@@ -11,62 +11,81 @@
 <style type="text/css">
 
 .container-geral {
-
- display: flex;
- justify-content: center;
- margin: 0 auto;
-   
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
 }
+
 .sub-container {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     margin: 0 auto;
 }
-.sub-container-form {
-    display: flex;
-    justify-content: space-between;
-}
 
-.sub-preco {
-    color: green; 
-    font-weight: 900; 
-    font-size: 18px;
-}
 .sub-container-item {
-    border: 2px solid black;
-    background: white;
-    margin: 32px 32px 32px 32px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 10px;
+    margin: 32px;
     width: 256px;
     text-align: center;
     align-items: center;
     font-size: 18px;
-    transition: all .2s ease-in-out; 
+    transition: all .3s ease-in-out;
 }
+
 .sub-container-item:hover {
-    transform: scale(1.1);
-    box-shadow: 6px 6px 6px 1px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+.sub-container-id{
+    color: black;
+    font-weight: bold;
+    font-size: 24px;
+    padding: 10px;
+}
+.sub-container-name-product {
+    color: black;
+    font-weight: 600;
+    font-size: 24px;
+   
+}
+
 
 .sub-container-image {
-
-    width: 254.4px;
-    height: 250px;
+    padding: 10px;
+    width: 256px; 
+    height: 200px; 
     display: flex;
     justify-content: center;
 }
-.sub-container-name-product {
-    background: black;
-    color: white;
-    font-weigth: bold;
+
+.sub-preco {
+    color: black;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 10px 0;
 }
 
+.sub-container-form {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-around;
+}
+
+
 img {
-    
+    max-width: 100%;
+    height: auto;
     object-fit: cover;
 }
 
+
+
 </style>
+
 
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">+</button>
 <div class="container-geral">
@@ -74,9 +93,11 @@ img {
     @if(isset($EstoqueProdutos))
     @foreach ($EstoqueProdutos as $key => $value)
         <div class="sub-container-item">
-            <div class="sub-container-name-product">
-                <p>ID: {{$key}}</p>
-                <p>{{strtoupper($value['produto'])}}</p>
+            <div class="sub-container-id">
+                <div style="display: flex; justify-content: left;">
+                <p style=" font-size: 18px">ID: <span style="font-weight: 300">{{$key}}</span></p>
+            </div>
+    
             </div>
             <div class="sub-container-image">
                 @if($value['image_url'] == false)
@@ -85,7 +106,12 @@ img {
                 <img  src="{{ $value['image_url'] }}">
                 @endif
             </div>
-            <p class="sub-preco">R$: {{  number_format($value['valor'], 2, ",", ".")}}</p>
+            <div class="sub-container-name-product">
+               
+                
+                <p>{{strtoupper($value['produto'])}}</p>
+            </div>
+            <p class="sub-preco"><span style="color: black"></span>R$: {{  number_format($value['valor'], 2, ",", ".")}}</p>
             <div class="sub-container-form">
                 <p>
                     <form  action="/DeletarProduto/{{$key}}" method="POST" >
@@ -103,7 +129,7 @@ img {
                 <p>
                     <form  action="/EditarProduto/{{$key}}" method="GET" >
                         @csrf
-                        <button class="btn btn-primary"  type="submit">Editar</button>
+                        <button class="btn btn-warning"  type="submit">Editar</button>
                     </form>
                 </p>
             </div>
@@ -112,7 +138,6 @@ img {
             @else
             <td colspan="10">Sem dados de registro!</td>
             @endif
-       
    </div>
 </div>
 
