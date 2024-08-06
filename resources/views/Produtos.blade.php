@@ -34,15 +34,20 @@
     font-size: 18px;
 }
 .sub-container-item {
-    border: 1px solid black;
+    border: 2px solid black;
     background: white;
     margin: 32px 32px 32px 32px;
     width: 256px;
     text-align: center;
     align-items: center;
     font-size: 18px;
-
+    transition: all .2s ease-in-out; 
 }
+.sub-container-item:hover {
+    transform: scale(1.1);
+    box-shadow: 6px 6px 6px 1px rgba(0, 0, 0, 0.2);
+}
+
 .sub-container-image {
 
     width: 254.4px;
