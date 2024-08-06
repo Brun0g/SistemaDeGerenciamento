@@ -26,6 +26,7 @@ class Quantity_product_controller extends Controller
         }
 
         $array = [];
+        $produtosPorCliente = [];
 
         if(isset($produtos, $nomeDoClientPorID, $produtosPorCliente))
         {

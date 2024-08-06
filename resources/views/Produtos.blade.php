@@ -10,113 +10,114 @@
 </x-slot>
 <style type="text/css">
 
-label {
-font-weight: 900;
+.container-geral {
+
+ display: flex;
+ justify-content: center;
+ margin: 0 auto;
+   
 }
-.input-margin-top {
-margin-top: 0.35rem;
-margin-bottom: 0.35rem;
+.sub-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0 auto;
 }
-#te {
-display: flex;
-justify-content: center;
-width: 100% ;
+.sub-container-form {
+    display: flex;
+    justify-content: space-between;
 }
-label {
-font-weight: 900;
+
+.sub-preco {
+    color: green; 
+    font-weight: 900; 
+    font-size: 18px;
 }
-.but {
-margin-top: 0.75rem;
+.sub-container-item {
+    border: 1px solid black;
+    background: white;
+    margin: 32px 32px 32px 32px;
+    width: 256px;
+    text-align: center;
+    align-items: center;
+    font-size: 18px;
+
 }
-caption {
-background-color: #e5e7eb;
+.sub-container-image {
+
+    width: 254.4px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
 }
-table {
-border-collapse: collapse;
-text-align: center;
-border: 1px solid;
-width: 100%;
+.sub-container-name-product {
+    background: black;
+    color: white;
+    font-weigth: bold;
 }
-thead {
-background-color: #e5e7eb;
-position: sticky;
-top: -15px;
-justify-content: center;
-text-align: center;
-font-size: 16px;
-border: 5px solid;
+
+img {
+    
+    object-fit: cover;
 }
-td {
-text-align: center;
-}
-#categoria-select {
-    width: 99%;
-}
+
 </style>
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">+</button>
-            <div id ="te" class="p-6 bg-white border-b border-gray-200">
-                
-                <table id="table">
-                    <thead class="thead">
-                        <tr>
-                            <th class="row-inform-item">ID</th>
-                            <th class="row-inform-item">Nome do Produto</th>
-                            <th class="row-inform-item">Valor</th>
-                            <th class="row-inform-item">Ação</th>
-                            <th class="row-inform-item">Ação</th>
-                            <th class="row-inform-item">Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
 
-                        @if(isset($EstoqueProdutos))
-                        @foreach ($EstoqueProdutos as $key => $value )
-                        <tr>
-                            <td style="color:white; background: black; font-weight: 900; border: 1px solid">
-                            {{  $key }}</td>
-                            <td>
-                       
-                                <figure>
-
-                                  <img src="{{$value['image_url']}}" alt="{{$value['produto']}}">
-                                </figure>
-                            </td>
-                            <td>{{  $value['produto'] }}</td>
-                            <td style="color:green;">R$ {{  $value['valor'] }}</td>
-                            <td>
-                                <form  action="/DeletarProduto/{{$key}}" method="POST" >
-                                    @csrf
-                                    @method('delete')
-                                    <button    class="btn btn-primary"  type="submit">Deletar</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form  action="/Produto/{{$key}}" method="GET" >
-                                    @csrf
-                                    <button    class="btn btn-primary"  type="submit">Visualizar</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form  action="/EditarProduto/{{$key}}" method="GET" >
-                                    @csrf
-                                    <button    class="btn btn-primary"  type="submit">Editar</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                        @else
-                        <td colspan="10">Sem dados de registro!</td>
-                        @endif
-                    </tbody>
-                </table>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">+</button>
+<div class="container-geral">
+    <div class="sub-container">
+    @if(isset($EstoqueProdutos))
+    @foreach ($EstoqueProdutos as $key => $value)
+        <div class="sub-container-item">
+            <div class="sub-container-name-product">
+                <p>ID: {{$key}}</p>
+                <p>{{strtoupper($value['produto'])}}</p>
+            </div>
+            <div class="sub-container-image">
+                @if($value['image_url'] == false)
+                <img src="{{ asset('images/default.png') }}">
+                @else
+                <img  src="{{ $value['image_url'] }}">
+                @endif
+            </div>
+            <p class="sub-preco">R$: {{  number_format($value['valor'], 2, ",", ".")}}</p>
+            <div class="sub-container-form">
+                <p>
+                    <form  action="/DeletarProduto/{{$key}}" method="POST" >
+                        @csrf
+                        @method('delete')
+                        <button class="btn btn-danger"  type="submit">Deletar</button>
+                    </form>
+                </p>
+                <p>
+                    <form  action="/Produto/{{$key}}" method="GET" >
+                        @csrf
+                        <button class="btn btn-primary"  type="submit">Visualizar</button>
+                    </form>
+                </p>
+                <p>
+                    <form  action="/EditarProduto/{{$key}}" method="GET" >
+                        @csrf
+                        <button class="btn btn-primary"  type="submit">Editar</button>
+                    </form>
+                </p>
             </div>
         </div>
-    </div>
+            @endforeach
+            @else
+            <td colspan="10">Sem dados de registro!</td>
+            @endif
+       
+   </div>
 </div>
-</div>
+
+                        
+                      
+                           
+                                
+                       
+                           
+                            
 </x-app-layout>
 
 <div class="modal fade" id="CadastrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
@@ -143,7 +144,7 @@ text-align: center;
                         </ul>
                     </div>
                     @endif
-                    <form id="po-insert" method="POST" action="/CadastrarProduto">
+                    <form id="po-insert" method="POST" action="/CadastrarProduto" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-4">
                             <label for="categoria-select" class="block text-sm font-medium text-gray-700">Escolha uma categoria:</label>
@@ -164,7 +165,7 @@ text-align: center;
                         </div>
                         <div class="mb-4">
                             <label for="file" class="block text-sm font-medium text-gray-700">Escolha o arquivo para upload:</label>
-                        <input type="file" name="imagem" id="image" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                        <input type="file" accept="image/*" name="imagem" id="imageFile" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" multiple/>
                         </div>
                         <div class="mb-4">
                             <label for="valorEstoque" class="block text-sm font-medium text-gray-700">Valor:</label>

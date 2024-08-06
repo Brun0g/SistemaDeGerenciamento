@@ -63,6 +63,7 @@ Route::POST('/CadastrarProduto', [Products_controller::class, 'newProduct'])->mi
 Route::GET('/Produtos',[Products_controller::class,'ProductsStorageView'])->middleware(['auth'])->name('Produtos');
 Route::GET('/Produto/{id}',[Products_controller::class,'showProduct'])->middleware(['auth']);
 Route::GET('/EditarProduto/{id}',[Products_controller::class,'viewFilterProducts'])->middleware(['auth']);
+Route::DELETE('/excluirImagem/{id}',[Products_controller::class,'deleteImage'])->middleware(['auth']);
 Route::DELETE('/DeletarProduto/{id}',[Products_controller::class,'deleteProduct'])->middleware(['auth']);
 Route::PATCH('/EditarProduto/{id}',[Products_controller::class,'editProduct'])->middleware(['auth']);
 

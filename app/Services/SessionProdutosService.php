@@ -9,12 +9,12 @@ class SessionProdutosService implements ProdutosServiceInterface
 	public function adicionarProduto($nome, $categoria, $valor, $imagem)
 	{
         $produtosNoEstoque = session()->get('EstoqueProdutos', []);
-        $produtosNoEstoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> $valor];
+        $produtosNoEstoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> $valor, 'image_url' => $imagem];
 
         session()->put('EstoqueProdutos', $produtosNoEstoque);
 	}
     
-    public function editarProduto($produto_id, $nome, $valor)
+    public function editarProduto($produto_id, $nome, $valor, $imagem)
     {
         $produtosNoEstoque = [];
 
@@ -24,9 +24,16 @@ class SessionProdutosService implements ProdutosServiceInterface
 
             if(array_key_exists($produto_id, $produtosNoEstoque))
             {
-                $produtosNoEstoque[$produto_id]['produto'] = $nome;
-                $produtosNoEstoque[$produto_id]['valor'] = $valor;
-
+                if($imagem == null)
+                {
+                    $produtosNoEstoque[$produto_id]['produto'] = $nome;
+                    $produtosNoEstoque[$produto_id]['valor'] = $valor;
+                } else {
+                    $produtosNoEstoque[$produto_id]['produto'] = $nome;
+                    $produtosNoEstoque[$produto_id]['valor'] = $valor;
+                    $produtosNoEstoque[$produto_id]['image_url'] = $imagem;
+                }
+            
                 session()->put('EstoqueProdutos', $produtosNoEstoque);
             }
         } 
@@ -58,8 +65,11 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $nome_produto = $value['produto'];
                 $categoria_produto = $value['categoria'];
                 $valor_produto = $value['valor'];
+                $image_url = $value['image_url'];
 
-                $listar_estoque_produto[$key] = ['produto' => $nome_produto, 'categoria' => $categoria_produto, 'valor' => $valor_produto];
+                $image_url = asset("storage/" .$image_url);
+
+                $listar_estoque_produto[$key] = ['produto' => $nome_produto, 'categoria' => $categoria_produto, 'valor' => $valor_produto, 'image_url' => $image_url];
             }
         }
 
@@ -77,8 +87,10 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $nome_produto = $value['produto'];
                 $categoria_produto = $value['categoria'];
                 $valor_produto = $value['valor'];
+                $image_url_produto = $value['image_url'];
+                $image_url_produto = asset("storage/" . $image_url_produto);
            
-                $produtoEncontrado = [ 'produto' => $nome_produto, 'categoria' => $categoria_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id];
+                $produtoEncontrado = [ 'produto' => $nome_produto, 'categoria' => $categoria_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto];
             }
         }
 

@@ -25,15 +25,17 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->save();
 	}
     
-    public function editarProduto($produto_id, $nome, $valor)
+    public function editarProduto($produto_id, $nome, $valor, $imagem)
     {
         $produto = Produto::find($produto_id);
 
         $produto->produto = $nome;
         $produto->valor = $valor;
-
+        
+        if(isset($imagem))
+        $produto->imagem = $imagem;
+   
         $produto->save();
-
     }
 
     public function excluirProduto($produto_id)
@@ -54,7 +56,13 @@ class DBProdutosService implements ProdutosServiceInterface
             $nome_produto = $produto->produto;
             $valor_produto = $produto->valor;
             $image_url_produto = $produto->imagem;
-           
+
+            
+            if($image_url_produto != false)
+                $image_url_produto = asset("storage/" . $image_url_produto);
+
+
+
             $listarProdutos[$produto->id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'image_url' => $image_url_produto];       
         }
 
@@ -71,12 +79,26 @@ class DBProdutosService implements ProdutosServiceInterface
             $nome_produto = $produto->produto;
             $valor_produto = $produto->valor;
             $produto_id = $produto->id;
+            $image_url_produto = $produto->imagem;
+
+            $image_url_produto = asset("storage/" . $image_url_produto);
+
+            if($produto->imagem == false)
+                $image_url_produto = false;
 
         }
         
-
-        $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id];
+        $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto];
 
         return $produtoEncontrado;
+    }
+
+    public function deletarImagem($produto_id)
+    {
+        $produto = Produto::find($produto_id);
+
+        $produto->imagem = false;
+
+        $produto->save();
     }
 }

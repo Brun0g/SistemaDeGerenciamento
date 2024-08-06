@@ -126,7 +126,8 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
     }
 
     public function atualizarPorcentagem($cliente_id, $porcentagem)
-    {
+    {   
+
         $descontos = session()->get('porcentagem', []);
 
         $clienteExiste = false;

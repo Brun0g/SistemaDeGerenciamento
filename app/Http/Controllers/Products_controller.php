@@ -27,34 +27,24 @@ class Products_controller extends Controller
     public function newProduct(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
-
         $nome = $request->input('produtoEstoque');
         $valor = $request->input('valorEstoque');
         $categoria = $request->input('categoria');
-        $imagem = $request->input('imagem');
+   
+        $validator = Validator::make($request->all(), [
+            'produtoEstoque' => 'required|string',
+            'valorEstoque'  => 'required|numeric',
+            'categoria'  => 'required|string',
+            'imagem' => 'required|image|mimes:jpeg,jpg,png,gif,svg|dimensions:max_width=1920,max_height=1080',
+        ]);
 
+        if($request->hasFile('imagem'))
+            $imagem = Storage::disk('public')->put('/images', $request->file('imagem'));
+        
+        $url = url()->previous();
 
-        Storage::put($imagem, 'local', 'public');
-
-
-    
-    
-
-
-        // $validator = Validator::make($request->all(), [
-        //     'produtoEstoque' => 'required|string',
-        //     'valorEstoque'  => 'required|numeric',
-        //     'categoria'  => 'required|string',
-        //     'imagem' => 'required|image|mimes:jpeg,jpg,png,gif,svg|max:5120',
-        // ]);
-
-     
-
-
-        // $url = url()->previous();
-
-        // if($validator->fails())
-        //     return redirect($url)->withErrors($validator);
+        if($validator->fails())
+            return redirect($url)->withErrors($validator);
 
 
         foreach ($listarCategorias as $categoria_id => $value) {
@@ -84,18 +74,32 @@ class Products_controller extends Controller
     {
         $nome = $request->input('produto');
         $valor =  $request->input('valor');
-        
+        $imagem =  $request->file('imagem');
+
+
         $validator = Validator::make($request->all(), [
-        'produto' => 'required|string',
-        'valor'  => 'required|numeric',
+            'produto' => 'required|string',
+            'valor'  => 'required|numeric',
         ]);
 
+        $url = url()->previous();
+
+        if($request->hasFile('imagem')){
+            
+            $validator = Validator::make($request->all(), [
+            'imagem' => 'required|image|mimes:jpeg,jpg,png,gif,svg|dimensions:max_width=1920,max_height=1080',
+            ]);
+
+            $imagem = Storage::disk('public')->put('/images', $request->file('imagem'));
+        }
+
+
         if($validator->fails())
-            return redirect()->to('EditarProduto/' . $produto_id)->withErrors($validator);
+            return redirect()->to($url)->withErrors($validator);
 
-        $provider_produto->editarProduto($produto_id, $nome, $valor);
+        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem);
 
-        return redirect('/Produtos');
+        return redirect($url);
     }
 
     public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
@@ -103,5 +107,15 @@ class Products_controller extends Controller
         $EstoqueProdutos = $provider_produto->buscarProduto($produto_id);
           
         return view('editFilterProducts', ['EstoqueProdutos' => $EstoqueProdutos, 'produto_id'=> $produto_id]);
+    }
+    public function deleteImage(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
+    {
+        
+        $provider_produto->deletarImagem($produto_id);
+
+        $url = url()->previous();
+
+    
+        return redirect($url);
     }
 }
