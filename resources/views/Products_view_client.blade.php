@@ -8,66 +8,72 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </x-slot>
+
 <style type="text/css">
-    table {
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+table {
     border-collapse: collapse;
-    text-align: center;
-    border: 1px solid;
     width: 100%;
-    }
-    thead {
-    background-color: #e5e7eb;
-    border: 2px solid;
-    }
-    caption{
-    background-color: #e5e7eb;
-    border: 2px solid;
-    }
-    td {
+    table-layout: auto;
+}
+thead {
+   
+    border: 2px solid #ddd;
+}
+th, td {
+    border: 2px solid #ddd;
+    padding: 8px;
     text-align: center;
-    }
-    .caption-style{
+}
+th {
+    background-color: royalblue;
+    color: white;
+    font-weight: bold;
+}
+.caption-style {
     background-color: black;
     color: white;
     text-align: center;
     font-weight: 900;
     font-size: 20px;
-    }
-</style>
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div id ="te" class="p-6 bg-white border-b border-gray-200">
-                
-                <table id="table">
-                    <thead class="thead">
-                        <td style="background-color: royalblue; border: 3px solid; font-weight: 900;">Clientes</td>
-                        @if(isset($produtos))
-                        @foreach($produtos as $produto)
-                        <td style="background-color: royalblue; border: 3px solid; font-weight: 900;">{{strtoupper($produto['produto'])}}</td>
+    padding: 10px;
+}
 
-                        @endforeach
-                           @endif
-                    </thead>
-                    <tbody>
-                        @if(isset($Clientes))
-                        @foreach($Clientes as $cliente => $valor)
-                        <tr>
-                            <td style="border: 3px solid;">{{strtoupper($valor['name'])}}</td>
-                            @if(isset($produtos))
-                            @foreach($produtos as $produto)
-                            <td style= "border: 3px solid; font-weight: 900;">{{$clientes_produtos[$cliente][$produto['produto']] ?? 0}}</td>
-                            @endforeach
-                            @endif
-                        </tr>
-                        @endforeach
-                            @endif
-                    </tbody>
-                    
-                </table>
-                
-            </div>
+</style>
+    <div class="container">
+        <div class="caption-style">
+            Relatório de Clientes e Produtos
         </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Clientes</th>
+                    @if(isset($produtos))
+                    @foreach($produtos as $produto)
+                    <th>{{ strtoupper($produto['produto']) }}</th>
+                    @endforeach
+                    @endif
+                </tr>
+            </thead>
+            <tbody>
+                @if(isset($Clientes))
+                @foreach($Clientes as $cliente => $valor)
+                <tr>
+                    <td data-label="Clientes">{{ strtoupper($valor['name']) }}</td>
+                    @if(isset($produtos))
+                    @foreach($produtos as $produto)
+                    <td data-label="{{ strtoupper($produto['produto']) }}">{{ $clientes_produtos[$cliente][$produto['produto']] ?? 0 }}</td>
+                    @endforeach
+                    @endif
+                </tr>
+                @endforeach
+                @endif
+            </tbody>
+        </table>
     </div>
-</div>
+
 </x-app-layout>

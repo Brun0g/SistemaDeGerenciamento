@@ -42,53 +42,72 @@ class DBProdutosService implements ProdutosServiceInterface
     {
         $produto = Produto::find($produto_id);
 
+        $produtos = session()->get('Pedidos', []);
+
+        foreach ($produtos as $key => $value) {
+                if($produto_id == $value['produto_id'])
+                    unset($produtos[$key]);
+        }
+
+        session()->put('Pedidos', $produtos);
+
         $produto->delete($produto_id);
     }
     
-    public function listarProduto()
+    public function listarProduto($provider_promotions)
     {
+        
         $produtos = Produto::all();
 
         $listarProdutos = [];
+      
+        $quantidade = 0;
 
         foreach ($produtos as $produto) 
         {
             $nome_produto = $produto->produto;
             $valor_produto = $produto->valor;
             $image_url_produto = $produto->imagem;
+            $produto_id = $produto->id;
 
-            
+            $promocao[$produto->id] = $provider_promotions->buscarPromocao($produto_id, $quantidade);
+    
+            $ativo = isset($promocao[$produto_id][0]['ativo']) ? $promocao[$produto_id][0]['ativo'] : 0;
+           
             if($image_url_produto != false)
                 $image_url_produto = asset("storage/" . $image_url_produto);
 
-
-
-            $listarProdutos[$produto->id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'image_url' => $image_url_produto];       
+            $listarProdutos[$produto->id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'image_url' => $image_url_produto, 'promocao' => $promocao, 'ativo' => $ativo];       
         }
 
         return $listarProdutos;
     }
 
-    public function buscarProduto($produto_id)
+    public function buscarProduto($produto_id, $softDelete)
     {
-        $produtoEncontrado = [];
+        $produtos = Produto::find($produto_id);
 
-        $produto = Produto::find($produto_id);
+       
 
-        foreach ($produto as $key => $value) {
-            $nome_produto = $produto->produto;
-            $valor_produto = $produto->valor;
-            $produto_id = $produto->id;
-            $image_url_produto = $produto->imagem;
+        if($softDelete == true)
+            $produtos = Produto::withTrashed()->where('id', $produto_id)->get()[0];
+        
+        $produtoEncontrado = [];    
+
+        foreach ($produtos as $produto) {
+
+            $nome_produto = $produtos->produto;
+            $valor_produto = $produtos->valor;
+            $produto_id = $produtos->id;
+            $image_url_produto = $produtos->imagem;
 
             $image_url_produto = asset("storage/" . $image_url_produto);
 
-            if($produto->imagem == false)
+            if($produtos->imagem == false)
                 $image_url_produto = false;
 
+            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto];
         }
-        
-        $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto];
 
         return $produtoEncontrado;
     }

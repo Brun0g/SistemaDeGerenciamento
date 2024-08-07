@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\Validator;
 use \App\Services\ProdutosServiceInterface;
 use \App\Services\CategoriaServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
+use \App\Services\PromotionsServiceInterface;
 
 use Illuminate\Support\Facades\Storage;
 
 
 class Products_controller extends Controller
 {
- 
-    public function ProductsStorageView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria)
+    public function ProductsStorageView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromotionsServiceInterface $provider_promotions)
     {
-        $estoqueProdutos = $provider_produto->listarProduto();
+        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions);
         $listarCategorias = $provider_categoria->listarCategoria();
 
         return view('/Produtos', ['categorias' => $listarCategorias,'EstoqueProdutos' => $estoqueProdutos]);
@@ -59,7 +59,8 @@ class Products_controller extends Controller
 
     public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
     {
-        $estoqueProdutos = $provider_produto->buscarProduto($produto_id);
+        $softDelete = false;
+        $estoqueProdutos = $provider_produto->buscarProduto($produto_id, $softDelete);
         
         return view('/showFilterProducts', ['EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id]);
     }
@@ -104,7 +105,9 @@ class Products_controller extends Controller
 
     public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
     {
-        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id);
+        $softDelete = false;
+
+        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id, $softDelete);
           
         return view('editFilterProducts', ['EstoqueProdutos' => $EstoqueProdutos, 'produto_id'=> $produto_id]);
     }

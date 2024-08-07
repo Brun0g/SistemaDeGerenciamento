@@ -43,7 +43,7 @@ class SessionPedidosService implements PedidosServiceInterface
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            $produto = $service_produtos->buscarProduto($produto_id);
+            $produto = $service_produtos->buscarProduto($produto_id, $softDelete);
 
             $pedidoUnitario[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor]; 
         } 
@@ -98,6 +98,7 @@ class SessionPedidosService implements PedidosServiceInterface
         $service_produtos = new SessionProdutosService();
 
         $total = 0;
+        $softDelete = true;
         
         foreach ($pedidoUnitario as $pedidoKey => $pedido) 
         {
@@ -108,7 +109,7 @@ class SessionPedidosService implements PedidosServiceInterface
                 $quantidade = $pedido['quantidade'];
                 $porcentagem = $pedido['porcentagem'];
                 $valor = $pedido['total'];
-                $produto = $service_produtos->buscarProduto($produto_id)['produto'];
+                $produto = $service_produtos->buscarProduto($produto_id, $softDelete)['produto'];
                 $preco_unidade = $pedido['preco_unidade'];
 
                 $total += $valor;

@@ -28,7 +28,7 @@ class PromotionController extends Controller
      */
     public function index(Request $request, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions)
     {
-        $produtos = $provider_produto->listarProduto();
+        $produtos = $provider_produto->listarProduto($provider_promotions);
         $promotionsList = $provider_promotions->listarPromocoes($provider_produto);
 
 

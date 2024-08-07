@@ -78,7 +78,7 @@ class Clients_controller extends Controller
         $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions);   
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
         $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_produto, $provider_carrinho, $provider_promotions);
-        $listarProduto = $provider_produto->listarProduto();
+        $listarProduto = $provider_produto->listarProduto($provider_promotions);
         $listarCategoria = $provider_categoria->listarCategoria();
         $listarPedidosAprovados = $provider_pedido->listarPedidos($cliente_id);
 

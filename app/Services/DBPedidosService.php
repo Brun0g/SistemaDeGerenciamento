@@ -34,13 +34,15 @@ class DBPedidosService implements PedidosServiceInterface
         $pedidosPorClientes = Order::all(); 
         
         $service_produtos = new DBProdutosService();
+
+        $softDelete = true;
     
         foreach ($pedidosPorClientes as $pedidoKey => $value) {
             $id = $value['cliente_id'];
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            $produto = $service_produtos->buscarProduto($produto_id);
+            $produto = $service_produtos->buscarProduto($produto_id, $softDelete);
 
             $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor]; 
         } 
@@ -55,6 +57,8 @@ class DBPedidosService implements PedidosServiceInterface
         $lista = [];
         $total = 0;
 
+        $softDelete = true;
+
         
         foreach ($pedidos as $key => $value) 
         {
@@ -64,7 +68,7 @@ class DBPedidosService implements PedidosServiceInterface
             $cliente_id = $value['cliente_id'];
             $preco_unidade = $value['preco_unidade'];
             $porcentagem = $value['porcentagem'];
-            $produto = $service_produtos->buscarProduto($produto_id);
+            $produto = $service_produtos->buscarProduto($produto_id, $softDelete);
 
             $total += $valor;
            

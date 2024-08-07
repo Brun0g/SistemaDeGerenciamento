@@ -53,7 +53,7 @@ class SessionProdutosService implements ProdutosServiceInterface
         }
     }
 
-    public function listarProduto()
+    public function listarProduto($provider_promotions)
     {
         $listar_estoque_produto = [];
 
@@ -76,7 +76,7 @@ class SessionProdutosService implements ProdutosServiceInterface
         return $listar_estoque_produto; 
     }
 
-    public function buscarProduto($produto_id)
+    public function buscarProduto($produto_id, $softDelete)
     {
         $produtoEncontrado = [];
         $produto = session()->get('EstoqueProdutos');

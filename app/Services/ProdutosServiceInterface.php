@@ -7,6 +7,6 @@ interface ProdutosServiceInterface
 	function adicionarProduto($nome, $categoria, $valor, $imagem);
 	function excluirProduto($produto_id);
 	function editarProduto($produto_id, $nome, $valor, $imagem);
-	function listarProduto();
-	function buscarProduto($produto_id);
+	function listarProduto($provider_promotions);
+	function buscarProduto($produto_id, $softDelete);
 }

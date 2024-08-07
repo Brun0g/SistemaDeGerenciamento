@@ -67,10 +67,12 @@ class SessionPromotionsService implements PromotionsServiceInterface
 
         $Promotionslist = [];
 
+        $softDelete = true;
+
         foreach ($promotions as $key => $value) 
         {
             $produto_id = $value['produto_id'];
-            $buscar = $provider_produto->buscarProduto($produto_id);
+            $buscar = $provider_produto->buscarProduto($produto_id, $softDelete);
             $porcentagem = $value['porcentagem'];
             $quantidade = $value['quantidade'];
             $ativo = $value['ativo'];

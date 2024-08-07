@@ -8,10 +8,11 @@ use Illuminate\Support\Collection;
 use \App\Services\ClientesServiceInterface;
 use \App\Services\PedidosServiceInterface;
 use \App\Services\ProdutosServiceInterface;
+use \App\Services\PromotionsServiceInterface;
 
 class Quantity_product_controller extends Controller
 {
-    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_client, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedido)
+    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_client, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedido, PromotionsServiceInterface $provider_promotions)
     {   
         $service_clientes = $provider_client;
         $service_produtos = $provider_produto;
@@ -19,7 +20,7 @@ class Quantity_product_controller extends Controller
 
      
         $nomeDoClientPorID = $service_clientes->listarClientes();
-        $produtos = $service_produtos->listarProduto();
+        $produtos = $service_produtos->listarProduto($provider_promotions);
         
         foreach ($nomeDoClientPorID as $cliente_id => $value) {
             $produtosPorCliente = $service_pedidos->listarQuantidadePedidos($cliente_id);

@@ -52,13 +52,14 @@ class DBPromotionsService implements PromotionsServiceInterface
     public function listarPromocoes($provider_produto)
     {
         $promotions = Promotion::all();
-
         $Promotionslist = [];
+
+        $softDelete = true;
 
         foreach ($promotions as $promotion) 
         {
             $produto_id = $promotion->produto_id;
-            $buscar = $provider_produto->buscarProduto($produto_id);
+            $buscar = $provider_produto->buscarProduto($produto_id, $softDelete);
             $porcentagem = $promotion->porcentagem;
             $quantidade = $promotion->quantidade;
             $ativo = $promotion->ativo;
@@ -93,6 +94,9 @@ class DBPromotionsService implements PromotionsServiceInterface
 
                     if($quantidade >= $quantidade_promocao)
                     $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
+
+                    if($quantidade == 0)
+                        $produtoEncontrado[] = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
                 }
             }
         }

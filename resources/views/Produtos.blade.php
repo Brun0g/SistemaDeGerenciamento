@@ -33,6 +33,11 @@
     align-items: center;
     font-size: 18px;
     transition: all .3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+
 }
 
 .sub-container-item:hover {
@@ -50,14 +55,17 @@
     color: black;
     font-weight: 600;
     font-size: 24px;
-   
 }
-
-
 .sub-container-image {
     padding: 10px;
     width: 256px; 
     height: 200px; 
+    display: flex;
+    justify-content: center;
+}
+.sub-container-image-com-desconto {
+    width: 250px;
+    height: 140px; 
     display: flex;
     justify-content: center;
 }
@@ -66,13 +74,34 @@
     color: black;
     font-weight: 600;
     font-size: 20px;
-    margin: 10px 0;
+  
+}
+.sub-preco-desconto {
+    font-size: 14px;
 }
 
 .sub-container-form {
-    margin-bottom: 15px;
+    margin-top: 10px;
     display: flex;
     justify-content: space-around;
+}
+
+.sub-container-item-sem-desconto {
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 10px;
+    height: 425px;
+    margin: 32px;
+    width: 256px;
+    text-align: center;
+    align-items: center;
+    font-size: 18px;
+    transition: all .3s ease-in-out;
+
+}
+.sub-container-item-sem-desconto:hover {
+    transform: scale(1.05); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -86,20 +115,24 @@ img {
 
 </style>
 
+<div style="display: flex; justify-content: center; margin-top: 20px;">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo produto</button>
+</div>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">+</button>
 <div class="container-geral">
     <div class="sub-container">
+
     @if(isset($EstoqueProdutos))
     @foreach ($EstoqueProdutos as $key => $value)
+    @if($value['ativo'] == 1)
         <div class="sub-container-item">
-            <div class="sub-container-id">
-                <div style="display: flex; justify-content: left;">
-                <p style=" font-size: 18px">ID: <span style="font-weight: 300">{{$key}}</span></p>
+            <div style="font-weight: 900">
+        
+                    ID: <span style="font-weight: 300; font-size: 18px">{{$key}}</span>
+               
             </div>
     
-            </div>
-            <div class="sub-container-image">
+            <div class="sub-container-image-com-desconto">
                 @if($value['image_url'] == false)
                 <img src="{{ asset('images/default.png') }}">
                 @else
@@ -107,11 +140,32 @@ img {
                 @endif
             </div>
             <div class="sub-container-name-product">
-               
-                
                 <p>{{strtoupper($value['produto'])}}</p>
             </div>
-            <p class="sub-preco"><span style="color: black"></span>R$: {{  number_format($value['valor'], 2, ",", ".")}}</p>
+
+           
+            <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
+            @if(count($EstoqueProdutos[$key]['promocao']) != [])
+            <div class="sub-preco-desconto">Desconto por quantidade</div>
+            <div style="display: flex; justify-content: center;">
+                <table>
+                    <tr>
+                        <th class="sub-preco-desconto">Quantidade</th>
+                        <th class="sub-preco-desconto">Preço</th>
+                    </tr>
+                  @foreach ($EstoqueProdutos[$key]['promocao'] as $id => $valor)
+                    @foreach($valor as $chave => $dado)
+                        @if($dado['produto_id'] == $key)
+                    <tr>
+                    <td class="sub-preco-desconto">{{$dado['quantidade']}}</td>
+                    <td class="sub-preco-desconto">R${{  number_format($value['valor'] - ($value['valor'] / 100 * $dado['porcentagem']), 2, ",", ".")}}</td>
+                    </tr>
+            @endif
+                  @endforeach
+                  @endforeach
+                </table>
+            </div>
+            @endif
             <div class="sub-container-form">
                 <p>
                     <form  action="/DeletarProduto/{{$key}}" method="POST" >
@@ -134,20 +188,57 @@ img {
                 </p>
             </div>
         </div>
+            
+
+    @else
+            <div class="sub-container-item-sem-desconto">
+            <div class="sub-container-id">
+                <div style="display: flex; justify-content: left;">
+                    <p style=" font-size: 18px">ID: <span style="font-weight: 300">{{$key}}</span></p>
+                </div>
+            </div>
+    
+            <div class="sub-container-image">
+                @if($value['image_url'] == false)
+                <img src="{{ asset('images/default.png') }}">
+                @else
+                <img  src="{{ $value['image_url'] }}">
+                @endif
+            </div>
+            <div class="sub-container-name-product">
+                <p>{{strtoupper($value['produto'])}}</p>
+            </div>
+            <p class="sub-preco"><span style="color: black"></span>R$: {{  number_format($value['valor'], 2, ",", ".")}}</p>
+           
+            <div class="sub-container-form">
+                <p>
+                    <form  action="/DeletarProduto/{{$key}}" method="POST" >
+                        @csrf
+                        @method('delete')
+                        <button class="btn btn-danger"  type="submit">Deletar</button>
+                    </form>
+                </p>
+                <p>
+                    <form  action="/Produto/{{$key}}" method="GET" >
+                        @csrf
+                        <button class="btn btn-primary"  type="submit">Visualizar</button>
+                    </form>
+                </p>
+                <p>
+                    <form  action="/EditarProduto/{{$key}}" method="GET" >
+                        @csrf
+                        <button class="btn btn-warning"  type="submit">Editar</button>
+                    </form>
+                </p>
+            </div>
+        </div>
+            @endif
             @endforeach
             @else
             <td colspan="10">Sem dados de registro!</td>
             @endif
    </div>
-</div>
-
-                        
-                      
-                           
-                                
-                       
-                           
-                            
+</div>         
 </x-app-layout>
 
 <div class="modal fade" id="CadastrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
