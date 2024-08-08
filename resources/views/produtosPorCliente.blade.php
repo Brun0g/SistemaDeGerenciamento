@@ -135,7 +135,7 @@
                       <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $value['cliente_id'] }}</td>
                       <td>{{  $value['produto'] }}</td>
                       <td>{{  $value['quantidade'] }}</td>
-                      <td style="color:green;">R$ {{number_format($value['total'] - ($value['total'] / 100 * abs($porcentagem)), 2, ",", ".") }}</td>
+                      <td style="color:green;">R$ {{number_format($value['total_final'] - ($value['total_final'] / 100 * abs($porcentagem)), 2, ",", ".") }}</td>
                       <td style="font-weight: 900;">{{ '-'. $porcentagem . "%" }}</td>
                       @endif
                       @endforeach
@@ -149,11 +149,12 @@
                       {{-- <td style="border-bottom: hidden"></td> --}}
                       <td style="border-bottom: hidden"></td>
                       
-                      <td style="border-left: black solid 1px; color:white; background: black; font-weight: 900;">R$ {{isset($totalPedido) ? $totalPedido : 0}}</td>
+                      <td style="border-left: black solid 1px; color:white; background: black; font-weight: 900;">R$ {{isset($totalPedido) ? number_format($totalPedido - ($totalPedido / 100 * $porcentagem), 2, ",", ".") : 0}}</td>
                       <td style="border-bottom: hidden; border-right: hidden;"></td>
                     </tr>
                   </table>
                 </div>
+
                 <div class="container-center" style="display: flex; justify-content: center; margin-bottom: 15px;">
                   <form method="GET" action="/carrinho/{{$id}}">
                     @csrf

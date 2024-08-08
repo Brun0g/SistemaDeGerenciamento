@@ -18,16 +18,22 @@ class Quantity_product_controller extends Controller
         $service_produtos = $provider_produto;
         $service_pedidos = $provider_pedido;
 
+        $softDelete = true;
      
         $nomeDoClientPorID = $service_clientes->listarClientes();
-        $produtos = $service_produtos->listarProduto($provider_promotions);
+        $produtos = $service_produtos->listarProduto($provider_promotions, $provider_produto, $softDelete);
+
+        $produtosPorCliente = [];
         
         foreach ($nomeDoClientPorID as $cliente_id => $value) {
             $produtosPorCliente = $service_pedidos->listarQuantidadePedidos($cliente_id);
         }
 
+
+
+
         $array = [];
-        $produtosPorCliente = [];
+        
 
         if(isset($produtos, $nomeDoClientPorID, $produtosPorCliente))
         {
@@ -56,6 +62,8 @@ class Quantity_product_controller extends Controller
                 }
             }
         }
+
+        
   
         return view('Products_view_client', ['Clientes' => $nomeDoClientPorID,  'produtosPorCliente' => $produtosPorCliente, 'produtos' => $produtos,'clientes_produtos' => $array]);
     }

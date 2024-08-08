@@ -33,7 +33,7 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->valor = $valor;
         
         if(isset($imagem))
-        $produto->imagem = $imagem;
+            $produto->imagem = $imagem;
    
         $produto->save();
     }
@@ -42,26 +42,14 @@ class DBProdutosService implements ProdutosServiceInterface
     {
         $produto = Produto::find($produto_id);
 
-        $produtos = session()->get('Pedidos', []);
-
-        foreach ($produtos as $key => $value) {
-                if($produto_id == $value['produto_id'])
-                    unset($produtos[$key]);
-        }
-
-        session()->put('Pedidos', $produtos);
-
         $produto->delete($produto_id);
     }
     
-    public function listarProduto($provider_promotions)
+    public function listarProduto($provider_promotions, $provider_produto, $softDelete)
     {
-        
         $produtos = Produto::all();
 
         $listarProdutos = [];
-      
-        $quantidade = 0;
 
         foreach ($produtos as $produto) 
         {
@@ -70,15 +58,16 @@ class DBProdutosService implements ProdutosServiceInterface
             $image_url_produto = $produto->imagem;
             $produto_id = $produto->id;
 
-            $promocao[$produto->id] = $provider_promotions->buscarPromocao($produto_id, $quantidade);
-    
-            $ativo = isset($promocao[$produto_id][0]['ativo']) ? $promocao[$produto_id][0]['ativo'] : 0;
-           
+            $promocao = $provider_promotions->buscarPromocao($produto_id);
+            $ativo = $promocao['ativo'];
+            $array[$produto_id] = $promocao['promocao'];
+
             if($image_url_produto != false)
                 $image_url_produto = asset("storage/" . $image_url_produto);
 
-            $listarProdutos[$produto->id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'image_url' => $image_url_produto, 'promocao' => $promocao, 'ativo' => $ativo];       
+            $listarProdutos[$produto->id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo];       
         }
+
 
         return $listarProdutos;
     }
@@ -86,8 +75,6 @@ class DBProdutosService implements ProdutosServiceInterface
     public function buscarProduto($produto_id, $softDelete)
     {
         $produtos = Produto::find($produto_id);
-
-       
 
         if($softDelete == true)
             $produtos = Produto::withTrashed()->where('id', $produto_id)->get()[0];

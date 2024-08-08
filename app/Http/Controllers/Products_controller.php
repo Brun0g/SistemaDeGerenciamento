@@ -18,7 +18,10 @@ class Products_controller extends Controller
 {
     public function ProductsStorageView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromotionsServiceInterface $provider_promotions)
     {
-        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions);
+        $softDelete = false;
+        
+        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions, $provider_produto, $softDelete);
+        
         $listarCategorias = $provider_categoria->listarCategoria();
 
         return view('/Produtos', ['categorias' => $listarCategorias,'EstoqueProdutos' => $estoqueProdutos]);

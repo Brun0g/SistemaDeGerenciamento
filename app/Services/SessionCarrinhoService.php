@@ -85,7 +85,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                 $unidade_desconto = $preco_unidade;
 
-                $promocao = $provider_promotions->buscarPromocao($produto_id, $quantidade);
+                $promocao = $provider_promotions->buscarQuantidade($produto_id, $quantidade);
 
                 if(isset($promocao['produto_id']))
                 {
@@ -181,7 +181,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
 
             $preco_unidade = $provider_produto->buscarProduto($produto_id, $softDelete)['valor'];
-            $promocao = $provider_promotions->buscarPromocao($produto_id, $quantidade);
+            $promocao = $provider_promotions->buscarQuantidade($produto_id, $quantidade);
 
             if(isset($promocao['produto_id']))
             {      
@@ -241,7 +241,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
                 $valor_final += $value['total_final'];
                 $pedidos[$key]['total_final'] = $total;
 
-                $promocao = $provider_promotions->buscarPromocao($produto_id, $quantidade);
+                $promocao = $provider_promotions->buscarQuantidade($produto_id, $quantidade);
 
                 if(isset($promocao['produto_id']))
                 {

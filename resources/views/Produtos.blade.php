@@ -119,6 +119,7 @@ img {
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo produto</button>
 </div>
 
+           {{-- {{dd($EstoqueProdutos)}} --}}
 <div class="container-geral">
     <div class="sub-container">
 
@@ -143,7 +144,6 @@ img {
                 <p>{{strtoupper($value['produto'])}}</p>
             </div>
 
-           
             <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
             @if(count($EstoqueProdutos[$key]['promocao']) != [])
             <div class="sub-preco-desconto">Desconto por quantidade</div>

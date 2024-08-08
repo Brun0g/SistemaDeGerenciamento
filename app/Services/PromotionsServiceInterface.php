@@ -9,5 +9,6 @@ interface PromotionsServiceInterface
 	function ativarPromocao($promotion_id, $situacao);
 	function editarPromocao($promotion_id, $quantidade, $porcentagem);
 	function deletarPromocao($promotion_id);
-	function buscarPromocao($promotion_id, $quantidade);
+	function buscarQuantidade($promotion_id, $quantidade);
+	function buscarPromocao($promotion_id);
 }

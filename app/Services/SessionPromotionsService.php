@@ -88,29 +88,32 @@ class SessionPromotionsService implements PromotionsServiceInterface
         return $Promotionslist;
     }
 
-    public function buscarPromocao($produto_id, $quantidade)
+    public function buscarQuantidade($produto_id, $quantidade)
     {
-        $produtoEncontrado = [];
         $produto = session()->get('promotions', []);
-    
+        $produtoEncontrado = [];
+        
         $quantity = array_column($produto, 'quantidade');
         array_multisort($quantity, SORT_ASC, $produto);
 
-     
-    
         foreach ($produto as $key => $value) {
             if($produto_id == $value['produto_id'])
             {
-                $id = $value['produto_id'];
-                $porcentagem = $value['porcentagem'];
-                $quantidade_promocao = $value['quantidade'];
-                $ativo = $value['ativo'];
+                if($value['ativo'] == 1)
+                {
+                    $id = $value['produto_id'];
+                    $porcentagem = $value['porcentagem'];
+                    $quantidade_promocao = $value['quantidade'];
+                    $ativo = $value['ativo'];
 
-                if($quantidade >= $quantidade_promocao)
-                $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
+                    if($quantidade >= $quantidade_promocao)
+                    $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
+
+                    if($quantidade == 0)
+                        $produtoEncontrado[] = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
+                }
             }
         }
-
 
         return $produtoEncontrado;
     }

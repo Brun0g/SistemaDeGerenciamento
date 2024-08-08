@@ -78,13 +78,15 @@ class Clients_controller extends Controller
         $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions);   
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
         $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_produto, $provider_carrinho, $provider_promotions);
-        $listarProduto = $provider_produto->listarProduto($provider_promotions);
+
+        $softDelete = false;
+        $listarProduto = $provider_produto->listarProduto($provider_promotions, $provider_produto, $softDelete);
         $listarCategoria = $provider_categoria->listarCategoria();
         $listarPedidosAprovados = $provider_pedido->listarPedidos($cliente_id);
 
         $totalPedido = $buscarValores['totalComDesconto'];
 
-        return view('produtosPorCliente', ['listarPedidos'=> $listarPedidos, 'categorias' => $listarCategoria, 'clienteID' => $cliente, 'id' => $cliente_id, 'listarPedidosAprovados' => $listarPedidosAprovados, 'totalPedido'=> number_format($totalPedido, 2, ",", "."), 'produtosEstoque' => $listarProduto, 'porcentagem' => $porcentagem]);
+        return view('produtosPorCliente', ['listarPedidos'=> $listarPedidos, 'categorias' => $listarCategoria, 'clienteID' => $cliente, 'id' => $cliente_id, 'listarPedidosAprovados' => $listarPedidosAprovados, 'totalPedido'=> $totalPedido, 'produtosEstoque' => $listarProduto, 'porcentagem' => $porcentagem]);
     }
 
     public function deleteClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)

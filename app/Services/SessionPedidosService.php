@@ -37,6 +37,8 @@ class SessionPedidosService implements PedidosServiceInterface
         $pedidoUnitario = session()->get('pedidoUnitario', []); 
         
         $service_produtos = new SessionProdutosService();
+
+        $softDelete = true;
     
         foreach ($pedidoUnitario as $pedidoKey => $value) {
             $id = $value['cliente_id'];
@@ -47,6 +49,8 @@ class SessionPedidosService implements PedidosServiceInterface
 
             $pedidoUnitario[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor]; 
         } 
+
+        
         
         return $pedidoUnitario; 
     }
@@ -143,5 +147,33 @@ class SessionPedidosService implements PedidosServiceInterface
         $pedidoUnitario[] = ['pedido_id' => $pedido_id,'cliente_id' => $cliente_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total];
 
         session()->put('pedidoUnitario', $pedidoUnitario);
+    }
+
+    public function listarQuantidadeProduto($provider_promotions)
+    {
+        $produtos = session()->get('EstoqueProdutos', []);
+
+        $listarProdutos = [];
+        $quantidade = 0;
+
+        foreach ($produtos as $key => $value) 
+        {
+            $nome_produto = $value['produto'];
+            $valor_produto = $value['valor'];
+            $image_url_produto = $value['imagem'];
+            $produto_id = $key;
+
+            $promocao[$key] = $provider_promotions->buscarQuantidade($produto_id, $quantidade);
+    
+            $ativo = isset($promocao[$produto_id][0]['ativo']) ? $promocao[$produto_id][0]['ativo'] : 0;
+           
+            if($image_url_produto != false)
+                $image_url_produto = asset("storage/" . $image_url_produto);
+
+            
+            $listarProdutos[$key] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'image_url' => $image_url_produto, 'promocao' => $promocao, 'ativo' => $ativo]; 
+        }
+
+        return $listarProdutos; 
     }
 }

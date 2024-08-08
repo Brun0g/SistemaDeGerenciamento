@@ -9,7 +9,7 @@ class SessionProdutosService implements ProdutosServiceInterface
 	public function adicionarProduto($nome, $categoria, $valor, $imagem)
 	{
         $produtosNoEstoque = session()->get('EstoqueProdutos', []);
-        $produtosNoEstoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> $valor, 'image_url' => $imagem];
+        $produtosNoEstoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> $valor, 'imagem' => $imagem];
 
         session()->put('EstoqueProdutos', $produtosNoEstoque);
 	}
@@ -22,79 +22,104 @@ class SessionProdutosService implements ProdutosServiceInterface
         {
             $produtosNoEstoque = session()->get('EstoqueProdutos'); 
 
-            if(array_key_exists($produto_id, $produtosNoEstoque))
-            {
-                if($imagem == null)
-                {
-                    $produtosNoEstoque[$produto_id]['produto'] = $nome;
-                    $produtosNoEstoque[$produto_id]['valor'] = $valor;
-                } else {
-                    $produtosNoEstoque[$produto_id]['produto'] = $nome;
-                    $produtosNoEstoque[$produto_id]['valor'] = $valor;
-                    $produtosNoEstoque[$produto_id]['image_url'] = $imagem;
-                }
-            
-                session()->put('EstoqueProdutos', $produtosNoEstoque);
-            }
-        } 
+            $produtosNoEstoque[$produto_id]['produto'] = $nome;
+            $produtosNoEstoque[$produto_id]['valor'] = $valor;
+              
+            if(isset($imagem))     
+                $produtosNoEstoque[$produto_id]['imagem'] = $imagem;      
+        }
+
+        session()->put('EstoqueProdutos', $produtosNoEstoque);
     }
 
     public function excluirProduto($produto_id)
     {
         if(session()->has('EstoqueProdutos'))
         {
-            $produtosNoEstoque = session()->get('EstoqueProdutos');
+            $produtos = session()->get('EstoqueProdutos');
 
-            if(array_key_exists($produto_id, $produtosNoEstoque))
-            {
-                unset($produtosNoEstoque[$produto_id]);
-                session()->put('EstoqueProdutos', $produtosNoEstoque);
+            foreach ($produtos as $key => $value) {
+                    if($key == $produto_id)
+                        $produtos[$key]['softDelete'] = 1;
             }
+
+            session()->put('EstoqueProdutos', $produtos);
         }
     }
 
-    public function listarProduto($provider_promotions)
+    public function listarProduto($provider_promotions, $provider_produto, $softDelete)
     {
-        $listar_estoque_produto = [];
+        $produtos = session()->get('EstoqueProdutos', []);
 
-        if(session()->has('EstoqueProdutos'))
+        $listarProdutos = [];
+        $quantidade = 0;
+
+        foreach ($produtos as $key => $value) 
         {
-            $estoqueProdutos = session()->get('EstoqueProdutos', []);
+            $nome_produto = $value['produto'];
+            $valor_produto = $value['valor'];
+            $image_url_produto = $value['imagem'];
+            $produto_id = $key;
+
+            $promocao[$key] = $provider_promotions->listarPromocoes($provider_produto);
+    
+            $ativo = isset($promocao[$produto_id][0]['ativo']) ? $promocao[$produto_id][0]['ativo'] : 0;
            
-            foreach ($estoqueProdutos as $key => $value) {
-                $nome_produto = $value['produto'];
-                $categoria_produto = $value['categoria'];
-                $valor_produto = $value['valor'];
-                $image_url = $value['image_url'];
+            if($image_url_produto != false)
+                $image_url_produto = asset("storage/" . $image_url_produto);
 
-                $image_url = asset("storage/" .$image_url);
+            if(!isset($value['softDelete']))
+                $listarProdutos[$key] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'image_url' => $image_url_produto, 'promocao' => $promocao, 'ativo' => $ativo];
 
-                $listar_estoque_produto[$key] = ['produto' => $nome_produto, 'categoria' => $categoria_produto, 'valor' => $valor_produto, 'image_url' => $image_url];
-            }
+            if($softDelete == true)
+                $listarProdutos[$key] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'image_url' => $image_url_produto, 'promocao' => $promocao, 'ativo' => $ativo];
+
         }
 
-        return $listar_estoque_produto; 
+        return $listarProdutos; 
     }
 
     public function buscarProduto($produto_id, $softDelete)
     {
-        $produtoEncontrado = [];
-        $produto = session()->get('EstoqueProdutos');
+        $produtos = session()->get('EstoqueProdutos', []);
+        $produtoEncontrado = [];    
 
-        foreach ($produto as $key => $value) {
-            if($produto_id == $key)
+        foreach ($produtos as $key => $value) {
+
+            if($produto_id == $key )
             {
                 $nome_produto = $value['produto'];
-                $categoria_produto = $value['categoria'];
                 $valor_produto = $value['valor'];
-                $image_url_produto = $value['image_url'];
+                $produto_id = $key;
+                $image_url_produto = $value['imagem'];
+
                 $image_url_produto = asset("storage/" . $image_url_produto);
-           
-                $produtoEncontrado = [ 'produto' => $nome_produto, 'categoria' => $categoria_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto];
+
+                if($value['imagem'] == false)
+                    $image_url_produto = false;
+
+                if(!isset($value['softDelete']))
+                    $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto];
+
+                if($softDelete == true)
+                    $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto];
             }
         }
 
         return $produtoEncontrado;
     }
+
+    public function deletarImagem($produto_id)
+    {
+        $produto = session()->get('EstoqueProdutos', []);
+
+        foreach ($produto as $key => $value) {
+            if($produto_id == $key)
+                $produto[$produto_id]['imagem'] = false; 
+        }
+
+        session()->put('EstoqueProdutos', $produto);
+    }
+
     
 }
