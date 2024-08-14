@@ -20,7 +20,7 @@ class Products_controller extends Controller
     {
         $softDelete = false;
         
-        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions, $provider_produto, $softDelete);
+        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions, $softDelete);
         
         $listarCategorias = $provider_categoria->listarCategoria();
 
@@ -30,14 +30,17 @@ class Products_controller extends Controller
     public function newProduct(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
+        
         $nome = $request->input('produtoEstoque');
         $valor = $request->input('valorEstoque');
+        $quantidade = $request->input('quantidade_estoque');
         $categoria = $request->input('categoria');
    
         $validator = Validator::make($request->all(), [
             'produtoEstoque' => 'required|string',
             'valorEstoque'  => 'required|numeric',
             'categoria'  => 'required|string',
+            'quantidade_estoque'  => 'required|numeric',
             'imagem' => 'required|image|mimes:jpeg,jpg,png,gif,svg|dimensions:max_width=1920,max_height=1080',
         ]);
 
@@ -55,15 +58,14 @@ class Products_controller extends Controller
                     $categoria = $categoria_id;
         }
         
-        $provider_produto->adicionarProduto($nome, $categoria, $valor, $imagem);
+        $provider_produto->adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade);
 
         return redirect('/Produtos');
     }
 
     public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
     {
-        $softDelete = false;
-        $estoqueProdutos = $provider_produto->buscarProduto($produto_id, $softDelete);
+        $estoqueProdutos = $provider_produto->buscarProduto($produto_id);
         
         return view('/showFilterProducts', ['EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id]);
     }
@@ -79,11 +81,13 @@ class Products_controller extends Controller
         $nome = $request->input('produto');
         $valor =  $request->input('valor');
         $imagem =  $request->file('imagem');
+        $quantidade =  $request->input('quantidade');
 
 
         $validator = Validator::make($request->all(), [
             'produto' => 'required|string',
             'valor'  => 'required|numeric',
+            'quantidade'  => 'required|numeric',
         ]);
 
         $url = url()->previous();
@@ -97,31 +101,25 @@ class Products_controller extends Controller
             $imagem = Storage::disk('public')->put('/images', $request->file('imagem'));
         }
 
-
         if($validator->fails())
             return redirect()->to($url)->withErrors($validator);
 
-        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem);
+        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, $quantidade);
 
         return redirect($url);
     }
 
     public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
     {
-        $softDelete = false;
-
-        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id, $softDelete);
+        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id);
           
         return view('editFilterProducts', ['EstoqueProdutos' => $EstoqueProdutos, 'produto_id'=> $produto_id]);
     }
     public function deleteImage(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
     {
-        
         $provider_produto->deletarImagem($produto_id);
-
         $url = url()->previous();
 
-    
         return redirect($url);
     }
 }

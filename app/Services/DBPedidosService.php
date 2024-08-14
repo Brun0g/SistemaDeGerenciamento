@@ -34,15 +34,13 @@ class DBPedidosService implements PedidosServiceInterface
         $pedidosPorClientes = Order::all(); 
         
         $service_produtos = new DBProdutosService();
-
-        $softDelete = true;
     
         foreach ($pedidosPorClientes as $pedidoKey => $value) {
             $id = $value['cliente_id'];
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            $produto = $service_produtos->buscarProduto($produto_id, $softDelete);
+            $produto = $service_produtos->buscarProduto($produto_id);
 
             $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor]; 
         } 
@@ -57,9 +55,6 @@ class DBPedidosService implements PedidosServiceInterface
         $lista = [];
         $total = 0;
 
-        $softDelete = true;
-
-        
         foreach ($pedidos as $key => $value) 
         {
             $produto_id = $value['produto_id'];
@@ -68,7 +63,7 @@ class DBPedidosService implements PedidosServiceInterface
             $cliente_id = $value['cliente_id'];
             $preco_unidade = $value['preco_unidade'];
             $porcentagem = $value['porcentagem'];
-            $produto = $service_produtos->buscarProduto($produto_id, $softDelete);
+            $produto = $service_produtos->buscarProduto($produto_id);
 
             $total += $valor;
            
@@ -101,10 +96,7 @@ class DBPedidosService implements PedidosServiceInterface
     {
         $pedidoEncontrado = [];
         $pedido = OrderTotal::find($pedido_id);
-
         $totalComDesconto = 0;
-
-
 
         foreach ($pedido as $key => $value) {
             $id_cliente = $pedido->cliente_id;
@@ -113,8 +105,6 @@ class DBPedidosService implements PedidosServiceInterface
             $totalSemDesconto = $pedido->totalSemDesconto;
             $porcentagem = $pedido->porcentagem;
 
-            
-        
             $pedidoEncontrado = ['cliente_id' => $id_cliente, 'endereco_id' => $endereco_id, 'total' => $total, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem];
         }
 

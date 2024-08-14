@@ -64,15 +64,12 @@ class SessionPromotionsService implements PromotionsServiceInterface
     public function listarPromocoes($provider_produto)
     {
         $promotions = session()->get('promotions', []);
-
         $Promotionslist = [];
-
-        $softDelete = true;
 
         foreach ($promotions as $key => $value) 
         {
             $produto_id = $value['produto_id'];
-            $buscar = $provider_produto->buscarProduto($produto_id, $softDelete);
+            $buscar = $provider_produto->buscarProduto($produto_id);
             $porcentagem = $value['porcentagem'];
             $quantidade = $value['quantidade'];
             $ativo = $value['ativo'];
@@ -108,14 +105,36 @@ class SessionPromotionsService implements PromotionsServiceInterface
 
                     if($quantidade >= $quantidade_promocao)
                     $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
-
-                    if($quantidade == 0)
-                        $produtoEncontrado[] = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
+                
                 }
             }
         }
 
         return $produtoEncontrado;
+    }
+
+    public function buscarPromocao($produto_id)
+    {
+        $produto = session()->get('promotions', []);
+        $produtoEncontrado = [];
+        $ativo = 0;
+
+        foreach ($produto as $key => $value) {
+            if($produto_id == $value['produto_id'])
+            {
+                $porcentagem = $value['porcentagem'];
+                $quantidade_promocao = $value['quantidade'];
+                
+                if($value['ativo'] == 1)
+                {
+                    $ativo = $value['ativo'];
+                   
+                    $produtoEncontrado[] = ['produto_id' => $produto_id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
+                }
+            }
+        }
+
+        return ['promocao' => $produtoEncontrado, 'ativo' => $ativo];
     }
 }
 

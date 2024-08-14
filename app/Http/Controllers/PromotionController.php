@@ -30,7 +30,7 @@ class PromotionController extends Controller
     {
         $softDelete = false;
         
-        $produtos = $provider_produto->listarProduto($provider_promotions, $provider_produto, $softDelete);
+        $produtos = $provider_produto->listarProduto($provider_promotions, $softDelete);
         $promotionsList = $provider_promotions->listarPromocoes($provider_produto);
 
 

@@ -67,6 +67,7 @@
     }
 
     </style>
+
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -107,6 +108,16 @@
         </div>
         <div class="py-12" >
           <div class="">
+            @if (session('status'))
+            <div class="alert alert-success" style="display: flex; justify-content:center">
+                {{ session('status') }}
+            </div>
+        @endif
+          @if (session('error_estoque'))
+              <div class="alert alert-danger" style="display: flex; justify-content:center">
+                  {{ session('error_estoque') }}
+              </div>
+          @endif
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalLongoExemplo" id="CadastrarProduto_x">+</button>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
               <div  class="p-6 bg-white border-b border-gray-200">
@@ -205,7 +216,7 @@
                   <div class="container-select">
                     <div class = "select-container">
                       <label for="produto-select">Escolha uma categoria:</label>
-                      <select  name="categoria" id="categoria-select">
+                      <select  name="categoria" id="categoria-select" required>
                         <option value="">-- Por favor escolha uma categoria --</option>
                         @if($categorias != [])
                         @foreach ($categorias as $key => $value )
@@ -238,6 +249,7 @@
                             
                             min="0"
                             max="9999"
+                            required
                             >
                           </td>
                         </tr>
@@ -275,7 +287,3 @@
         
         </script>
         </x-app-layout>
-
-
-
-         ssh-keygen -t rsa -b 4096 -C "brun0_g@hotmail.com"

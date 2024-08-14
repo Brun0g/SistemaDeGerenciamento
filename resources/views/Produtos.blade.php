@@ -119,7 +119,7 @@ img {
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo produto</button>
 </div>
 
-           {{-- {{dd($EstoqueProdutos)}} --}}
+        
 <div class="container-geral">
     <div class="sub-container">
 
@@ -143,8 +143,8 @@ img {
             <div class="sub-container-name-product">
                 <p>{{strtoupper($value['produto'])}}</p>
             </div>
-
             <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
+            <p class="sub-preco-desconto"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade']}}</p>
             @if(count($EstoqueProdutos[$key]['promocao']) != [])
             <div class="sub-preco-desconto">Desconto por quantidade</div>
             <div style="display: flex; justify-content: center;">
@@ -209,13 +209,13 @@ img {
                 <p>{{strtoupper($value['produto'])}}</p>
             </div>
             <p class="sub-preco"><span style="color: black"></span>R$: {{  number_format($value['valor'], 2, ",", ".")}}</p>
-           
+           <p class="sub-preco-desconto"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade']}}</p>
             <div class="sub-container-form">
                 <p>
                     <form  action="/DeletarProduto/{{$key}}" method="POST" >
                         @csrf
                         @method('delete')
-                        <button class="btn btn-danger"  type="submit">Deletar</button>
+                        <button class="btn btn-danger" type="submit">Deletar</button>
                     </form>
                 </p>
                 <p>
@@ -287,6 +287,10 @@ img {
                         <div class="mb-4">
                             <label for="file" class="block text-sm font-medium text-gray-700">Escolha o arquivo para upload:</label>
                         <input type="file" accept="image/*" name="imagem" id="imageFile" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" multiple/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="quantidade_estoque" class="block text-sm font-medium text-gray-700">Quantidade:</label>
+                            <input type="number" id="quantidade_estoque" name="quantidade_estoque" step="any" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
                         </div>
                         <div class="mb-4">
                             <label for="valorEstoque" class="block text-sm font-medium text-gray-700">Valor:</label>

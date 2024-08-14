@@ -10,30 +10,43 @@
 </x-slot>
 
 <style type="text/css">
+
 .container {
-    max-width: 100%;
+    width: 100%;
+    max-width: 1700px;
     margin: 0 auto;
     padding: 20px;
 }
+
+.table-container {
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch; 
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
     table-layout: auto;
+    min-width: 1000px;
 }
+
 thead {
-   
     border: 2px solid #ddd;
 }
+
 th, td {
     border: 2px solid #ddd;
-    padding: 8px;
+    padding: 15px;
     text-align: center;
+    white-space: nowrap;
 }
+
 th {
     background-color: royalblue;
     color: white;
     font-weight: bold;
 }
+
 .caption-style {
     background-color: black;
     color: white;
@@ -44,10 +57,12 @@ th {
 }
 
 </style>
-    <div class="container">
-        <div class="caption-style">
-            Relatório de Clientes e Produtos
-        </div>
+
+<div class="container">
+    <div class="caption-style">
+        Relatório de Clientes e Produtos
+    </div>
+    <div class="table-container">
         <table>
             <thead>
                 <tr>
@@ -75,5 +90,7 @@ th {
             </tbody>
         </table>
     </div>
+</div>
+
 
 </x-app-layout>

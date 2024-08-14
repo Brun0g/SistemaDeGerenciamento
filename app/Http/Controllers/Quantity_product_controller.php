@@ -21,7 +21,7 @@ class Quantity_product_controller extends Controller
         $softDelete = true;
      
         $nomeDoClientPorID = $service_clientes->listarClientes();
-        $produtos = $service_produtos->listarProduto($provider_promotions, $provider_produto, $softDelete);
+        $produtos = $service_produtos->listarProduto($provider_promotions, $softDelete);
 
         $produtosPorCliente = [];
         

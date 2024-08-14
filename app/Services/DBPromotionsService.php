@@ -54,12 +54,10 @@ class DBPromotionsService implements PromotionsServiceInterface
         $promotions = Promotion::all();
         $Promotionslist = [];
 
-        $softDelete = true;
-
         foreach ($promotions as $promotion) 
         {
             $produto_id = $promotion->produto_id;
-            $buscar = $provider_produto->buscarProduto($produto_id, $softDelete);
+            $buscar = $provider_produto->buscarProduto($produto_id);
             $porcentagem = $promotion->porcentagem;
             $quantidade = $promotion->quantidade;
             $ativo = $promotion->ativo;
@@ -93,7 +91,7 @@ class DBPromotionsService implements PromotionsServiceInterface
                     $ativo = $value['ativo'];
 
                     if($quantidade >= $quantidade_promocao)
-                    $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
+                        $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
                 }
             }
         }
@@ -104,8 +102,6 @@ class DBPromotionsService implements PromotionsServiceInterface
     public function buscarPromocao($produto_id)
     {
         $produto = Promotion::all()->where('produto_id', $produto_id);
-        $produto = $produto->toArray();
-
         $produtoEncontrado = [];
         $ativo = 0;
 
