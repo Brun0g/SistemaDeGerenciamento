@@ -4,16 +4,18 @@ namespace App\Services;
 
 
 use App\Models\Produto;
+use App\Models\Entrada;
 
 use \App\Services\DBPedidosService;
 use \App\Services\DBClientesService;
+use Illuminate\Support\Facades\Auth;
 
 use App\Services\ProdutosServiceInterface;
 use Illuminate\Support\Facades\Storage;
 
 class DBProdutosService implements ProdutosServiceInterface
 {
-	public function adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade)
+	public function adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas)
 	{
         $produto = new Produto();
 
@@ -24,21 +26,28 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->quantidade = $quantidade;
       
         $produto->save();
+
+        $provider_entradas->adicionarEntrada($produto->id, $quantidade);
 	}
     
-    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade)
+    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $provider_entradas, $provider_saida)
     {
         $produto = Produto::find($produto_id);
+
+        $entrada_estoque  = $quantidade - $produto->quantidade;
+        $valor_anterior = $produto->quantidade;
 
         $produto->produto = $nome;
         $produto->valor = $valor;
         $produto->quantidade = $quantidade;
 
-        
         if(isset($imagem))
             $produto->imagem = $imagem;
    
         $produto->save();
+
+        if($quantidade != $valor_anterior)
+            $provider_entradas->adicionarEntrada($produto->id, $entrada_estoque);
     }
 
     public function excluirProduto($produto_id)
@@ -78,7 +87,7 @@ class DBProdutosService implements ProdutosServiceInterface
         return $listarProdutos;
     }
 
-    public function buscarProduto($produto_id)
+    public function buscarProduto($produto_id, $provider_entradas, $provider_saida)
     {
         $produtos = Produto::withTrashed()->where('id', $produto_id)->get()[0];
 
@@ -92,13 +101,16 @@ class DBProdutosService implements ProdutosServiceInterface
             $quantidade = $produtos->quantidade;
 
             $image_url_produto = asset("storage/" . $image_url_produto);
+            $entradas = $provider_entradas->buscarEntrada($produto_id);
+            $saidas = $provider_saida->buscarSaida($produto_id);
 
             if($produtos->imagem == false)
                 $image_url_produto = false;
 
-            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at];
+            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'entradas' => $entradas, 'saidas' => $saidas, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at];
         }
- 
+    
+
         return $produtoEncontrado;
     }
 
@@ -117,7 +129,6 @@ class DBProdutosService implements ProdutosServiceInterface
 
         $produto->quantidade = $quantidade; 
       
-
         $produto->save();
     }
 }

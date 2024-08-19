@@ -12,6 +12,8 @@ use \App\Services\ProdutosServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\EnderecoServiceInterface;
 use \App\Services\PromotionsServiceInterface;
+use \App\Services\EntradasServiceInterface;
+use \App\Services\SaidaServiceInterface;
 
 use \App\Services\DBClientesService;
 use \App\Services\DBCategoriasService;
@@ -19,6 +21,8 @@ use \App\Services\DBPedidosService;
 use \App\Services\DBProdutosService;
 use \App\Services\DBEnderecosService;
 use \App\Services\DBPromotionsService;
+use \App\Services\DBEntradasService;
+use \App\Services\DBSaidaService;
 
 use \App\Services\SessionClientesService;
 use \App\Services\SessionCategoriaService;
@@ -27,6 +31,8 @@ use \App\Services\SessionProdutosService;
 use \App\Services\SessionCarrinhoService;
 use \App\Services\SessionEnderecoService;
 use \App\Services\SessionPromotionsService;
+use \App\Services\SessionEntradasService;
+use \App\Services\SessionSaidaService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -35,19 +41,25 @@ class AppServiceProvider extends ServiceProvider
 
     public $bindings = [
 
-        // ClientesServiceInterface::class => SessionClientesService::class,
-        // CategoriaServiceInterface::class => SessionCategoriaService::class,
-        // ProdutosServiceInterface::class => SessionProdutosService::class,
-        // PedidosServiceInterface::class => SessionPedidosService::class,
-        // EnderecoServiceInterface::class => SessionEnderecoService::class,
-        // PromotionsServiceInterface::class => SessionPromotionsService::class,
+        ClientesServiceInterface::class => SessionClientesService::class,
+        CategoriaServiceInterface::class => SessionCategoriaService::class,
+        ProdutosServiceInterface::class => SessionProdutosService::class,
+        PedidosServiceInterface::class => SessionPedidosService::class,
+        EnderecoServiceInterface::class => SessionEnderecoService::class,
+        PromotionsServiceInterface::class => SessionPromotionsService::class,
+        EntradasServiceInterface::class => SessionEntradasService::class,
+        SaidaServiceInterface::class => SessionSaidaService::class,
 
-        ClientesServiceInterface::class => DBClientesService::class,
-        CategoriaServiceInterface::class => DBCategoriasService::class,
-        ProdutosServiceInterface::class => DBProdutosService::class,
-        PedidosServiceInterface::class => DBPedidosService::class,
-        EnderecoServiceInterface::class => DBEnderecosService::class,
-        PromotionsServiceInterface::class => DBPromotionsService::class,
+
+        // ClientesServiceInterface::class => DBClientesService::class,
+        // CategoriaServiceInterface::class => DBCategoriasService::class,
+        // ProdutosServiceInterface::class => DBProdutosService::class,
+        // PedidosServiceInterface::class => DBPedidosService::class,
+        // EnderecoServiceInterface::class => DBEnderecosService::class,
+        // PromotionsServiceInterface::class => DBPromotionsService::class,
+        // EntradasServiceInterface::class => DBEntradasService::class,
+        // SaidaServiceInterface::class => DBSaidaService::class,
+
         CarrinhoServiceInterface::class => SessionCarrinhoService::class,
 
     ];

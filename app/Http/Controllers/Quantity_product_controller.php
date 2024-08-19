@@ -9,34 +9,26 @@ use \App\Services\ClientesServiceInterface;
 use \App\Services\PedidosServiceInterface;
 use \App\Services\ProdutosServiceInterface;
 use \App\Services\PromotionsServiceInterface;
+use \App\Services\EntradasServiceInterface;
+use \App\Services\SaidaServiceInterface;
 
 class Quantity_product_controller extends Controller
 {
-    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_client, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedido, PromotionsServiceInterface $provider_promotions)
+    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedido, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
     {   
-        $service_clientes = $provider_client;
-        $service_produtos = $provider_produto;
-        $service_pedidos = $provider_pedido;
-
-        $softDelete = true;
-     
-        $nomeDoClientPorID = $service_clientes->listarClientes();
-        $produtos = $service_produtos->listarProduto($provider_promotions, $softDelete);
-
+        $nomeDoClientPorID = $provider_cliente->listarClientes();
+        $produtos = $provider_produto->listarProduto($provider_promotions, false);
         $produtosPorCliente = [];
         
         foreach ($nomeDoClientPorID as $cliente_id => $value) {
-            $produtosPorCliente = $service_pedidos->listarQuantidadePedidos($cliente_id);
+            $produtosPorCliente = $provider_pedido->listarQuantidadePedidos($cliente_id, $provider_entradas, $provider_saida);
         }
-
-
-
 
         $array = [];
         
-
         if(isset($produtos, $nomeDoClientPorID, $produtosPorCliente))
         {
+
             foreach($produtos as $key => $value) {
                 // PEGAR NOME DO PRODUTO
                 $nome_produto = $value['produto'];
@@ -63,8 +55,6 @@ class Quantity_product_controller extends Controller
             }
         }
 
-        
-  
         return view('Products_view_client', ['Clientes' => $nomeDoClientPorID,  'produtosPorCliente' => $produtosPorCliente, 'produtos' => $produtos,'clientes_produtos' => $array]);
     }
 }

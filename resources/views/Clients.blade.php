@@ -45,16 +45,19 @@ font-size: 13px;
 </style>
 <div class="py-12">
     <div class="max-w mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+  
+        <div style="display: flex; justify-content: center; margin-bottom: 10px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo cliente</button>
-            <div id ="te" class="p-6 bg-white border-b border-gray-200">
+        </div>
+
+           
                 <table id="table">
                     <thead class="thead">
                         <tr>
                             <th class="row-inform-item" style="width: 3%;">ID</th>
                             <th class="row-inform-item" style="width: 15%;">Nome</th>
                             <th class="row-inform-item">Email</th>
-                            <th class="row-inform-item" style="width: 8%;">Idade</th>
+                            <th class="row-inform-item" style="width: 5%;">Idade</th>
                             <th class="row-inform-item" >Endereço</th>
                             <th class="row-inform-item">Contato</th>
                             <th class="row-inform-item">Total</th>
@@ -66,12 +69,12 @@ font-size: 13px;
                     <tbody>
                         @if(isset($tabela_clientes))
                         @foreach ($tabela_clientes as $key => $value )
-                        <tr>
+                        <tr style="background: white;">
                             <td style="font-size: 16px;  color:white; background: black; font-weight: 900; border: 1px solid">{{  $key }}</td>
                             <td style ="border: 1px solid; ">{{  $value['name'] }}</td>
                             <td style ="border: 1px solid;">{{  $value['email'] }}</td>
                             <td style ="border: 1px solid;">{{  $value['idade'] }}</td>
-                            <td style="width: 50%;  text-align: left; border: 1px solid; border-right: none;">
+                            <td style="width: 30%;  text-align: left; border: 1px solid; border-right: none;">
                                 <ol style="list-style-type: decimal; list-style-position: inside; ">
                                   
                                     @if($listar_enderecos != [])
@@ -80,7 +83,7 @@ font-size: 13px;
                                     
                                     <li style="  border-right: none; ">
                                         
-                                        {{ $endereco['rua'] . ", " . $endereco['numero'] . ", ". $endereco['cidade'] .", ".$endereco['estado'].", ". $endereco['cep']}}
+                                        {{ strtoupper($endereco['rua'] . ", " . $endereco['numero'] . ", ". $endereco['cidade'] .", ".$endereco['estado'].", ". $endereco['cep'])}}
                                     </li>
                                     @endif
                                     @endforeach
@@ -117,8 +120,8 @@ font-size: 13px;
                         @endif
                     </tbody>
                 </table>
-            </div>
-        </div>
+           
+      
     </div>
 </div>
 </div>

@@ -153,7 +153,10 @@
                                 </td>
                                 <td style="width: 15%; font-weight: 900; color: green">R$ <input style="text-align: center; width: 50%" type="text" name="valor" value={{$EstoqueProdutos['valor'] }}>
                                 </td>
-                                 <td style="width: 15%"><input style="text-align: center; width: 50%" type="text" name="quantidade" value="{{$EstoqueProdutos['quantidade'] }}">
+                                 <td style="width: 15%">
+
+                                    <input style="text-align: center; width: 50%" type="number" name="quantidade" value="{{$EstoqueProdutos['quantidade'] }}">
+
                                 </td>
                                 <td style="width: 10%">
                                     <input type="file" accept="image/*" name="imagem" id="imageFile"/>

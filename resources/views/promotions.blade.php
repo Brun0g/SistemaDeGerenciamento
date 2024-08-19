@@ -75,9 +75,10 @@ text-align: center;
 <div class="py-12">
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">+</button>
             
+            <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar promoção</button>
+            </div>
                 <table id="table">
                     <thead class="thead">
                         <tr>
@@ -96,7 +97,7 @@ text-align: center;
                     <tbody>
                         @if(isset($listaPromocoes))
                         @foreach ($listaPromocoes as $key => $value)
-                        <tr>
+                        <tr style="background: white;">
                              <td style="color:white; background: black; font-weight: 900; border: 1px solid; width: 10%">
                             {{  $key }}</td>
                             @if($value['ativo'] == 0)
@@ -108,7 +109,7 @@ text-align: center;
                                 </form>
                             </td>
                             @else
-                            <td style="border: 3px solid; width: 5%">
+                            <td style="border: 1px solid; width: 5%">
                                 <form action="/situation/{{$key}}" method="POST">
                                     @csrf
                                     @method('PATCH')
@@ -120,23 +121,23 @@ text-align: center;
                             <form action="/updatePromotion/{{$key}}" method="POST">
                             @csrf
                             @method('PATCH')
-                            <td style="border: 3px solid; width: 20%">{{  $value['produto'] }}</td>
-                            <td style="border: 3px solid black; width: 20%; color: green;">R$ {{  number_format($value['preco_original'], 2, ",", ".") }}</td>
-                            <td style="border: 3px solid black; width: 20%; color: green;">R${{  number_format($value['preco_desconto'], 2, ",", ".") }}</td>
-                            <td style="border: 3px solid black; width: 10%; color: red;">R$-{{number_format($value['preco_original'] - $value['preco_desconto'], 2, ",", ".") }}
+                            <td style="border: 1px solid; width: 20%">{{  $value['produto'] }}</td>
+                            <td style="border: 1px solid black; width: 20%; color: green;">R$ {{  number_format($value['preco_original'], 2, ",", ".") }}</td>
+                            <td style="border: 1px solid black; width: 20%; color: green;">R${{  number_format($value['preco_desconto'], 2, ",", ".") }}</td>
+                            <td style="border: 1px solid black; width: 10%; color: red;">R$-{{number_format($value['preco_original'] - $value['preco_desconto'], 2, ",", ".") }}
                             </td>
-                            <td style="border: 3px solid;">
+                            <td style="border: 1px solid;">
                                     <input type="number" style="width: 80%; border: hidden; text-align: center;" name="atualizarPorcentagem" value="{{ $value['porcentagem'] }}" min="0" max="100">
                             </td>
-                            <td style="border: 3px solid; width: 20%">
+                            <td style="border: 1px solid; width: 20%">
                                     <input type="number" style="width: 100%; border: hidden; text-align: center;" name="atualizarQuantidade" value="{{ $value['quantidade'] }}" min="0" max="9999">
                             </td>
-                             <td style="border: 3px solid;">
+                             <td style="border: 1px solid;">
                                     <button class="btn btn-primary" type="submit">Atualizar</button>
                                 </td>
                             </form>
                             
-                            <td style="border: 3px solid; width: 15%">
+                            <td style="border: 1px solid; width: 15%">
                                 <form  action="/deletePromotion/{{$key}}" method="POST" >
                                     @csrf
                                     @method('delete')
@@ -150,7 +151,7 @@ text-align: center;
                         @endif
                     </tbody>
                 </table>
-            </div>
+        
         </div>
     </div>
 </div>

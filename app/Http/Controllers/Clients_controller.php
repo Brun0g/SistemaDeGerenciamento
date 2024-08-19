@@ -15,6 +15,9 @@ use \App\Services\ProdutosServiceInterface;
 use \App\Services\EnderecoServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromotionsServiceInterface;
+use \App\Services\EntradasServiceInterface;
+use \App\Services\SaidaServiceInterface;
+
 
 
 
@@ -72,10 +75,10 @@ class Clients_controller extends Controller
         return view('Clients', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
     }
 
-    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions)
+    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
     {
         $cliente = $provider_cliente->buscarCliente($cliente_id);
-        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho);   
+        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho, $provider_entradas, $provider_saida);   
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
         $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_produto, $provider_carrinho, $provider_promotions);
 

@@ -3,35 +3,59 @@
 namespace App\Services;
 
 use App\Services\ProdutosServiceInterface;
+use Illuminate\Support\Facades\Auth;
 
 class SessionProdutosService implements ProdutosServiceInterface
 {
-	public function adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade)
+	public function adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas)
 	{
-        $produtosNoEstoque = session()->get('EstoqueProdutos', []);
+        $estoque = session()->get('EstoqueProdutos', []);
 
-        $produtosNoEstoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'quantidade' => (int)$quantidade,  'imagem' => $imagem, 'deleted_at' => null];
+        $estoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'quantidade' => (int)$quantidade,  'imagem' => $imagem, 'deleted_at' => null];
 
-        session()->put('EstoqueProdutos', $produtosNoEstoque);
+        session()->put('EstoqueProdutos', $estoque);
+
+        $produto_id = array_key_last($estoque);
+        
+
+        $provider_entradas->adicionarEntrada($produto_id, $quantidade);
 	}
     
-    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade)
+    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $provider_entradas, $provider_saida)
     {
-        $produtosNoEstoque = [];
+        $estoque = [];
+        
 
         if(session()->has('EstoqueProdutos'))
         {
-            $produtosNoEstoque = session()->get('EstoqueProdutos'); 
+            $estoque = session()->get('EstoqueProdutos'); 
 
-            $produtosNoEstoque[$produto_id]['produto'] = $nome;
-            $produtosNoEstoque[$produto_id]['valor'] = $valor;
-            $produtosNoEstoque[$produto_id]['quantidade'] = $quantidade;
-              
+            foreach ($estoque as $key => $value) {
+                if($produto_id == $key)
+                {
+                    $entrada_estoque  = $quantidade - $value['quantidade'];  
+
+                    $estoque[$produto_id]['produto'] = $nome;
+                    $estoque[$produto_id]['valor'] = $valor;
+
+                    if($quantidade != $value['quantidade'])
+                    {
+                        $estoque[$produto_id]['quantidade'] = $quantidade;
+                        $quantidade = $entrada_estoque;
+                        $provider_entradas->adicionarEntrada($produto_id, $quantidade);
+                    }  
+                }
+            }
+            
             if(isset($imagem))     
-                $produtosNoEstoque[$produto_id]['imagem'] = $imagem;      
+                $estoque[$produto_id]['imagem'] = $imagem;      
         }
 
-        session()->put('EstoqueProdutos', $produtosNoEstoque);
+
+
+        session()->put('EstoqueProdutos', $estoque);
+
+        
     }
 
     public function excluirProduto($produto_id)
@@ -79,11 +103,12 @@ class SessionProdutosService implements ProdutosServiceInterface
         return $listarProdutos;
     }
 
-    public function buscarProduto($produto_id)
+    public function buscarProduto($produto_id, $provider_entradas, $provider_saida)
     {
         $produtoEncontrado = [];
         $produtos = session()->get('EstoqueProdutos', []);
-       
+
+
         foreach ($produtos as $key => $value) {
             if($produto_id == $key)
             {
@@ -95,14 +120,17 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $estoque = $value['quantidade'];
 
                 $image_url_produto = asset("storage/" . $image_url_produto);
+                $entradas = $provider_entradas->buscarEntrada($produto_id);
+                $saidas = $provider_saida->buscarSaida($produto_id);
 
                 if($value['imagem'] == false)
                     $image_url_produto = false;
 
-                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $estoque, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $delete];
+                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $estoque, 'entradas' => $entradas, 'saidas' => $saidas, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $delete];
             }
         }
 
+   
         return $produtoEncontrado;
     }
 
@@ -124,7 +152,7 @@ class SessionProdutosService implements ProdutosServiceInterface
 
         foreach ($produto as $key => $value) {
             if($produto_id == $key)
-                $produto[$key]['quantidade'] += $quantidade; 
+                $produto[$key]['quantidade'] = $quantidade; 
         }
 
         session()->put('EstoqueProdutos', $produto);

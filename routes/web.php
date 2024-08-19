@@ -10,6 +10,8 @@ use App\Http\Controllers\Graficos_controller;
 use App\Http\Controllers\Carrinho_controller;
 use App\Http\Controllers\Address_controller;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\EntradaController;
+use App\Http\Controllers\SaidaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,6 +98,9 @@ Route::POST('/newpromotion',[PromotionController::class,'store'])->middleware(['
 Route::PATCH('/situation/{id}',[PromotionController::class,'update'])->middleware(['auth']);
 Route::PATCH('/updatePromotion/{id}',[PromotionController::class,'edit'])->middleware(['auth']);
 Route::DELETE('/deletePromotion/{id}',[PromotionController::class,'destroy'])->middleware(['auth']);
+
+// ENTRADAS/SAIDAS
+Route::GET('/entradas_saidas',[EntradaController::class,'index'])->middleware(['auth'])->name('entradas_saidas');
 
 
 

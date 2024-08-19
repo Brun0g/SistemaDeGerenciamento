@@ -67,10 +67,10 @@
 
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">+</button>
-            <div id ="te" class="p-6 bg-white border-b border-gray-200">
-                 
+      
+        <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar categoria</button>
+        </div>   
                 <table id="table">
                     <thead class="thead">
                         <tr>
@@ -83,10 +83,10 @@
                     <tbody>
                          @if(isset($categorias))
                         @foreach ($categorias as $key => $value )
-                        <tr>
+                        <tr style="background: white;">
                             <td style="color:white; background: black; font-weight: 900; border: 1px solid">
                             {{  $key }}</td>
-                            <td>{{  $value['categoria'] }}</td>
+                            <td>{{  strtoupper($value['categoria']) }}</td>
                             <td>
                                 <form  action="/DeletarCategoria/{{$key}}" method="POST" >
                                       @csrf
@@ -108,8 +108,8 @@
                         @endif
                     </tbody>
                 </table>
-            </div>
-        </div>
+         
+        
     </div>
 
 </div>

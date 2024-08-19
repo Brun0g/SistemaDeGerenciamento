@@ -10,6 +10,8 @@ use \App\Services\ProdutosServiceInterface;
 use \App\Services\CategoriaServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromotionsServiceInterface;
+use \App\Services\EntradasServiceInterface;
+use \App\Services\SaidaServiceInterface;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -27,7 +29,7 @@ class Products_controller extends Controller
         return view('/Produtos', ['categorias' => $listarCategorias,'EstoqueProdutos' => $estoqueProdutos]);
     }
 
-    public function newProduct(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria)
+    public function newProduct(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, EntradasServiceInterface $provider_entradas)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
         
@@ -35,7 +37,7 @@ class Products_controller extends Controller
         $valor = $request->input('valorEstoque');
         $quantidade = $request->input('quantidade_estoque');
         $categoria = $request->input('categoria');
-   
+
         $validator = Validator::make($request->all(), [
             'produtoEstoque' => 'required|string',
             'valorEstoque'  => 'required|numeric',
@@ -58,14 +60,14 @@ class Products_controller extends Controller
                     $categoria = $categoria_id;
         }
         
-        $provider_produto->adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade);
+        $provider_produto->adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas);
 
         return redirect('/Produtos');
     }
 
-    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
+    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
     {
-        $estoqueProdutos = $provider_produto->buscarProduto($produto_id);
+        $estoqueProdutos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida);
         
         return view('/showFilterProducts', ['EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id]);
     }
@@ -76,7 +78,7 @@ class Products_controller extends Controller
 
         return redirect('/Produtos');
     }
-    public function editProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho)
+    public function editProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
     {
         $nome = $request->input('produto');
         $valor =  $request->input('valor');
@@ -104,14 +106,14 @@ class Products_controller extends Controller
         if($validator->fails())
             return redirect()->to($url)->withErrors($validator);
 
-        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, $quantidade);
+        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $provider_entradas, $provider_saida);
 
         return redirect($url);
     }
 
-    public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
+    public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
     {
-        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id);
+        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida);
           
         return view('editFilterProducts', ['EstoqueProdutos' => $EstoqueProdutos, 'produto_id'=> $produto_id]);
     }

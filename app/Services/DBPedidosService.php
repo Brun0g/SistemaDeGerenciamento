@@ -9,6 +9,8 @@ use \App\Services\DBProdutosService;
 use \App\Services\DBClientesService;
 use App\Models\Order;
 use App\Models\OrderTotal;
+use App\Models\Saida;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 
 
@@ -29,7 +31,7 @@ class DBPedidosService implements PedidosServiceInterface
         }
     }
     
-    public function listarQuantidadePedidos($cliente_id)
+    public function listarQuantidadePedidos($cliente_id, $provider_entradas, $provider_saida)
     {
         $pedidosPorClientes = Order::all(); 
         
@@ -40,7 +42,7 @@ class DBPedidosService implements PedidosServiceInterface
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            $produto = $service_produtos->buscarProduto($produto_id);
+            $produto = $service_produtos->buscarProduto($produto_id, $provider_entradas, $provider_saida);
 
             $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor]; 
         } 
@@ -48,7 +50,7 @@ class DBPedidosService implements PedidosServiceInterface
         return $pedidosPorClientes; 
     }
 
-    public function buscarItemPedido($pedido_id)
+    public function buscarItemPedido($pedido_id, $provider_entradas, $provider_saida)
     {
         $pedidos = Order::all()->where('pedido_id', $pedido_id);
         $service_produtos = new DBProdutosService();
@@ -63,7 +65,7 @@ class DBPedidosService implements PedidosServiceInterface
             $cliente_id = $value['cliente_id'];
             $preco_unidade = $value['preco_unidade'];
             $porcentagem = $value['porcentagem'];
-            $produto = $service_produtos->buscarProduto($produto_id);
+            $produto = $service_produtos->buscarProduto($produto_id, $provider_entradas, $provider_saida);
 
             $total += $valor;
            
@@ -129,7 +131,7 @@ class DBPedidosService implements PedidosServiceInterface
 
     }
 
-    function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
+    function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, $provider_saida)
     {
         $pedido = new Order;
 
@@ -143,7 +145,7 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido->totalSemDesconto = $valor_total;
 
         $pedido->save();
-    }
 
-    
+        $provider_saida->adicionarSaida($produto_id, $pedido->id, $quantidade);
+    }
 }
