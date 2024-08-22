@@ -104,10 +104,29 @@
                  
                         </div>
                         <div class="form-group">
-                            <label for="quantidade">Entrada no estoque</label>
+                        <fieldset >
+                          <legend style="font-size: 15px;">Selecione entrada ou saída:</legend>
+
+                          <div style="display: flex; justify-content: space-evenly;">
+                              <div>
+                                <input type="radio" id="huey" name="escolha" value="entrada" checked />
+                                <label for="huey">Entrada</label>
+                              </div>
+                              <div >
+                                <input type="radio" id="dewey" name="escolha" value="saida" />
+                                <label for="dewey">Saída</label>
+                              </div>
+                          </div>
+                        </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantidade">Quantidade</label>
                             <input type="number" class="form-control" id="quantidade" name="quantidade" placeholder="0" required>
                         </div>
-
+                        <div class="form-group">
+                        <legend style="font-size: 15px;">Observação:</legend>
+                        <textarea id="w3review" name="observacao" rows="4" cols="20"></textarea>
+                        </div>
                         <button type="submit" class="btn btn-success">Confirmar</button>
                     </form>
                 @else

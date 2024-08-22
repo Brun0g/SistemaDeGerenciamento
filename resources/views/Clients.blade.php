@@ -71,7 +71,7 @@ font-size: 13px;
                         @foreach ($tabela_clientes as $key => $value )
                         <tr style="background: white;">
                             <td style="font-size: 16px;  color:white; background: black; font-weight: 900; border: 1px solid">{{  $key }}</td>
-                            <td style ="border: 1px solid; ">{{  $value['name'] }}</td>
+                            <td style ="border: 1px solid; ">{{  strtoupper($value['name']) }}</td>
                             <td style ="border: 1px solid;">{{  $value['email'] }}</td>
                             <td style ="border: 1px solid;">{{  $value['idade'] }}</td>
                             <td style="width: 30%;  text-align: left; border: 1px solid; border-right: none;">

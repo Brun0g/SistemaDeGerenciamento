@@ -96,12 +96,16 @@ class EntradaController extends Controller
         $nome = $request->input('produto');
         $valor =  $request->input('valor');
         $imagem =  $request->file('imagem');
+        $entrada_ou_saida =  $request->input('escolha');
+        $observacao = $request->input('observacao');
         $quantidade =  $request->input('quantidade');
-
-
+        
         $validator = Validator::make($request->all(), [
             'produto' => 'required|string',
             'valor'  => 'required|numeric',
+            'quantidade'  => 'required|numeric',
+            'escolha'  => 'required|string',
+            'observacao'  => 'nullable|string',
             'quantidade'  => 'required|numeric',
         ]);
 
@@ -110,7 +114,10 @@ class EntradaController extends Controller
         if($validator->fails())
             return redirect()->to($url)->withErrors($validator);
 
-        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $provider_entradas, $provider_saida);
+        if($entrada_ou_saida == 'saida')
+            $quantidade = -(int)$quantidade;
+
+        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida);
 
         return redirect($url);
     }

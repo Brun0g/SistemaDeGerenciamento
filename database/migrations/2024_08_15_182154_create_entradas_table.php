@@ -18,6 +18,7 @@ class CreateEntradasTable extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('produto_id')->constrained('produtos');
             $table->integer('quantidade');
+            $table->string('observacao')->nullable();
             $table->timestamps();
         });
     }

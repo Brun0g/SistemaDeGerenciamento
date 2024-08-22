@@ -10,13 +10,14 @@ use Illuminate\Support\Facades\Auth;
 
 class DBEntradasService implements EntradasServiceInterface
 {
-    public function adicionarEntrada($produto_id, $quantidade)
+    public function adicionarEntrada($produto_id, $quantidade, $observacao)
     {
         $entrada = new Entrada();
 
         $entrada->user_id = Auth::id();
         $entrada->produto_id = $produto_id;
         $entrada->quantidade = $quantidade;
+        $entrada->observacao = $observacao;
      
         $entrada->save();
     }

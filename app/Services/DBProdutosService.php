@@ -27,27 +27,33 @@ class DBProdutosService implements ProdutosServiceInterface
       
         $produto->save();
 
-        $provider_entradas->adicionarEntrada($produto->id, $quantidade);
+        $observacao = 'Primeira entrada no sistema';
+
+        $provider_entradas->adicionarEntrada($produto->id, $quantidade, $observacao);
 	}
     
-    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $provider_entradas, $provider_saida)
+    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida)
     {
         $produto = Produto::find($produto_id);
 
-        $entrada_estoque  = $quantidade - $produto->quantidade;
-        $valor_anterior = $produto->quantidade;
-
         $produto->produto = $nome;
         $produto->valor = $valor;
-        $produto->quantidade = $quantidade;
+        $produto->quantidade += $quantidade;
+      
 
         if(isset($imagem))
             $produto->imagem = $imagem;
    
         $produto->save();
 
-        if($quantidade != $valor_anterior)
-            $provider_entradas->adicionarEntrada($produto->id, $entrada_estoque);
+        if(isset($entrada_ou_saida))
+        {
+            if($entrada_ou_saida == 'entrada'){
+            $provider_entradas->adicionarEntrada($produto->id, $quantidade, $observacao);
+            } else {
+                $provider_saida->adicionarSaida($produto->id, null, $quantidade);
+            }
+        }
     }
 
     public function excluirProduto($produto_id)

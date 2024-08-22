@@ -1,7 +1,7 @@
 @props(['listarPedidosAprovados' => $listarPedidosAprovados, 'id' => $id])
 
 
-@if(isset($listarPedidosAprovados))
+@if(sizeof($listarPedidosAprovados) > 0)
 @foreach ($listarPedidosAprovados as $id_pedido => $value )
 
 @if ($value['cliente_id'] == $id )
@@ -26,7 +26,7 @@
     @endif
     @endforeach
     @else
-    <td colspan="5" >Sem dados de registro!</td>
+    <td style="background: white" colspan="5" >Sem dados de registro!</td>
     @endif
   
 

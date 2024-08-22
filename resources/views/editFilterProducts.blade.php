@@ -111,7 +111,7 @@
                                 <th class="row-inform-item"></th>
                                 <th class="row-inform-item">Alterar nome </th>
                                 <th class="row-inform-item">Alterar valor</th>
-                                {{-- <th class="row-inform-item">Alterar estoque</th> --}}
+                                <th class="row-inform-item">Quantidade</th>
                                 <th class="row-inform-item">Alterar imagem</th>
                                 <th class="row-inform-item">Ação</th>
                             </tr>
@@ -153,11 +153,10 @@
                                 </td>
                                 <td style="width: 15%; font-weight: 900; color: green">R$ <input style="text-align: center; width: 50%" type="text" name="valor" value={{$EstoqueProdutos['valor'] }}>
                                 </td>
-                             {{--     <td style="width: 15%">
+                                 <td style="width: 25%">
+                                    <input style="background: #cdcdcd; text-align: center; width: 50%; border: none; outline: none;" type="text" name="quantidade" value="{{$EstoqueProdutos['quantidade']}}" readonly>
+                                </td>
 
-                                    <input style="text-align: center; width: 50%" type="number" name="quantidade" value="{{$EstoqueProdutos['quantidade'] }}">
-
-                                </td> --}}
                                 <td style="width: 10%">
                                     <input type="file" accept="image/*" name="imagem" id="imageFile"/>
                                 </td>

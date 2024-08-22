@@ -16,12 +16,14 @@ class SessionProdutosService implements ProdutosServiceInterface
         session()->put('EstoqueProdutos', $estoque);
 
         $produto_id = array_key_last($estoque);
+
+        $observacao = 'Primeira entrada no sistema';
         
 
-        $provider_entradas->adicionarEntrada($produto_id, $quantidade);
+        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
 	}
     
-    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $provider_entradas, $provider_saida)
+    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida)
     {
         $estoque = [];
         
@@ -42,7 +44,7 @@ class SessionProdutosService implements ProdutosServiceInterface
                     {
                         $estoque[$produto_id]['quantidade'] = $quantidade;
                         $quantidade = $entrada_estoque;
-                        $provider_entradas->adicionarEntrada($produto_id, $quantidade);
+                        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
                     }  
                 }
             }

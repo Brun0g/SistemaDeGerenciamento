@@ -116,7 +116,7 @@ img {
     padding: 5px 10px;
     margin-left: 5px;
     font-size: 16px;
-    width: 100px;
+    width: 120px;
     text-align: center;
     color: #fff;
     background-color: #007bff; /
@@ -232,7 +232,7 @@ img {
                 <p>
                     <form  action="/entradas_saidas/{{$key}}" method="GET" >
                         @csrf
-                        <button class="btn-edit btn-sucesso"  type="submit">Entrada</button>
+                        <button class="btn-edit btn-sucesso"  type="submit">Entrada/Saída</button>
                     </form>
                 </p>
             </div>

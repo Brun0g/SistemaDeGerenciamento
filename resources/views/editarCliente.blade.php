@@ -111,6 +111,7 @@ justify-content: center;
                     <th class="row-inform-item">Estado</th>
                     <th class="row-inform-item">CEP</th>
                     <th class="row-inform-item">Ação</th>
+
                     @if(count($listarEnderecos) > 1)
                     <th class="row-inform-item">Ação</th>
                     @endif
@@ -127,7 +128,8 @@ justify-content: center;
                     <td style="border: 1px solid;">{{$endereco['estado']}}</td>
                     <td style="border: 1px solid;">{{$endereco['cep']}}</td>
                     @if(count($listarEnderecos) > 1)
-                    <td style="border: 1px solid;">
+
+                    <td style="border: 1px solid;" class="bg-white">
                         
                         <form action="/DeletarEndereco/{{$endereco_id}}" method="POST" >
                             @csrf

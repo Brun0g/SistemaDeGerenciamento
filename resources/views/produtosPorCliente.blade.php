@@ -124,7 +124,8 @@
           
           <div style="display: flex; justify-content: center">
             <h3>Carrinho</h3>
-          </div>                <table id="table">
+          </div>                
+          <table id="table">
           <thead class="thead">
             <tr>
               {{-- <th class="row-inform-item">ID PEDIDO</th> --}}
@@ -174,6 +175,9 @@
         </div>
       </div>
       
+          <div style="display: flex; justify-content: center">
+            <h3>Pedidos concluídos</h3>
+          </div>    
       <table id="table">
         <thead class="thead">
           <tr>

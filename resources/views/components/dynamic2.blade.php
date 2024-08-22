@@ -1,12 +1,12 @@
 @props(['listarPedidosAprovados' => $listarPedidosAprovados, 'id' => $id]);
 
 
-@if(isset($listarPedidosAprovados))
+@if(sizeof($listarPedidosAprovados) > 0)
 @foreach ($listarPedidosAprovados as $id_pedido => $value)
 
 @if ($value['cliente_id'] == $id )
 @if ($value['excluido'] == 0)
-<tr>
+<tr class="bg-white">
     <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $id_pedido }}</td>
     <td style="color:green;">R$ {{ number_format($value['total'], 2, ",", ".")  }}</td>
     <td>
@@ -27,5 +27,5 @@
     @endif
     @endforeach
     @else
-    <td colspan="5" >Sem dados de registro!</td>
+    <td style="background: white;" colspan="5" >Sem dados de registro!</td>
     @endif

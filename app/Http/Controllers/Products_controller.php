@@ -102,7 +102,7 @@ class Products_controller extends Controller
         if($validator->fails())
             return redirect()->to($url)->withErrors($validator);
 
-        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $provider_entradas, $provider_saida);
+        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, 0, null, null, $provider_entradas, $provider_saida);
 
         return redirect($url);
     }

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionEntradasService implements EntradasServiceInterface
 {
-    public function adicionarEntrada($produto_id, $quantidade)
+    public function adicionarEntrada($produto_id, $quantidade, $observacao)
     {
         $entrada = session()->get('entrada', []);
 
