@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionCarrinhoService implements CarrinhoServiceInterface
 {
-    public function adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas, $provider_saida)
+    public function adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {   
         $pedidos = session()->get('Pedidos', []);
-        $produto = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida);
+        $produto = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
         $total = $produto['valor'] * $quantidade;
 
         $quantidade_estoque = $produto['quantidade'];
@@ -53,7 +53,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         return ['mensagem' => $mensagem, 'quantidade' => $quantidade_estoque];
     }
 
-    public function excluirProduto($cliente_id, $produto_id, $voltar_estoque, $provider_produto, $provider_entradas, $provider_saida)
+    public function excluirProduto($cliente_id, $produto_id, $voltar_estoque, $provider_produto, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {
         $pedidos = session()->get('Pedidos', []);
 
@@ -63,7 +63,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
             {
                 if($produto_id == $value['produto_id'])
                 {
-                    $quantidade_estoque = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida)['quantidade'];
+                    $quantidade_estoque = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)['quantidade'];
                     $quantidade_pedido = $value['quantidade'];
 
                     if($voltar_estoque)
@@ -80,7 +80,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         session()->put('Pedidos', $pedidos);  
     }
 
-    public function visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho, $provider_entradas, $provider_saida)
+    public function visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {
         $pedidos = session()->get('Pedidos', []);
         $carrinho = [];
@@ -93,7 +93,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
                 $quantidade = $value['quantidade'];
                 $total = $value['total'];
                 $total_final = $value['total_final'];
-                $produto = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida);
+                $produto = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
                 $preco_unidade = $produto['valor'];
                 $deleted_at = $produto['deleted_at'];
                 $unidade_desconto = $preco_unidade;
@@ -121,7 +121,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         return $carrinho; 
     }
 
-    public function atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas, $provider_saida)
+    public function atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {
         $pedidos = session()->get('Pedidos', []);
         
@@ -130,7 +130,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
             if($pedido_id == $key)
             {
                 $produto_id = $value['produto_id'];
-                $produto = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida);
+                $produto = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
                 $total = $produto['valor'] * $quantidade;
                 
                 $pedidos[$key]['total'] = $total;
@@ -172,9 +172,9 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         session()->put('porcentagem', $descontos);
     }
 
-    public function finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedido, $provider_promotions, $provider_entradas, $provider_saida)
+    public function finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promotions, $provider_entradas, $provider_saida, $provider_user)
     {
-        $pedidos_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho, $provider_entradas, $provider_saida);
+        $pedidos_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
         $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_produto, $provider_carrinho, $provider_promotions);
 
         $porcentagem = $buscar['porcentagem'];
@@ -183,7 +183,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         $totalComDesconto = $buscar['totalComDesconto'];
         $valor_final = $totalComDesconto - ($totalComDesconto / 100 * $porcentagem);
         
-        $pedido_id = $provider_pedido->salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total);
+        $pedido_id = $provider_pedidos->salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total);
 
         foreach ($pedidos_carrinho as $key => $value) {
             $produto_id = $value['produto_id'];
@@ -199,7 +199,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
                 $valor_total = $value['total'];
                 $porcentagem_unidade = 0;
 
-                $preco_unidade = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida)['valor'];
+                $preco_unidade = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)['valor'];
                 $promocao = $provider_promotions->buscarQuantidade($produto_id, $quantidade);
 
                 if(isset($promocao['produto_id']))
@@ -215,10 +215,10 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
                     }    
                 }
 
-                $provider_pedido->salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, $provider_saida);
+                $provider_pedidos->salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, $provider_saida);
 
                 
-                $provider_carrinho->excluirProduto($cliente_id, $produto_id, $estoque, $provider_produto, $provider_entradas, $provider_saida);
+                $provider_carrinho->excluirProduto($cliente_id, $produto_id, $estoque, $provider_produto, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
             }
         }
     }

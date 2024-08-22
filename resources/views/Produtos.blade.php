@@ -81,7 +81,7 @@
 }
 
 .sub-container-form {
-    margin-top: 10px;
+    margin-top: 3px;
     display: flex;
     justify-content: space-around;
 }
@@ -111,7 +111,48 @@ img {
     object-fit: cover;
 }
 
+.btn-edit {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-left: 5px;
+    font-size: 16px;
+    width: 100px;
+    text-align: center;
+    color: #fff;
+    background-color: #007bff; /
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.3s; 
+}
 
+.btn-sucesso {
+    background-color: #28a745;
+}
+.btn-deletar {
+    background-color: #dc3545;
+}
+.btn-editar {
+    background-color: #ffc107;
+}
+
+.btn-edit:hover {
+    background-color: #0056b3; 
+    transform: scale(1.05); 
+}
+.btn-sucesso:hover{
+    background-color: #218838; 
+    transform: scale(1.05); 
+}
+.btn-deletar:hover{
+    background-color: #c82333; 
+    transform: scale(1.05); 
+}
+
+.btn-editar:hover{
+    background-color: #e0a800; 
+    transform: scale(1.05); 
+}
 
 </style>
 
@@ -125,7 +166,7 @@ img {
 
     @if(isset($EstoqueProdutos))
     @foreach ($EstoqueProdutos as $key => $value)
-    @if($value['ativo'] == 1)
+    
         <div class="sub-container-item">
             <div style="font-weight: 900">
         
@@ -171,74 +212,38 @@ img {
                     <form  action="/DeletarProduto/{{$key}}" method="POST" >
                         @csrf
                         @method('delete')
-                        <button class="btn btn-danger"  type="submit">Deletar</button>
+                        <button class="btn-edit btn-deletar"  type="submit">Deletar</button>
                     </form>
                 </p>
                 <p>
                     <form  action="/Produto/{{$key}}" method="GET" >
                         @csrf
-                        <button class="btn btn-primary"  type="submit">Visualizar</button>
-                    </form>
-                </p>
-                <p>
-                    <form  action="/EditarProduto/{{$key}}" method="GET" >
-                        @csrf
-                        <button class="btn btn-warning"  type="submit">Editar</button>
+                        <button class="btn-edit"  type="submit">Visualizar</button>
                     </form>
                 </p>
             </div>
-        </div>
-            
-
-    @else
-            <div class="sub-container-item-sem-desconto">
-            <div class="sub-container-id">
-                <div style="display: flex; justify-content: left;">
-                    <p style=" font-size: 18px">ID: <span style="font-weight: 300">{{$key}}</span></p>
-                </div>
-            </div>
-    
-            <div class="sub-container-image">
-                @if($value['image_url'] == false)
-                <img src="{{ asset('images/default.png') }}">
-                @else
-                <img  src="{{ $value['image_url'] }}">
-                @endif
-            </div>
-            <div class="sub-container-name-product">
-                <p>{{strtoupper($value['produto'])}}</p>
-            </div>
-            <p class="sub-preco"><span style="color: black"></span>R$: {{  number_format($value['valor'], 2, ",", ".")}}</p>
-           <p class="sub-preco-desconto"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade']}}</p>
             <div class="sub-container-form">
                 <p>
-                    <form  action="/DeletarProduto/{{$key}}" method="POST" >
-                        @csrf
-                        @method('delete')
-                        <button class="btn btn-danger" type="submit">Deletar</button>
-                    </form>
-                </p>
-                <p>
-                    <form  action="/Produto/{{$key}}" method="GET" >
-                        @csrf
-                        <button class="btn btn-primary"  type="submit">Visualizar</button>
-                    </form>
-                </p>
-                <p>
                     <form  action="/EditarProduto/{{$key}}" method="GET" >
                         @csrf
-                        <button class="btn btn-warning"  type="submit">Editar</button>
+                        <button class="btn-edit btn-editar"  type="submit">Editar</button>
+                    </form>
+                </p>
+                <p>
+                    <form  action="/entradas_saidas/{{$key}}" method="GET" >
+                        @csrf
+                        <button class="btn-edit btn-sucesso"  type="submit">Entrada</button>
                     </form>
                 </p>
             </div>
         </div>
-            @endif
             @endforeach
             @else
             <td colspan="10">Sem dados de registro!</td>
             @endif
    </div>
 </div>         
+
 </x-app-layout>
 
 <div class="modal fade" id="CadastrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
@@ -270,10 +275,11 @@ img {
                         <div class="mb-4">
                             <label for="categoria-select" class="block text-sm font-medium text-gray-700">Escolha uma categoria:</label>
                             <select name="categoria" id="categoria-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
                                 <option value="">--Por favor escolha uma categoria--</option>
                                 @if(isset($categorias))
-                                @foreach ($categorias as $value)
-                                <option value="{{ $value['categoria'] }}">{{ $value['categoria'] }}</option>
+                                @foreach ($categorias as $categoria_id => $value)
+                                <option value="{{ $categoria_id }}">{{ $value['categoria'] }}</option>
                                 @endforeach
                                 @else
                                 <option disabled>Sem dados de registro!</option>

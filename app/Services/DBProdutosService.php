@@ -87,7 +87,7 @@ class DBProdutosService implements ProdutosServiceInterface
         return $listarProdutos;
     }
 
-    public function buscarProduto($produto_id, $provider_entradas, $provider_saida)
+    public function buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {
         $produtos = Produto::withTrashed()->where('id', $produto_id)->get()[0];
 
@@ -101,13 +101,19 @@ class DBProdutosService implements ProdutosServiceInterface
             $quantidade = $produtos->quantidade;
 
             $image_url_produto = asset("storage/" . $image_url_produto);
-            $entradas = $provider_entradas->buscarEntrada($produto_id);
-            $saidas = $provider_saida->buscarSaida($produto_id);
+
+            $entradas = $provider_entradas->buscarEntrada($produto_id, $provider_user);
+            $saidas = $provider_saida->buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida);
+
+            $novo_array = array_merge($entradas, $saidas);
+            $sort = array_column($novo_array, 'data');
+
+            array_multisort($sort, SORT_ASC, $novo_array);
 
             if($produtos->imagem == false)
                 $image_url_produto = false;
 
-            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'entradas' => $entradas, 'saidas' => $saidas, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at];
+            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'entradas_saidas' => $novo_array, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at];
         }
     
 

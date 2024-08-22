@@ -23,42 +23,43 @@ class DBSaidaService implements SaidaServiceInterface
         $saida->save();
     }
 
-    function buscarSaida($produto_id)
+    function buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida)
     {
         $saidas = Saida::all()->where('produto_id', $produto_id);
 
         $saidas_array = [];
 
         foreach ($saidas as $key => $value) {
-            if($value['produto_id'] == $produto_id)
-            {
+            
                 $user_id = $value['user_id'];
+                $nome = $provider_user->buscarUsuario($user_id);
                 $produto_id = $value['produto_id'];
                 $pedido_id = $value['pedido_id'];
                 $quantidade = $value['quantidade'];
-                $data = $value['created_at'];   
+                $data = $value['created_at'];
 
-                $saidas_array[] = ['user_id' => $user_id, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data];
-            }
+                $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data, 'status' => 1];
+            
         }
 
         return $saidas_array;
     }
 
-    function listarSaida()
+    function listarSaida($provider_user)
     {
-        $saidas = Saida::all()->where('produto_id', $produto_id);
+        $saidas = Saida::all();
 
         $saidas_array = [];
 
         foreach ($saidas as $key => $value) {
             $user_id = $value['user_id'];
+            $nome = $provider_user->buscarUsuario($user_id);
             $produto_id = $value['produto_id'];
             $pedido_id = $value['pedido_id'];
             $quantidade = $value['quantidade'];
             $data = $value['created_at'];   
 
-            $saidas_array[] = ['user_id' => $user_id, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data];
+            $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data];
         }
 
         return $saidas_array;

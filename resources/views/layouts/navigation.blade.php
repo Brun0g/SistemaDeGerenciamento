@@ -30,9 +30,9 @@
                     <x-nav-link :href="route('Products_view_client')" :active="request()->routeIs('Products_view_client')">
                         {{ __('Clientes e Produtos') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('entradas_saidas')" :active="request()->routeIs('entradas_saidas')">
+{{--                     <x-nav-link :href="route('entradas_saidas')" :active="request()->routeIs('entradas_saidas')">
                         {{ __('Entradas e saídas') }}
-                    </x-nav-link>
+                    </x-nav-link> --}}
                     <x-nav-link :href="route('graficos')" :active="request()->routeIs('graficos')">
                         {{ __('Gráficos') }}
                     </x-nav-link>

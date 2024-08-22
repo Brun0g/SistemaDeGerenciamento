@@ -100,7 +100,8 @@ Route::PATCH('/updatePromotion/{id}',[PromotionController::class,'edit'])->middl
 Route::DELETE('/deletePromotion/{id}',[PromotionController::class,'destroy'])->middleware(['auth']);
 
 // ENTRADAS/SAIDAS
-Route::GET('/entradas_saidas',[EntradaController::class,'index'])->middleware(['auth'])->name('entradas_saidas');
+Route::GET('/entradas_saidas/{id}',[EntradaController::class,'index'])->middleware(['auth'])->name('entradas_saidas');
+Route::PATCH('/entradas_saidas/{id}',[EntradaController::class,'update'])->middleware(['auth']);
 
 
 

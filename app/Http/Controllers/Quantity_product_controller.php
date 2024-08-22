@@ -11,27 +11,24 @@ use \App\Services\ProdutosServiceInterface;
 use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
 use \App\Services\SaidaServiceInterface;
+use \App\Services\UserServiceInterface;
 
 class Quantity_product_controller extends Controller
 {
-    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedido, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
+    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user)
     {   
         $nomeDoClientPorID = $provider_cliente->listarClientes();
         $produtos = $provider_produto->listarProduto($provider_promotions, false);
-        $produtosPorCliente = [];
-        
-        foreach ($nomeDoClientPorID as $cliente_id => $value) {
-            $produtosPorCliente = $provider_pedido->listarQuantidadePedidos($cliente_id, $provider_entradas, $provider_saida);
-        }
-
+        $produtosPorCliente = $provider_pedidos->listarQuantidadePedidos();
         $array = [];
-        
+
         if(isset($produtos, $nomeDoClientPorID, $produtosPorCliente))
         {
 
             foreach($produtos as $key => $value) {
                 // PEGAR NOME DO PRODUTO
                 $nome_produto = $value['produto'];
+
                 foreach($produtosPorCliente as $id => $valor) {
                     // PEGAR ID DO CLIENTE
                     $cliente_id = $valor['cliente_id'];
@@ -41,7 +38,7 @@ class Quantity_product_controller extends Controller
                         $array[$cliente_id] = [];
 
                     // SE O PRODUTO DO PEDIDO FOR IGUAL AO PRODUTO DO ESTOQUE
-                    if($valor['produto'] == $nome_produto)
+                    if($valor['produto_id'] == $key)
                     {
                         
                         // SE NÃO EXISTIR O PRODUTO, INSERIR E COLOCAR QUANTIDADE 0
@@ -55,6 +52,30 @@ class Quantity_product_controller extends Controller
             }
         }
 
+     
+
         return view('Products_view_client', ['Clientes' => $nomeDoClientPorID,  'produtosPorCliente' => $produtosPorCliente, 'produtos' => $produtos,'clientes_produtos' => $array]);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // $startTime = microtime(true);
+
+   // $endTime = microtime(true);
+        // $executionTime = $endTime - $startTime;
+        // $executionTime = 'Tempo de execução: ' . number_format($executionTime, 2, '.', '');
+
+        // dd($array, $executionTime);

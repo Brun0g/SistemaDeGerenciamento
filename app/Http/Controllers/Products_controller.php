@@ -12,6 +12,8 @@ use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
 use \App\Services\SaidaServiceInterface;
+use \App\Services\UserServiceInterface;
+use \App\Services\PedidosServiceInterface;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -54,20 +56,14 @@ class Products_controller extends Controller
         if($validator->fails())
             return redirect($url)->withErrors($validator);
 
-
-        foreach ($listarCategorias as $categoria_id => $value) {
-                if($categoria == $value['categoria'])
-                    $categoria = $categoria_id;
-        }
-        
         $provider_produto->adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas);
 
         return redirect('/Produtos');
     }
 
-    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
+    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
     {
-        $estoqueProdutos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida);
+        $estoqueProdutos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
         
         return view('/showFilterProducts', ['EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id]);
     }
@@ -111,9 +107,9 @@ class Products_controller extends Controller
         return redirect($url);
     }
 
-    public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
+    public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
     {
-        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida);
+        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
           
         return view('editFilterProducts', ['EstoqueProdutos' => $EstoqueProdutos, 'produto_id'=> $produto_id]);
     }

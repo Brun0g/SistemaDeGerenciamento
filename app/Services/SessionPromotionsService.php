@@ -61,7 +61,7 @@ class SessionPromotionsService implements PromotionsServiceInterface
         session()->put('promotions', $promotions);
     }
     
-    public function listarPromocoes($provider_produto, $provider_entradas, $provider_saida)
+    public function listarPromocoes($provider_produto, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {
         $promotions = session()->get('promotions', []);
         $Promotionslist = [];
@@ -69,7 +69,7 @@ class SessionPromotionsService implements PromotionsServiceInterface
         foreach ($promotions as $key => $value) 
         {
             $produto_id = $value['produto_id'];
-            $buscar = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida);
+            $buscar = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
             $porcentagem = $value['porcentagem'];
             $quantidade = $value['quantidade'];
             $ativo = $value['ativo'];

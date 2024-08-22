@@ -103,7 +103,7 @@ class SessionProdutosService implements ProdutosServiceInterface
         return $listarProdutos;
     }
 
-    public function buscarProduto($produto_id, $provider_entradas, $provider_saida)
+    public function buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {
         $produtoEncontrado = [];
         $produtos = session()->get('EstoqueProdutos', []);
@@ -120,13 +120,19 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $estoque = $value['quantidade'];
 
                 $image_url_produto = asset("storage/" . $image_url_produto);
-                $entradas = $provider_entradas->buscarEntrada($produto_id);
-                $saidas = $provider_saida->buscarSaida($produto_id);
+                $entradas = $provider_entradas->buscarEntrada($produto_id, $provider_user);
+                $saidas = $provider_saida->buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida);
+
+
+                $novo_array = array_merge($entradas, $saidas);
+                $sort = array_column($novo_array, 'data');
+
+                array_multisort($sort, SORT_ASC, $novo_array);
 
                 if($value['imagem'] == false)
                     $image_url_produto = false;
 
-                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $estoque, 'entradas' => $entradas, 'saidas' => $saidas, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $delete];
+                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $estoque, 'entradas_saidas' => $novo_array, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $delete];
             }
         }
 

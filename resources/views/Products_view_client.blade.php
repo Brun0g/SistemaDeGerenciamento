@@ -77,7 +77,7 @@ th {
             <tbody>
                 @if(isset($Clientes))
                 @foreach($Clientes as $cliente => $valor)
-                <tr>
+                <tr style="background: white;">
                     <td data-label="Clientes">{{ strtoupper($valor['name']) }}</td>
                     @if(isset($produtos))
                     @foreach($produtos as $produto)

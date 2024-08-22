@@ -3,7 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entrada;
+
+
 use Illuminate\Http\Request;
+use Illuminate\Session\Store;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 
 use \App\Services\PedidosServiceInterface;
 use \App\Services\ClientesServiceInterface;
@@ -13,6 +19,7 @@ use \App\Services\EnderecoServiceInterface;
 use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
 use \App\Services\SaidaServiceInterface;
+use \App\Services\UserServiceInterface;
 
 class EntradaController extends Controller
 {
@@ -21,17 +28,17 @@ class EntradaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(request $request, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions)
+    public function index(request $request, $produto_id, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
     {
-       
-       $entradas = $provider_entradas->listarEntrada();
-       $saidas = $provider_saida->listarSaida();
+      
 
-       $produtos = $provider_produto->listarProduto($provider_promotions, false);
+       $entradas = $provider_entradas->listarEntrada($provider_user);
+       $saidas = $provider_saida->listarSaida($provider_user);
+       $produtos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
 
+    
 
-
-       return view('entradas_saida', ['entradas' => $entradas, 'saidas' => $saidas, 'produtos' => $produtos]);
+       return view('entradas_saida', ['entradas' => $entradas, 'saidas' => $saidas, 'EstoqueProdutos' => $produtos, 'produto_id' => $produto_id]);
     }
 
     /**
@@ -84,9 +91,28 @@ class EntradaController extends Controller
      * @param  \App\Models\Entrada  $entrada
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Entrada $entrada)
+    public function update(Request $request, $produto_id, EntradasServiceInterface $provider_entradas, ProdutosServiceInterface $provider_produto, SaidaServiceInterface $provider_saida)
     {
-        //
+        $nome = $request->input('produto');
+        $valor =  $request->input('valor');
+        $imagem =  $request->file('imagem');
+        $quantidade =  $request->input('quantidade');
+
+
+        $validator = Validator::make($request->all(), [
+            'produto' => 'required|string',
+            'valor'  => 'required|numeric',
+            'quantidade'  => 'required|numeric',
+        ]);
+
+        $url = url()->previous();
+
+        if($validator->fails())
+            return redirect()->to($url)->withErrors($validator);
+
+        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $provider_entradas, $provider_saida);
+
+        return redirect($url);
     }
 
     /**

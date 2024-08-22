@@ -31,7 +31,7 @@ class DBPedidosService implements PedidosServiceInterface
         }
     }
     
-    public function listarQuantidadePedidos($cliente_id, $provider_entradas, $provider_saida)
+    public function listarQuantidadePedidos()
     {
         $pedidosPorClientes = Order::all(); 
         
@@ -42,18 +42,20 @@ class DBPedidosService implements PedidosServiceInterface
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            $produto = $service_produtos->buscarProduto($produto_id, $provider_entradas, $provider_saida);
+            
 
-            $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor]; 
+            $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'quantidade' => $quantidade]; 
         } 
         
         return $pedidosPorClientes; 
     }
 
-    public function buscarItemPedido($pedido_id, $provider_entradas, $provider_saida)
+    public function buscarItemPedido($pedido_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {
         $pedidos = Order::all()->where('pedido_id', $pedido_id);
+
         $service_produtos = new DBProdutosService();
+
         $lista = [];
         $total = 0;
 
@@ -65,7 +67,7 @@ class DBPedidosService implements PedidosServiceInterface
             $cliente_id = $value['cliente_id'];
             $preco_unidade = $value['preco_unidade'];
             $porcentagem = $value['porcentagem'];
-            $produto = $service_produtos->buscarProduto($produto_id, $provider_entradas, $provider_saida);
+            $produto = $service_produtos->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
 
             $total += $valor;
            
@@ -147,5 +149,16 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido->save();
 
         $provider_saida->adicionarSaida($produto_id, $pedido->id, $quantidade);
+    }
+
+    public function buscarItem($pedido_id)
+    {
+        $pedidos = Order::find($pedido_id);
+
+        $total = $pedidos->total;   
+     
+        $lista = ['total' => $total];
+
+        return $lista;          
     }
 }

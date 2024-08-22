@@ -16,9 +16,9 @@ class SessionEntradasService implements EntradasServiceInterface
         session()->put('entrada', $entrada);
     }
 
-    function buscarEntrada($produto_id)
+    function buscarEntrada($produto_id, $provider_user)
     {
-        $entradas = session()->get('entrada' ,[]);
+        $entradas = session()->get('entrada', []);
 
         $entradas_array = [];
 
@@ -26,17 +26,22 @@ class SessionEntradasService implements EntradasServiceInterface
             if($value['produto_id'] == $produto_id)
             {
                 $user_id = $value['user_id'];
+
+                $nome = $provider_user->buscarUsuario($user_id);
+
                 $produto_id = $value['produto_id'];
                 $quantidade = $value['quantidade'];
                 $data = $value['created_at'];   
+                $entrada_ativa = 0;   
 
-                $entradas_array[] = ['user_id' => $user_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data];
+                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'status' => 0];
             }
         }
 
         return $entradas_array;
     }
-    function listarEntrada()
+
+    function listarEntrada($provider_user)
     {
         $entradas = session()->get('entrada' ,[]);
 
