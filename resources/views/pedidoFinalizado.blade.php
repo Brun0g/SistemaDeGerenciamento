@@ -104,7 +104,7 @@ padding: 5px;
                                 @if(isset($array))
                                 @foreach ($array as $id_pedido => $value )
                                 <tr>
-                                    <td style=" width: 15%; border: 1px solid black;">{{  strtoupper($value['produto']) }}</td>
+                                    <td style=" width: 10%; border: 1px solid black;">{{  strtoupper($value['produto']) }}</td>
                                     <td  style="width: 5%; border: 1px solid black;">{{  $value['quantidade'] }}</td>
                                      <td  style="color: green; width: 5%; border: 1px solid black;">R$ {{  number_format($value['preco_unidade'], 2, ",", ".")}}</td>
                                     {{-- @if($value['porcentagem'] > 0)
@@ -118,7 +118,7 @@ padding: 5px;
                                     </td>
                                     @else
                                     {{-- <td style="color:black; font-size: 14px; font-style: italic; font-weight:900; border: 1px solid black;">X</td> --}}
-                                    <td style="color:black; font-size: 14px; font-style: italic; border: 1px solid black;">NÃO APLICADO</td>
+                                    <td style="color:black; width: 5%; font-size: 14px; font-style: italic; border: 1px solid black;">NÃO APLICADO</td>
                                     @endif
                                     <td style="width: 10%; color:green; border: 1px solid black;">R$ {{  number_format($value['preco_unidade'] * $value['quantidade'] - ($value['preco_unidade'] * $value['quantidade'] / 100 * $value['porcentagem']), 2, ",", ".")  }}</td>
 
