@@ -185,7 +185,7 @@ img {
                 <p>{{strtoupper($value['produto'])}}</p>
             </div>
             <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
-            <p class="sub-preco-desconto"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade']}}</p>
+            <p class="sub-preco-desconto"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade_estoque']}}</p>
             @if(count($EstoqueProdutos[$key]['promocao']) != [])
             <div class="sub-preco-desconto">Desconto por quantidade</div>
             <div style="display: flex; justify-content: center;">

@@ -25,7 +25,7 @@ use \App\Services\UserServiceInterface;
 
 class Carrinho_controller extends Controller
 {
-    public function newProductCart(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function newProductCart(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions)
     {
         $produtos = $request->input('produto');
     
@@ -49,12 +49,11 @@ class Carrinho_controller extends Controller
             $quantidade = $value;
             
             if($quantidade != "0"){
-                $mensagem = $provider_carrinho->adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+                $mensagem = $provider_carrinho->adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promotions);
 
                 if($mensagem['mensagem']){
-                    
-                    $produto = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)['produto'];
-                    session()->flash('error_estoque', 'Quantidade do Produto: ' . $produto . ' ultrapassa valor do   Estoque: ' . $mensagem['quantidade'] . ' Quantidade: ' . $quantidade);
+                    $produto = $provider_produto->buscarProduto($produto_id)['produto'];
+                    session()->flash('error_estoque', 'Quantidade do Produto: ' . strtoupper($produto) . ' ultrapassa valor do   Estoque: ' . $mensagem['quantidade'] . ' Quantidade: ' . $quantidade);
                 }
                 else{
                     session()->flash('status', 'Produto adicionado com sucesso!');
@@ -65,7 +64,7 @@ class Carrinho_controller extends Controller
         return redirect($url);
     }
 
-    public function updateCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function updateCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions)
     {
         $array = $request->input('atualizar');
 
@@ -90,28 +89,25 @@ class Carrinho_controller extends Controller
             $produto_id = $pedido_no_carrinho['produto_id'];
             $quantidade_carrinho = (int)$pedido_no_carrinho['quantidade'];
 
-            $produto = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
-            $quantidade_estoque = $produto['quantidade'];
-            $total_estoque = $quantidade_estoque + $quantidade_carrinho;
-            
-            if($quantidade <= $total_estoque)
+            $produto = $provider_produto->buscarProduto($produto_id);
+            $quantidade_estoque = $produto['quantidade_estoque'];
+
+       
+            if($quantidade <= $quantidade_estoque && $quantidade != $quantidade_carrinho)
             {
-                session()->flash('status', 'Quantidade adicionada com sucesso!');
+                session()->flash('status', 'Quantidade alterada com sucesso! Produto: ' . strtoupper($produto['produto']));
 
-                $provider_carrinho->atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+                $provider_carrinho->atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promotions);
             }
-            else{
-
-                session()->flash('error_estoque', 'Quantidade do Produto: ' . $produto['produto'] . ' ultrapassa valor do   Estoque: ' . $quantidade_estoque . ' Quantidade: ' . $quantidade);
-
-                break;
-            }
+            
+            if($quantidade > $quantidade_estoque && $quantidade != $quantidade_carrinho)
+                session()->flash('error_estoque', 'Quantidade do Produto: ' . strtoupper($produto['produto']) . ' ultrapassa valor do   Estoque: ' . $quantidade_estoque . ' Quantidade: ' . $quantidade);
         }
 
         return redirect($url);
     }
 
-    public function updateDiscountCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions)
+    public function updateDiscountCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho)
     {
         $porcentagem = $request->input('porcentagem');
     
@@ -131,12 +127,13 @@ class Carrinho_controller extends Controller
         return redirect($url);
     }
 
-    public function showCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, EnderecoServiceInterface $provider_endereco, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function showCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, EnderecoServiceInterface $provider_endereco, PromotionsServiceInterface $provider_promotions)
     {
-        $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+        $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions);
 
         $visualizarCliente = $provider_cliente->listarClientes();
-        $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_produto, $provider_carrinho, $provider_promotions);
+        $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promotions);
+
         $enderecos = $provider_endereco->listarEnderecos();
 
         $porcentagem = $buscar['porcentagem'];
@@ -150,9 +147,38 @@ class Carrinho_controller extends Controller
     {
         $endereco_id = $request->input('endereco_id');
 
-        $provider_carrinho->finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promotions, $provider_entradas, $provider_saida, $provider_user);
+        $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions);
 
-        return redirect('Cliente/' . $cliente_id);
+        $url = url()->previous();
+        $array = [];
+
+
+
+        foreach ($pedidos_no_carrinho as $key => $value) {
+            $fora_de_estoque = $value['fora_de_estoque'];
+
+            if($fora_de_estoque == true)
+            {
+                $quantidade_estoque = $value['quantidade_estoque'];
+                $fora_estoque = true;
+                $produto = $value['produto'];
+
+             
+                $array_erros[] = strtoupper($produto) .' fora de estoque! ' . 'Estoque: ' . $quantidade_estoque;
+            }
+        }
+
+
+
+        if(isset($fora_estoque))
+             return redirect($url)->with('array_erros', $array_erros);
+        
+
+        session()->flash('status', 'Pedido encaminhado com sucesso!');
+
+        $provider_carrinho->finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promotions, $provider_entradas, $provider_saida, $provider_user);
+       
+        return redirect($url);
     }
     
     public function deleteCart(Request $request, $cliente_id, $produto_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)

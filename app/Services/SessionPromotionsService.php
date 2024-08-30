@@ -69,7 +69,7 @@ class SessionPromotionsService implements PromotionsServiceInterface
         foreach ($promotions as $key => $value) 
         {
             $produto_id = $value['produto_id'];
-            $buscar = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+            $buscar = $provider_produto->buscarProduto($produto_id);
             $porcentagem = $value['porcentagem'];
             $quantidade = $value['quantidade'];
             $ativo = $value['ativo'];

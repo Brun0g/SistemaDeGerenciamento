@@ -27,33 +27,22 @@ class DBProdutosService implements ProdutosServiceInterface
       
         $produto->save();
 
-        $observacao = 'Primeira entrada no sistema';
-
-        $provider_entradas->adicionarEntrada($produto->id, $quantidade, $observacao);
+        $provider_entradas->adicionarEntrada($produto->id, $quantidade, 'Primeira entrada no sistema');
 	}
     
-    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida)
+    public function editarProduto($produto_id, $nome, $valor, $imagem)
     {
         $produto = Produto::find($produto_id);
 
+          
+        
         $produto->produto = $nome;
         $produto->valor = $valor;
-        $produto->quantidade += $quantidade;
-      
 
         if(isset($imagem))
             $produto->imagem = $imagem;
    
         $produto->save();
-
-        if(isset($entrada_ou_saida))
-        {
-            if($entrada_ou_saida == 'entrada'){
-            $provider_entradas->adicionarEntrada($produto->id, $quantidade, $observacao);
-            } else {
-                $provider_saida->adicionarSaida($produto->id, null, $quantidade);
-            }
-        }
     }
 
     public function excluirProduto($produto_id)
@@ -78,22 +67,27 @@ class DBProdutosService implements ProdutosServiceInterface
             $valor_produto = $produto->valor;
             $image_url_produto = $produto->imagem;
             $produto_id = $produto->id;
-            $quantidade = $produto->quantidade;
+            $quantidade_estoque = $produto->quantidade;
 
             $promocao = $provider_promotions->buscarPromocao($produto_id);
             $ativo = $promocao['ativo'];
             $array[$produto_id] = $promocao['promocao'];
 
+            $service_carrinho = new SessionCarrinhoService();
+
+            $quantidade_carrinho = $service_carrinho->buscarQuantidade($produto_id)['quantidade'];
+            $quantidade = $quantidade_estoque - $quantidade_carrinho;
+
             if($image_url_produto != false)
                 $image_url_produto = asset("storage/" . $image_url_produto);
 
-            $listarProdutos[$produto->id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo];       
+            $listarProdutos[$produto->id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo, 'quantidade_estoque' => $quantidade_estoque];       
         }
 
         return $listarProdutos;
     }
 
-    public function buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
+    public function buscarProduto($produto_id)
     {
         $produtos = Produto::withTrashed()->where('id', $produto_id)->get()[0];
 
@@ -104,22 +98,14 @@ class DBProdutosService implements ProdutosServiceInterface
             $produto_id = $produtos->id;
             $image_url_produto = $produtos->imagem;
             $deleted_at = $produtos->deleted_at;
-            $quantidade = $produtos->quantidade;
+            $quantidade_estoque = $produtos->quantidade;
 
             $image_url_produto = asset("storage/" . $image_url_produto);
-
-            $entradas = $provider_entradas->buscarEntrada($produto_id, $provider_user);
-            $saidas = $provider_saida->buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida);
-
-            $novo_array = array_merge($entradas, $saidas);
-            $sort = array_column($novo_array, 'data');
-
-            array_multisort($sort, SORT_ASC, $novo_array);
 
             if($produtos->imagem == false)
                 $image_url_produto = false;
 
-            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'entradas_saidas' => $novo_array, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at];
+            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at, 'quantidade_estoque' => $quantidade_estoque];
         }
     
 
@@ -135,12 +121,23 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->save();
     }
 
-    public function atualizarEstoque($produto_id, $quantidade)
+    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id)
     {
         $produto = Produto::find($produto_id);
 
-        $produto->quantidade = $quantidade; 
-      
+
+        if(isset($entrada_ou_saida))
+        {
+            $produto->quantidade += $quantidade;
+
+            if($entrada_ou_saida == 'entrada')
+                $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
+            else
+                $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao);
+
+        } else 
+            $produto->quantidade = $quantidade;
+
         $produto->save();
     }
 }

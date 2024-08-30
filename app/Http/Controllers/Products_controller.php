@@ -61,11 +61,24 @@ class Products_controller extends Controller
         return redirect('/Produtos');
     }
 
-    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho)
     {
-        $estoqueProdutos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
-        
-        return view('/showFilterProducts', ['EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id]);
+        $estoqueProdutos = $provider_produto->buscarProduto($produto_id);
+
+
+        $entradas = $provider_entradas->buscarEntrada($produto_id, $provider_user);
+        $saidas = $provider_saida->buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida);
+        $entradas_saidas = array_merge($entradas['entradas_array'], $saidas['saidas_array']);
+        $sort = array_column($entradas_saidas, 'data');
+
+        array_multisort($sort, SORT_ASC, $entradas_saidas);
+
+        $quantidade_carrinho = $provider_carrinho->buscarQuantidade($produto_id)['quantidade'];
+
+        $resultado = $entradas['total'] - $saidas['total'];
+
+
+        return view('/showFilterProducts', ['resultado' => $resultado, 'EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas, 'resultado' => $resultado]);
     }
 
     public function deleteProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
@@ -79,13 +92,11 @@ class Products_controller extends Controller
         $nome = $request->input('produto');
         $valor =  $request->input('valor');
         $imagem =  $request->file('imagem');
-        $quantidade =  $request->input('quantidade');
 
 
         $validator = Validator::make($request->all(), [
             'produto' => 'required|string',
             'valor'  => 'required|numeric',
-            'quantidade'  => 'required|numeric',
         ]);
 
         $url = url()->previous();
@@ -102,14 +113,14 @@ class Products_controller extends Controller
         if($validator->fails())
             return redirect()->to($url)->withErrors($validator);
 
-        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem, 0, null, null, $provider_entradas, $provider_saida);
+        $provider_produto->editarProduto($produto_id, $nome, $valor, $imagem);
 
         return redirect($url);
     }
 
     public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
     {
-        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id);
           
         return view('editFilterProducts', ['EstoqueProdutos' => $EstoqueProdutos, 'produto_id'=> $produto_id]);
     }

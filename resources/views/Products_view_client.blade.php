@@ -19,19 +19,26 @@
 }
 
 .table-container {
-    overflow-x: auto; 
-    -webkit-overflow-scrolling: touch; 
+    position: relative;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px; /* Ajuste conforme necessário */
+    border: 2px solid #ddd; /* Borda ao redor do container da tabela */
 }
 
 table {
     border-collapse: collapse;
     width: 100%;
-    table-layout: auto;
-    min-width: 1000px;
+  
 }
 
 thead {
-    border: 2px solid #ddd;
+   
+    position: sticky;
+    top: 0;
+    background-color: royalblue;
+    color: white;
+    z-index: 1; 
 }
 
 th, td {
@@ -42,8 +49,6 @@ th, td {
 }
 
 th {
-    background-color: royalblue;
-    color: white;
     font-weight: bold;
 }
 
@@ -91,6 +96,5 @@ th {
         </table>
     </div>
 </div>
-
 
 </x-app-layout>

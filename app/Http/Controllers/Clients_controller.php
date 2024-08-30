@@ -79,9 +79,9 @@ class Clients_controller extends Controller
     public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user)
     {
         $cliente = $provider_cliente->buscarCliente($cliente_id);
-        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);  
+        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions);  
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
-        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_produto, $provider_carrinho, $provider_promotions);
+        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promotions);
 
         $softDelete = false;
         $listarProduto = $provider_produto->listarProduto($provider_promotions, $softDelete);

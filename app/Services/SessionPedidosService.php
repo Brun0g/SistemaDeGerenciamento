@@ -108,7 +108,7 @@ class SessionPedidosService implements PedidosServiceInterface
                 $quantidade = $pedido['quantidade'];
                 $porcentagem = $pedido['porcentagem'];
                 $valor = $pedido['total'];
-                $produto = $service_produtos->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)['produto'];
+                $produto = $service_produtos->buscarProduto($produto_id)['produto'];
                 $preco_unidade = $pedido['preco_unidade'];
 
                 $total += $valor;
@@ -138,12 +138,15 @@ class SessionPedidosService implements PedidosServiceInterface
     {
         $pedidoUnitario = session()->get('pedidoUnitario', []);
         $pedidosTotalValor = session()->get('PedidosTotalValor', []);
+
+        $count = sizeof($pedidosTotalValor);
     
         $pedidoUnitario[] = ['pedido_id' => $pedido_id,'cliente_id' => $cliente_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total];
 
+
         session()->put('pedidoUnitario', $pedidoUnitario);
 
-        $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade);
+        return $count;
     }
 
     public function buscarItem($pedido_id)

@@ -23,41 +23,23 @@ class SessionProdutosService implements ProdutosServiceInterface
         $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
 	}
     
-    public function editarProduto($produto_id, $nome, $valor, $imagem, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida)
+    public function editarProduto($produto_id, $nome, $valor, $imagem)
     {
-        $estoque = [];
-        
+        $produtos = session()->get('EstoqueProdutos', []);
 
-        if(session()->has('EstoqueProdutos'))
-        {
-            $estoque = session()->get('EstoqueProdutos'); 
 
-            foreach ($estoque as $key => $value) {
-                if($produto_id == $key)
-                {
-                    $entrada_estoque  = $quantidade - $value['quantidade'];  
+        foreach ($produtos as $key => $value) {
+            if($produto_id == $key)
+            {
+                $produtos[$key]['produto'] = $nome;
+                $produtos[$key]['valor'] = $valor;
 
-                    $estoque[$produto_id]['produto'] = $nome;
-                    $estoque[$produto_id]['valor'] = $valor;
-
-                    if($quantidade != $value['quantidade'])
-                    {
-                        $estoque[$produto_id]['quantidade'] = $quantidade;
-                        $quantidade = $entrada_estoque;
-                        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
-                    }  
-                }
+                if(isset($imagem))
+                    $produtos[$key]['imagem'] = $imagem;
             }
-            
-            if(isset($imagem))     
-                $estoque[$produto_id]['imagem'] = $imagem;      
         }
 
-
-
-        session()->put('EstoqueProdutos', $estoque);
-
-        
+        session()->put('EstoqueProdutos', $produtos);
     }
 
     public function excluirProduto($produto_id)
@@ -88,24 +70,29 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $nome_produto = $value['produto'];
                 $valor_produto = $value['valor'];
                 $image_url_produto = $value['imagem'];
-                $estoque = $value['quantidade'];
+                $quantidade_estoque = $value['quantidade'];
                 $produto_id = $key;
 
                 $promocao = $provider_promotions->buscarPromocao($produto_id);
                 $ativo = $promocao['ativo'];
                 $array[$produto_id] = $promocao['promocao'];
 
+                $service_carrinho = new SessionCarrinhoService();
+
+                $quantidade_carrinho = $service_carrinho->buscarQuantidade($produto_id)['quantidade'];
+                $quantidade = $quantidade_estoque - $quantidade_carrinho;
+
                 if($image_url_produto != false)
                     $image_url_produto = asset("storage/" . $image_url_produto);
 
-                 $listarProdutos[$produto_id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $estoque, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo];
+                 $listarProdutos[$produto_id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo, 'quantidade_estoque' => $quantidade_estoque];
             }
         }
 
         return $listarProdutos;
     }
 
-    public function buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
+    public function buscarProduto($produto_id)
     {
         $produtoEncontrado = [];
         $produtos = session()->get('EstoqueProdutos', []);
@@ -118,23 +105,15 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $valor_produto = $value['valor'];
                 $produto_id = $key;
                 $image_url_produto = $value['imagem'];
-                $delete = $value['deleted_at'];
-                $estoque = $value['quantidade'];
+                $deleted_at = $value['deleted_at'];
+                $quantidade_estoque = $value['quantidade'];
 
                 $image_url_produto = asset("storage/" . $image_url_produto);
-                $entradas = $provider_entradas->buscarEntrada($produto_id, $provider_user);
-                $saidas = $provider_saida->buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida);
-
-
-                $novo_array = array_merge($entradas, $saidas);
-                $sort = array_column($novo_array, 'data');
-
-                array_multisort($sort, SORT_ASC, $novo_array);
-
+               
                 if($value['imagem'] == false)
                     $image_url_produto = false;
 
-                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $estoque, 'entradas_saidas' => $novo_array, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $delete];
+                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at, 'quantidade_estoque' => $quantidade_estoque];
             }
         }
 
@@ -154,13 +133,25 @@ class SessionProdutosService implements ProdutosServiceInterface
         session()->put('EstoqueProdutos', $produto);
     }
 
-    public function atualizarEstoque($produto_id, $quantidade)
+    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id)
     {
         $produto = session()->get('EstoqueProdutos', []);
 
         foreach ($produto as $key => $value) {
             if($produto_id == $key)
-                $produto[$key]['quantidade'] = $quantidade; 
+            {
+                if(isset($entrada_ou_saida))
+                {
+                    $produto[$key]['quantidade'] += $quantidade;
+
+                    if($entrada_ou_saida == 'entrada')
+                        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
+                    else
+                        $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao);
+                
+                } else 
+                    $produto[$key]['quantidade'] = $quantidade;
+            }
         }
 
         session()->put('EstoqueProdutos', $produto);

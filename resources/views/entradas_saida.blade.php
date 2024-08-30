@@ -88,20 +88,25 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="produto">Nome do produto:</label>
-                            <input type="text" class="form-control" id="produto" value="{{ strtoupper($EstoqueProdutos['produto']) }}" name="produto" readonly>
+                           
+                            <h4>{{ strtoupper($EstoqueProdutos['produto']) }}</h4>
                         </div>
 
                         <div class="form-group">
-                            <label for="produto">Quantidade atual:</label>
-                            <input type="text" class="form-control" id="produto" value="{{ strtoupper($EstoqueProdutos['quantidade']) }}" readonly>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="produto">Preço:</label>
-                   
-                            <input type="text" class="form-control" name="valor" value={{$EstoqueProdutos['valor'] }} readonly>
-                 
+                            @if (session('status'))
+                            <div class="alert alert-success" style="display: flex; justify-content:center">
+                                {{ session('status') }}
+                            </div>
+                            @endif
+                            @if (session('error'))
+                                <div class="alert alert-danger" style="display: flex; justify-content:center">
+                                  {{ session('error') }}
+                                </div>
+                            @endif
+                            <label for="produto">Quantidade no estoque:</label>
+                            <input type="text" class="form-control" id="produto" value="{{ strtoupper($EstoqueProdutos['quantidade_estoque']) }}" readonly>
+                            <label for="produto">Quantidade no carrinho:</label>
+                            <input type="text" class="form-control" id="produto" value="{{$carrinho}}" readonly>
                         </div>
                         <div class="form-group">
                         <fieldset >
@@ -121,11 +126,11 @@
                         </div>
                         <div class="form-group">
                             <label for="quantidade">Quantidade</label>
-                            <input type="number" class="form-control" id="quantidade" name="quantidade" placeholder="0" required>
+                            <input type="number" class="form-control" id="quantidade" name="quantidade" placeholder="0" min="1" required>
                         </div>
                         <div class="form-group">
                         <legend style="font-size: 15px;">Observação:</legend>
-                        <textarea id="w3review" name="observacao" rows="4" cols="20"></textarea>
+                        <textarea id="w3review" name="observacao" rows="1" cols="20"></textarea>
                         </div>
                         <button type="submit" class="btn btn-success">Confirmar</button>
                     </form>

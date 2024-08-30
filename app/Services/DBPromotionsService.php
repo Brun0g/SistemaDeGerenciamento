@@ -57,7 +57,7 @@ class DBPromotionsService implements PromotionsServiceInterface
         foreach ($promotions as $promotion) 
         {
             $produto_id = $promotion->produto_id;
-            $buscar = $provider_produto->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+            $buscar = $provider_produto->buscarProduto($produto_id);
             $porcentagem = $promotion->porcentagem;
             $quantidade = $promotion->quantidade;
             $ativo = $promotion->ativo;

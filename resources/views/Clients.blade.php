@@ -3,10 +3,15 @@
 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
 {{ __('Clientes') }}
 </h2>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script
+              src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+              integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+              crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 </x-slot>
 <style type="text/css">
 #te {
@@ -45,12 +50,14 @@ font-size: 13px;
 </style>
 <div class="py-12">
     <div class="max-w mx-auto sm:px-6 lg:px-8">
-  
+    
+    <div class="input-group" style="width: 20%">
+  <input   id= "live_search" type="search" class="form-control rounded" placeholder="Procurar clientes" aria-label="Search" aria-describedby="search-addon" />
+  <button type="button" class="btn btn-outline-primary" data-mdb-ripple-init>Procurar</button>
+</div>
         <div style="display: flex; justify-content: center; margin-bottom: 10px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo cliente</button>
         </div>
-
-           
                 <table id="table">
                     <thead class="thead">
                         <tr>
@@ -120,11 +127,34 @@ font-size: 13px;
                         @endif
                     </tbody>
                 </table>
-           
-      
     </div>
+   
 </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+
+
+       
+
+        $("#live_search").on("click", function (){
+
+            const array = $.param($tabela_clientes);
+            
+            console.log(array);
+
+            // if(input != ""){
+            //     $.ajax({
+            //         url:
+            //     })
+            // }
+
+        });
+
+
+    });
+</script>
 </x-app-layout>
 <div class="modal fade" id="CadastrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered" role="document">

@@ -47,16 +47,33 @@ input[type="radio"]:checked+label {
     <div class="max-w-8xl mx-auto sm:px-8 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div id ="te" class="p-6 bg-white border-b border-gray-200">
-                @if (session('status'))
+        
+        @if (session('status'))
+        <div style="display: flex; justify-content: center;">
             <div class="alert alert-success" style="display: flex; justify-content:center">
                 {{ session('status') }}
             </div>
+        </div>
         @endif
+        
           @if (session('error_estoque'))
-              <div class="alert alert-danger" style="display: flex; justify-content:center">
+          <div style="display: flex; justify-content: center;">
+              <div class="alert alert-danger" style="text-align: center; width: 25%; margin-right: 10px; font-weight: 600;">
+                
                   {{ session('error_estoque') }}
               </div>
+          </div>
           @endif
+
+          @if(session('array_erros'))
+        <ul style="display: flex; justify-content:center;">
+            @foreach(session('array_erros') as $key => $value)
+            <li class="alert alert-danger" style="text-align: center; width: 20%; margin-right: 10px; font-weight: 600;">
+                  {{ $value }}
+            </li>
+            @endforeach
+        </ul>
+        @endif 
                 <table id="table">
                     <thead class="thead">
                         <tr>
@@ -76,6 +93,7 @@ input[type="radio"]:checked+label {
                         </tr>
                     </thead>
                     <tbody>
+                   
                         @foreach($pedidosSession as $pedido_id => $value)
                         @if($value['cliente_id'] == $id)
                         <tr>
@@ -84,7 +102,7 @@ input[type="radio"]:checked+label {
                                 @method('PATCH')
                                 <td style="border: 1px solid; width: 3%">{{$pedido_id}}</td>
                                 <td style="border: 1px solid; width: 7%">{{ strtoupper($value['produto']) }}</td>
-                                @if($value['deleted_at'] != null)
+                                @if($value['deleted_at'] != null || $value['quantidade'] == 0)
                                 <td style="font-weight: 900; color: red; border: 1px solid black; width: 7%">
                                     FORA DE ESTOQUE
                                 </td>

@@ -142,7 +142,7 @@
             
             @foreach ($listarPedidos as $id_pedido => $value )
             @if ($value['cliente_id'] == $id )
-            <tr>
+            <tr class="bg-white">
               {{-- <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $id_pedido }}</td> --}}
               <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $value['cliente_id'] }}</td>
               <td>{{  $value['produto'] }}</td>
@@ -230,6 +230,7 @@
                       <tr>
                         <th>Produto</th>
                         <th>Quantidade</th>
+                        <th>Estoque</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -249,6 +250,7 @@
                           required
                           >
                         </td>
+                        <td class="produto-cell">{{ $value['quantidade']}}</td>
                       </tr>
                       @endforeach
                     </tbody>
@@ -283,4 +285,4 @@
       <script>
       
       </script>
-      </x-app-layout>
+</x-app-layout>

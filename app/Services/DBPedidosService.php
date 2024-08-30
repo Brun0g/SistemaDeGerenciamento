@@ -67,7 +67,7 @@ class DBPedidosService implements PedidosServiceInterface
             $cliente_id = $value['cliente_id'];
             $preco_unidade = $value['preco_unidade'];
             $porcentagem = $value['porcentagem'];
-            $produto = $service_produtos->buscarProduto($produto_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+            $produto = $service_produtos->buscarProduto($produto_id);
 
             $total += $valor;
            
@@ -148,7 +148,7 @@ class DBPedidosService implements PedidosServiceInterface
 
         $pedido->save();
 
-        $provider_saida->adicionarSaida($produto_id, $pedido->id, $quantidade);
+        return $pedido->id;
     }
 
     public function buscarItem($pedido_id)

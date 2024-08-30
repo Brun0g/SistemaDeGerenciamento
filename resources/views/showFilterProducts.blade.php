@@ -71,22 +71,22 @@ padding: 10px;
                         <th class="row-inform-item">Usuário</th>
                         <th class="row-inform-item">Tipo</th>
                         <th class="row-inform-item">Quantidade</th>
-             
+                        <th class="row-inform-item">Observação</th>
+                        
                         <th class="row-inform-item">Data</th>
                     </tr>
                 </thead>
                 <tbody>
 
-                @if(isset($EstoqueProdutos))
-                @foreach($EstoqueProdutos['entradas_saidas'] as $key => $value)
+                @if(isset($entradas_saidas))
+                @foreach($entradas_saidas as $key => $value)
                 @if($value['produto_id'] == $produto_id)
-                    @if($value['status'] == 1)
+                    @if($value['status'] == 1 && isset($value['pedido_id']))
                 <tr>
                     <td>{{  strtoupper($value['user_id'])}}</td>
                     <td>Saída realizada Pedido N°: <span style="color: purple; font-weight: 900">{{$value['pedido_id']}}</span></td>
-
-                    <td style="font-weight: 900; color: red">{{  -$value['quantidade'] }}</td>
-        
+                    <td style="font-weight: 900; color: red">{{  $value['quantidade'] }}</td>
+                    <td>{{  $value['observacao'] }}</td>
                     <td>{{  $value['data'] }}</td>
                 </tr>
                 @elseif($value['quantidade'] > 0)
@@ -95,7 +95,7 @@ padding: 10px;
                     <td>Entrada</td>
 
                     <td style="font-weight: 900; color: green">{{  $value['quantidade'] }}</td>
-        
+                <td>{{  $value['observacao'] }}</td>
                     <td>{{  $value['data'] }}</td>
                 </tr>
                 @elseif($value['quantidade'] < 0)
@@ -104,7 +104,7 @@ padding: 10px;
                     <td>Quantidade retirada do estoque</td>
 
                     <td style="font-weight: 900; color: red;">{{  $value['quantidade'] }}</td>
-        
+        <td>{{  $value['observacao'] }}</td>
                     <td>{{  $value['data'] }}</td>
                 </tr>
                 @endif
@@ -113,7 +113,8 @@ padding: 10px;
                                 <tr>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden; "></td>
                                     <td style="border: black solid 1px; font-weight: 900; text-align: right; background: #e5e7eb;">TOTAL: </td>
-                                    <td style="border-top: 1px solid black; border-left: hidden;background: #e5e7eb; border-bottom: 1px solid black; border-right: 1px solid right; font-weight: 900">{{$EstoqueProdutos['quantidade']}}</td>
+                                    <td style="border-top: 1px solid black; border-left: hidden;background: #e5e7eb; border-bottom: 1px solid black; border-right: 1px solid right; font-weight: 900">{{$resultado}}</td>
+                                    <td style="border-top: 1px solid black; border-left: 1px solid black; background-color: rgb(243 244 246); border-bottom: hidden; border-right: hidden"></td>
                                     <td style="border-top: 1px solid black; border-left: 1px solid black; background-color: rgb(243 244 246); border-bottom: hidden; border-right: hidden"></td>
                                 </tr>
                 @else

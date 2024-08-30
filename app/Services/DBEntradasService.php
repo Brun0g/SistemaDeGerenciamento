@@ -27,9 +27,8 @@ class DBEntradasService implements EntradasServiceInterface
         $entradas = Entrada::all()->where('produto_id', $produto_id);
 
         $entradas_array = [];
-
-        
-
+        $total = 0;
+    
         foreach ($entradas as $key => $value) {
             if($value['produto_id'] == $produto_id)
             {
@@ -39,13 +38,15 @@ class DBEntradasService implements EntradasServiceInterface
 
                 $produto_id = $value['produto_id'];
                 $quantidade = $value['quantidade'];
+                $total += $value['quantidade'];
                 $data = $value['created_at'];  
+                $observacao = $value['observacao'];  
 
-                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'status' => 0];
+                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0];
             }
         }
 
-        return $entradas_array;
+        return ['entradas_array' => $entradas_array, 'total'  => $total];
     }
     
     function listarEntrada($provider_user){
@@ -61,8 +62,9 @@ class DBEntradasService implements EntradasServiceInterface
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $data = $value['created_at'];   
+            $observacao = $value['observacao'];   
 
-            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data];
+            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao];
         }
 
         return $entradas_array;
