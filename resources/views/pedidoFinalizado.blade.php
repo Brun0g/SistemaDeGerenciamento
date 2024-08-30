@@ -100,7 +100,7 @@ padding: 5px;
                                 </tr>
                             </thead>
                             <tbody>
-
+                                
                                 @if(isset($array))
                                 @foreach ($array as $id_pedido => $value )
                                 <tr>

@@ -93,7 +93,6 @@ input[type="radio"]:checked+label {
                         </tr>
                     </thead>
                     <tbody>
-                   
                         @foreach($pedidosSession as $pedido_id => $value)
                         @if($value['cliente_id'] == $id)
                         <tr>
@@ -114,7 +113,8 @@ input[type="radio"]:checked+label {
                                 <td style="font-weight: normal; border: 1px solid black; width: 8%; color: green;">
                                     R$ {{ number_format($value['preco_unidade'], 2, ',', '.') }}
                                 </td>
-                                @if($value['preco_unidade'] != $value['unidade_desconto'])
+
+                                @if($value['total'] != $value['total_final'])
                                 <td style="font-weight: normal; border: 1px solid black; width: 10%; color: green;">
                                     R$ {{ number_format($value['unidade_desconto'], 2, ',', '.') }}
                                 </td>
@@ -146,8 +146,11 @@ input[type="radio"]:checked+label {
                             <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                             <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                             <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; border-right: black solid 1px;">DESCONTO GERAL <span style="color: indianred;">{{$porcentagem}}</span>% :</td>
-
-                            <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{ $porcentagem != 0 ? number_format($totalComDesconto - ($totalComDesconto / 100 * $porcentagem) - $totalSemDesconto, 2, ',', '.') : 0 }}</td>
+                            @if($totalComDesconto != $totalSemDesconto)
+                            <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{ number_format($totalComDesconto / 100 * $porcentagem, 2, ',', '.')}}</td>
+                            @else
+                            <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{  number_format($totalSemDesconto / 100 * $porcentagem, 2, ',', '.')  }}</td>
+                            @endif
                              <td style="border-right: hidden; border-bottom: hidden; border-top: hidden;"></td>
 
                         </tr>

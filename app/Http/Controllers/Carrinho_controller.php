@@ -48,16 +48,16 @@ class Carrinho_controller extends Controller
             $produto_id = $key;
             $quantidade = $value;
             
-            if($quantidade != "0"){
-                $mensagem = $provider_carrinho->adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promotions);
+            if($quantidade != "0")
+            {
+                $retornar_erro = $provider_carrinho->adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promotions);
 
-                if($mensagem['mensagem']){
+                if($retornar_erro['error']){
                     $produto = $provider_produto->buscarProduto($produto_id)['produto'];
-                    session()->flash('error_estoque', 'Quantidade do Produto: ' . strtoupper($produto) . ' ultrapassa valor do   Estoque: ' . $mensagem['quantidade'] . ' Quantidade: ' . $quantidade);
+                    session()->flash('error_estoque', 'Quantidade do Produto: ' . strtoupper($produto) . ' ultrapassa valor do   Estoque: ' . $retornar_erro['quantidade'] . ' Quantidade: ' . $quantidade);
                 }
-                else{
-                    session()->flash('status', 'Produto adicionado com sucesso!');
-                }
+                else
+                    session()->flash('status', 'Produto adicionado com sucesso!');       
             }
         }
 
@@ -129,7 +129,7 @@ class Carrinho_controller extends Controller
 
     public function showCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, EnderecoServiceInterface $provider_endereco, PromotionsServiceInterface $provider_promotions)
     {
-        $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions);
+        $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho);
 
         $visualizarCliente = $provider_cliente->listarClientes();
         $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promotions);
@@ -147,7 +147,7 @@ class Carrinho_controller extends Controller
     {
         $endereco_id = $request->input('endereco_id');
 
-        $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions);
+        $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho);
 
         $url = url()->previous();
         $array = [];
