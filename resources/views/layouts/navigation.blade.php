@@ -12,15 +12,74 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-            {{--      <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link> --}}
+
                       <x-nav-link :href="route('Clients')" :active="request()->routeIs('Clients')">
                         {{ __('Clientes') }}
                     </x-nav-link>
-                      <x-nav-link :href="route('Produtos')" :active="request()->routeIs('Produtos')">
-                        {{ __('Produtos') }}
-                    </x-nav-link>
+                    <div class="hidden sm:flex sm:items-center sm:ml-6">
+                <x-dropdown align="right" width="48">
+                    <x-slot name="trigger">
+                        <button class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                            <div>Produtos</div>
+
+                            <div class="ml-1">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <form method="POST" action="{{ route('Produtos') }}">
+                            @csrf
+                            @method('GET')
+                            <x-dropdown-link :href="route('Produtos')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Visualizar produtos') }}
+                            </x-dropdown-link>
+                        </form>
+                        <form method="POST" action="{{ route('multiplosProdutos') }}">
+                            @csrf
+                            @method('GET')
+                            <x-dropdown-link :href="route('multiplosProdutos')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Adicionar múltiplas entradas') }}
+                            </x-dropdown-link>
+                        </form>
+                        <form method="POST" action="{{ route('EditarMultiplosProdutos') }}">
+                            @csrf
+                            @method('GET')
+                            <x-dropdown-link :href="route('EditarMultiplosProdutos')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Ajustar estoque de múltiplos produtos') }}
+                            </x-dropdown-link>
+                        </form>
+                        <form method="POST" action="{{ route('visualizar_ajuste') }}">
+                            @csrf
+                            @method('GET')
+                            <x-dropdown-link :href="route('visualizar_ajuste')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Visualizar ajustes') }}
+                            </x-dropdown-link>
+                        </form>
+                        <form method="POST" action="{{ route('visualizar_entradas') }}">
+                            @csrf
+                            @method('GET')
+                            <x-dropdown-link :href="route('visualizar_entradas')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Visualizar entradas') }}
+                            </x-dropdown-link>
+                        </form>
+                    </x-slot>
+                </x-dropdown>
+            </div>
+                      
                     <x-nav-link :href="route('promotions')" :active="request()->routeIs('promotions')">
                         {{ __('Promoções') }}
                     </x-nav-link>
@@ -30,9 +89,6 @@
                     <x-nav-link :href="route('Products_view_client')" :active="request()->routeIs('Products_view_client')">
                         {{ __('Clientes e Produtos') }}
                     </x-nav-link>
-{{--                     <x-nav-link :href="route('entradas_saidas')" :active="request()->routeIs('entradas_saidas')">
-                        {{ __('Entradas e saídas') }}
-                    </x-nav-link> --}}
                     <x-nav-link :href="route('graficos')" :active="request()->routeIs('graficos')">
                         {{ __('Gráficos') }}
                     </x-nav-link>

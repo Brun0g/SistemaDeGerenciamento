@@ -31,7 +31,7 @@ class Order_controller extends Controller
         return redirect('Cliente/' . $cliente_id);
     }
     
-    public function showFinishOrder(Request $request, $pedido_id, $cliente_id,PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user)
+    public function showFinishOrder(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user)
     {
         $pedidoEncontrado = $provider_pedidos->buscarPedido($pedido_id);
         $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
@@ -39,6 +39,6 @@ class Order_controller extends Controller
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);
 
        
-        return view('pedidoFinalizado' , ['pedido_id' => $pedido_id, 'cliente_id' => $cliente_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto']]);
+        return view('pedidoFinalizado' , ['pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto']]);
     }
 }

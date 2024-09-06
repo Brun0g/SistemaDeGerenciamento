@@ -14,6 +14,7 @@ use \App\Services\EntradasServiceInterface;
 use \App\Services\SaidaServiceInterface;
 use \App\Services\UserServiceInterface;
 use \App\Services\PedidosServiceInterface;
+use \App\Services\RegistroMultiplosServiceInterface;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -44,7 +45,7 @@ class Products_controller extends Controller
             'produtoEstoque' => 'required|string',
             'valorEstoque'  => 'required|numeric',
             'categoria'  => 'required|string',
-            'quantidade_estoque'  => 'required|numeric',
+            'quantidade_estoque'  => 'required|numeric|min:0',
             'imagem' => 'required|image|mimes:jpeg,jpg,png,gif,svg|dimensions:max_width=1920,max_height=1080',
         ]);
 
@@ -75,7 +76,11 @@ class Products_controller extends Controller
 
         $quantidade_carrinho = $provider_carrinho->buscarQuantidade($produto_id)['quantidade'];
 
+ 
+
         $resultado = $entradas['total'] - $saidas['total'];
+
+
 
 
         return view('/showFilterProducts', ['resultado' => $resultado, 'EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas, 'resultado' => $resultado]);
@@ -124,6 +129,7 @@ class Products_controller extends Controller
           
         return view('editFilterProducts', ['EstoqueProdutos' => $EstoqueProdutos, 'produto_id'=> $produto_id]);
     }
+
     public function deleteImage(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
     {
         $provider_produto->deletarImagem($produto_id);
@@ -131,4 +137,109 @@ class Products_controller extends Controller
 
         return redirect($url);
     }
+
+    public function multipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromotionsServiceInterface $provider_promotions)
+    {
+        $listarCategorias = $provider_categoria->listarCategoria();
+        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions, false);
+
+        return view('multiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $estoqueProdutos]);
+    }
+
+    public function newMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, RegistroMultiplosServiceInterface $provider_registro)
+    {
+        $quantidade = $request->input('quantidade');
+        $observacao = $request->input('observacao');
+
+        $validator = Validator::make($request->all(), [
+            'quantidade.*' => 'bail|required|integer|min:0',
+            'observacao' => 'nullable|string',
+        ]);
+
+
+
+        $url = url()->previous();
+
+        if($validator->fails())
+            return redirect()->to($url)->withErrors($validator);
+            
+        $validated = $validator->validated();
+        $registro_id = $provider_registro->adicionarRegistro();
+
+       
+        foreach ($validated['quantidade'] as $key => $value) {
+
+            $produto_id = $key;
+            $quantidade = $value;
+   
+            if($quantidade != "0")
+            {
+                $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, null, 'Múltipla entrada', $registro_id);
+
+                session()->flash('status', 'Múltiplas entradas adicionada com sucesso!');       
+            }
+        }
+
+        return redirect($url);
+    }
+    public function editMultipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromotionsServiceInterface $provider_promotions)
+    {
+        $listarCategorias = $provider_categoria->listarCategoria();
+        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions, false);
+
+        return view('EditarMultiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $estoqueProdutos]);
+    }
+
+    public function EditMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, RegistroMultiplosServiceInterface $provider_registro)
+    {
+        $quantidade = $request->input('quantidade');
+        $observacao = $request->input('observacao');
+
+        $validator = Validator::make($request->all(), [
+            'quantidade.*' => 'bail|required|integer|min:0',
+            'observacao' => 'nullable|string',
+        ]);
+
+
+        $url = url()->previous();
+
+        if($validator->fails())
+            return redirect()->to($url)->withErrors($validator);
+            
+        $validated = $validator->validated();
+
+        $registro_id = $provider_registro->adicionarRegistro();
+
+
+        foreach ($validated['quantidade'] as $key => $value) {
+
+            $produto_id = $key;
+            $quantidade = $value;
+            $quantidade_estoque = $provider_produto->buscarProduto($produto_id)['quantidade_estoque'];
+
+            if($quantidade_estoque != $quantidade)
+            {
+                if($quantidade_estoque < $quantidade)
+                {
+                    // $quantidade = $quantidade - $quantidade_estoque;
+
+                    session()->flash('status', 'Ajuste de múltiplas entradas realizada com sucesso!');       
+
+                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste-A', $registro_id);
+                }
+                else
+                {
+                    $quantidade = $quantidade_estoque - $quantidade;
+
+                    session()->flash('status', 'Ajuste de múltiplas saidas realizada com sucesso!');    
+
+                    $provider_produto->atualizarEstoque($produto_id, -$quantidade, 'saida', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste', $registro_id);
+                }
+            }
+        }
+
+        return redirect($url);
+    }
 }
+
+

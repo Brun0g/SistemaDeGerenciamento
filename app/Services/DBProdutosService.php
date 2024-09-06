@@ -27,15 +27,13 @@ class DBProdutosService implements ProdutosServiceInterface
       
         $produto->save();
 
-        $provider_entradas->adicionarEntrada($produto->id, $quantidade, 'Primeira entrada no sistema');
+        $provider_entradas->adicionarEntrada($produto->id, $quantidade, null, 'Primeira entrada no sistema', null, 0);
 	}
     
     public function editarProduto($produto_id, $nome, $valor, $imagem)
     {
         $produto = Produto::find($produto_id);
 
-          
-        
         $produto->produto = $nome;
         $produto->valor = $valor;
 
@@ -121,19 +119,23 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->save();
     }
 
-    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id)
+    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id, $tipo, $registro_id)
     {
         $produto = Produto::find($produto_id);
 
-
         if(isset($entrada_ou_saida))
         {
+            $quantidade_anterior = $produto->quantidade;
             $produto->quantidade += $quantidade;
+            
+
+            if($tipo == 'Ajuste-A')
+                $produto->quantidade = $quantidade;
 
             if($entrada_ou_saida == 'entrada')
-                $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
+                $entrada_id = $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior);
             else
-                $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao);
+                $saida_id = $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior);
 
         } else 
             $produto->quantidade = $quantidade;

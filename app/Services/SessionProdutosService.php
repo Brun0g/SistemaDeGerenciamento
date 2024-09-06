@@ -17,10 +17,7 @@ class SessionProdutosService implements ProdutosServiceInterface
 
         $produto_id = array_key_last($estoque);
 
-        $observacao = 'Primeira entrada no sistema';
-        
-
-        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
+        $provider_entradas->adicionarEntrada($produto_id, $quantidade, null, 'Primeira entrada no sistema', null, 0);
 	}
     
     public function editarProduto($produto_id, $nome, $valor, $imagem)
@@ -133,7 +130,7 @@ class SessionProdutosService implements ProdutosServiceInterface
         session()->put('EstoqueProdutos', $produto);
     }
 
-    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id)
+    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id, $tipo, $registro_id)
     {
         $produto = session()->get('EstoqueProdutos', []);
 
@@ -144,10 +141,13 @@ class SessionProdutosService implements ProdutosServiceInterface
                 {
                     $produto[$key]['quantidade'] += $quantidade;
 
+                    if($tipo == 'Ajuste-A')
+                        $produto[$key]['quantidade'] = abs($quantidade);
+
                     if($entrada_ou_saida == 'entrada')
-                        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao);
+                        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior);
                     else
-                        $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao);
+                        $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior);
                 
                 } else 
                     $produto[$key]['quantidade'] = $quantidade;

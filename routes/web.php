@@ -12,6 +12,7 @@ use App\Http\Controllers\Address_controller;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\SaidaController;
+use App\Http\Controllers\RegistroMultiplosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,17 +63,21 @@ Route::DELETE('/DeletarEndereco/{id}',[Address_controller::class,'deleteAddress'
 
 // PRODUTO
 Route::POST('/CadastrarProduto', [Products_controller::class, 'newProduct'])->middleware(['auth'])->middleware(['cors']);
+Route::POST('/adicionarMultiplos', [Products_controller::class, 'newMultiple'])->middleware(['auth'])->middleware(['cors']);
 Route::GET('/Produtos',[Products_controller::class,'ProductsStorageView'])->middleware(['auth'])->name('Produtos');
 Route::GET('/Produto/{id}',[Products_controller::class,'showProduct'])->middleware(['auth']);
 Route::GET('/EditarProduto/{id}',[Products_controller::class,'viewFilterProducts'])->middleware(['auth']);
+Route::GET('/multiplosProdutos',[Products_controller::class,'multipleProductView'])->middleware(['auth'])->name('multiplosProdutos');
+Route::GET('/EditarMultiplosProdutos',[Products_controller::class,'EditMultipleProductView'])->middleware(['auth'])->name('EditarMultiplosProdutos');
 Route::DELETE('/excluirImagem/{id}',[Products_controller::class,'deleteImage'])->middleware(['auth']);
 Route::DELETE('/DeletarProduto/{id}',[Products_controller::class,'deleteProduct'])->middleware(['auth']);
 Route::PATCH('/EditarProduto/{id}',[Products_controller::class,'editProduct'])->middleware(['auth']);
+Route::PATCH('/EditMultiple', [Products_controller::class, 'EditMultiple'])->middleware(['auth'])->middleware(['cors']);
 
 // PEDIDO
 Route::POST('/aprovarPedido/{id_pedido}/{id_cliente}',[Order_controller::class,'finishOrder'])->middleware(['auth']);
 Route::DELETE('/ExcluirPedidoCliente/{id_cliente}/{id_product}',[Order_controller::class,'deleteOrderFinish'])->middleware(['auth']);
-Route::GET('/pedidofinalizado/{id_cliente}/{id_pedido}', [Order_controller::class, 'showFinishOrder'])->middleware(['auth']);
+Route::GET('/pedidofinalizado/{id_pedido}', [Order_controller::class, 'showFinishOrder'])->middleware(['auth']);
 
 //CARRINHO
 Route::POST('/finalizarPedido/{id}', [Carrinho_controller::class, 'finishCart'])->middleware(['auth']);
@@ -103,6 +108,10 @@ Route::DELETE('/deletePromotion/{id}',[PromotionController::class,'destroy'])->m
 Route::GET('/entradas_saidas/{id}',[EntradaController::class,'index'])->middleware(['auth'])->name('entradas_saidas');
 Route::PATCH('/entradas_saidas/{id}',[EntradaController::class,'update'])->middleware(['auth']);
 
+// MULTIPLAS ENTRADAS E SAIDAS
+Route::GET('/detalhes/{id}',[RegistroMultiplosController::class,'index'])->middleware(['auth']);
+Route::GET('/visualizar_ajuste',[RegistroMultiplosController::class,'show'])->middleware(['auth'])->name('visualizar_ajuste');
+Route::GET('/visualizar_entradas',[RegistroMultiplosController::class,'entradas_view'])->middleware(['auth'])->name('visualizar_entradas');
 
 
 

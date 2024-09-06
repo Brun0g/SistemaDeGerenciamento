@@ -45,7 +45,7 @@ class Clients_controller extends Controller
         'rua' => 'required|string',
         'numero' => 'required|numeric',
         'estado' => 'required|string',
-        'contato' => 'required|numeric',
+        'contato' => 'required|numeric|digits:11',
         ]);
 
         if($validator->fails())

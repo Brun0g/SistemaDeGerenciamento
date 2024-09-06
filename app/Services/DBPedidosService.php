@@ -18,8 +18,8 @@ class DBPedidosService implements PedidosServiceInterface
 {
     public function excluirPedido($cliente_id, $id_pedido)
     {
-        $pedidos = Order::all()->where('cliente_id', $cliente_id);
-        $pedidos_por_cliente = OrderTotal::all()->where('id', $id_pedido);
+        $pedidos = Order::where('cliente_id', $cliente_id)->get();
+        $pedidos_por_cliente = OrderTotal::where('id', $id_pedido)->get();
             
         foreach ($pedidos as $pedido => $value) {
             if($value['pedido_id'] == $id_pedido)
@@ -52,7 +52,7 @@ class DBPedidosService implements PedidosServiceInterface
 
     public function buscarItemPedido($pedido_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
     {
-        $pedidos = Order::all()->where('pedido_id', $pedido_id);
+        $pedidos = Order::where('pedido_id', $pedido_id)->get();
 
         $service_produtos = new DBProdutosService();
 
@@ -80,7 +80,7 @@ class DBPedidosService implements PedidosServiceInterface
     public function listarPedidos($cliente_id)
     {
         $datas = [];
-        $pedidos = OrderTotal::all()->where('cliente_id', $cliente_id); 
+        $pedidos = OrderTotal::where('cliente_id', $cliente_id)->get(); 
 
         foreach ($pedidos as $key => $value) {
             $pedido_id = $pedidos[$key]->id;

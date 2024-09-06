@@ -20,6 +20,7 @@ use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
 use \App\Services\SaidaServiceInterface;
 use \App\Services\UserServiceInterface;
+use \App\Services\RegistroMultiplosServiceInterface;
 
 class EntradaController extends Controller
 {
@@ -91,7 +92,7 @@ class EntradaController extends Controller
      * @param  \App\Models\Entrada  $entrada
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $produto_id, EntradasServiceInterface $provider_entradas, ProdutosServiceInterface $provider_produto, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions)
+    public function update(Request $request, $produto_id, EntradasServiceInterface $provider_entradas, ProdutosServiceInterface $provider_produto, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions, RegistroMultiplosServiceInterface $provider_registro)
     {
         $entrada_ou_saida =  $request->input('escolha');
         $observacao = $request->input('observacao');
@@ -118,6 +119,8 @@ class EntradaController extends Controller
         {
             session()->flash('status', 'Entrada adicionada com sucesso!');
 
+            $tipo = 'Entrada';
+
             $pedidos = $provider_carrinho->listarPedidosCarrinho();
 
             if(isset($pedidos))
@@ -126,21 +129,17 @@ class EntradaController extends Controller
 
                     $pedido_id = $key;
                     $cliente_id = $value['cliente_id'];
-                    $quantidade_carrinho = $value['quantidade'];
+                    $quantidade = $value['quantidade'];
 
-                    if($quantidade_carrinho == 0)
-                        $provider_carrinho->atualizar($pedido_id, $cliente_id, 1, $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+                    if($quantidade == 0)
+                        $provider_carrinho->atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
                 }
             }
 
         } else {
 
-            // if($quantidade_carrinho >= $produto['quantidade_estoque'])
-            // {
-            //         session()->flash('error', 'Operação cancelada, há produtos no carrinho!');
-            //         return redirect($url);
-            // }
-            
+            $tipo = 'Saída';
+
             if($produto['quantidade_estoque'] - $quantidade < 0)
             {
                     session()->flash('error', 'Não é possível adicionar valor negativo ao produto!');
@@ -152,7 +151,7 @@ class EntradaController extends Controller
         }
    
 
-        $provider_produto->atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, null);
+        $provider_produto->atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, null, $tipo, null);
 
         return redirect($url);
     }

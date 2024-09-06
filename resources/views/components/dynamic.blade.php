@@ -16,7 +16,7 @@
         </form>
     </td>
     <td>
-        <form  action="/pedidofinalizado/{{$id_pedido}}/{{$value['cliente_id']}}" method="GET" >
+        <form  action="/pedidofinalizado/{{$id_pedido}}" method="GET" >
             @csrf
             
             <button    class="btn btn-primary"  type="submit">Visualizar pedido</button>

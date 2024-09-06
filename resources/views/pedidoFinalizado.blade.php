@@ -131,7 +131,7 @@ padding: 5px;
                                     <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden; "></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden; "></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden; border-top: black solid 1px;"></td>
-                                    <td style="border: black solid 1px; font-weight: 900; text-align: right; background: #e5e7eb;">TOTAL : </td>
+                                    <td style="border: black solid 1px; font-weight: 900; text-align: right; background: #e5e7eb;">TOTAL</td>
                                     <td style="border-top: solid 1px black;  color: green; ">R$ {{  number_format($value['totalComDesconto'], 2, ",", ".") }}</td>
                                 </tr>
                                 <tr style = "border-top: black solid 1px; border-bottom: black solid 1px;">
@@ -139,7 +139,7 @@ padding: 5px;
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
-                                    <td style=" font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; ">DESCONTO GERAL <span style="color: indianred;">{{$porcentagem}}</span>% : </td>
+                                    <td style=" font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; ">DESCONTO GERAL <span style="color: indianred;">{{$porcentagem}}</span>%</td>
                                     <td style="border: black solid 1px; color:indianred; ; border-top: hidden;">R$ {{  number_format($value['totalComDesconto'] - ($value['totalComDesconto'] / 100 * $porcentagem) - $value['totalComDesconto'], 2, ",", ".") }}</td>  
                                 </tr>
                                 <tr style = "border-top: black solid 1px; border-bottom: black solid 1px;">
@@ -147,7 +147,7 @@ padding: 5px;
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
-                                    <td style=" font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; ">À PAGAR :</td>
+                                    <td style=" font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; ">À PAGAR</td>
                                     <td style="border: black solid 1px; color:green; border-top: hidden;">R$ {{  number_format(abs($total), 2, ",", ".") }}</td> 
                                 </tr>
                             </table>

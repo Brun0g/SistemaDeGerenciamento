@@ -73,7 +73,7 @@ class DBPromotionsService implements PromotionsServiceInterface
 
     public function buscarQuantidade($produto_id, $quantidade)
     {
-        $produto = Promotion::all()->where('produto_id', $produto_id);
+        $produto = Promotion::where('produto_id', $produto_id)->get();
         $produto = $produto->toArray();
 
         $produtoEncontrado = [];
@@ -104,7 +104,7 @@ class DBPromotionsService implements PromotionsServiceInterface
 
     public function buscarPromocao($produto_id)
     {
-        $produto = Promotion::all()->where('produto_id', $produto_id);
+        $produto = Promotion::where('produto_id', $produto_id)->get();
         $produtoEncontrado = [];
         $ativo = 0;
 

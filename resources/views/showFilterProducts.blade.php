@@ -81,10 +81,15 @@ padding: 10px;
                 @if(isset($entradas_saidas))
                 @foreach($entradas_saidas as $key => $value)
                 @if($value['produto_id'] == $produto_id)
-                    @if($value['status'] == 1 && isset($value['pedido_id']))
+                
+                @if($value['status'] == 1 && isset($value['pedido_id']) && $value['tipo'] != 'Ajuste' && $value['tipo'] != 'Ajuste-A')
                 <tr>
                     <td>{{  strtoupper($value['user_id'])}}</td>
-                    <td>Saída realizada Pedido N°: <span style="color: purple; font-weight: 900">{{$value['pedido_id']}}</span></td>
+                    <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
+                            @csrf
+                            @method('GET')
+                    <td><button type="submit">Saída realizada {{$value['tipo']}} N°: <span style="color: purple; font-weight: 900"> {{$value['pedido_id']}}</span></button></td>
+                    </form>
                     <td style="font-weight: 900; color: red">{{  $value['quantidade'] }}</td>
                     <td>{{  $value['observacao'] }}</td>
                     <td>{{  $value['data'] }}</td>
@@ -92,19 +97,38 @@ padding: 10px;
                 @elseif($value['quantidade'] > 0)
                  <tr>
                     <td>{{  strtoupper($value['user_id'])}}</td>
-                    <td>Entrada</td>
+                    @if($value['registro_id'] != null)
+                    <form action="/detalhes/{{$value['registro_id']}}" method="POST">
+                            @csrf
+                            @method('GET')
+                    <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['registro_id']}}</span></button></td>
+                    </form>
+                    @else
+                    <td>{{$value['tipo']}}</td>
+                    @endif
 
+                    @if($value['tipo'] == 'Ajuste-A')
+                    <td style="font-weight: 900; color: green">{{ $value['quantidade'] }}</td>
+                    @else
                     <td style="font-weight: 900; color: green">{{  $value['quantidade'] }}</td>
+                    @endif
                 <td>{{  $value['observacao'] }}</td>
                     <td>{{  $value['data'] }}</td>
                 </tr>
                 @elseif($value['quantidade'] < 0)
                  <tr>
                     <td>{{  strtoupper($value['user_id'])}}</td>
-                    <td>Quantidade retirada do estoque</td>
-
+                    @if($value['registro_id'] != null)
+                    <form action="/detalhes/{{$value['registro_id']}}" method="POST">
+                            @csrf
+                            @method('GET')
+                    <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['registro_id']}}</span></button></td>
+                    </form>
+                    @else
+                    <td>{{$value['tipo']}}</td>
+                    @endif
                     <td style="font-weight: 900; color: red;">{{  $value['quantidade'] }}</td>
-        <td>{{  $value['observacao'] }}</td>
+                    <td>{{  $value['observacao'] }}</td>
                     <td>{{  $value['data'] }}</td>
                 </tr>
                 @endif

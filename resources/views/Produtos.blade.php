@@ -1,8 +1,8 @@
 <x-app-layout>
 <x-slot name="header">
-<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-{{ __('Produtos') }}
-</h2>
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{ __('Produtos') }}
+    </h2>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -296,11 +296,11 @@ img {
                         </div>
                         <div class="mb-4">
                             <label for="quantidade_estoque" class="block text-sm font-medium text-gray-700">Quantidade:</label>
-                            <input type="number" id="quantidade_estoque" name="quantidade_estoque" step="any" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                            <input type="number" id="quantidade_estoque" name="quantidade_estoque" step="any" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" min="0" />
                         </div>
                         <div class="mb-4">
                             <label for="valorEstoque" class="block text-sm font-medium text-gray-700">Valor:</label>
-                            <input type="number" id="valorEstoque" name="valorEstoque" step="any" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                            <input min="1"; type="number" id="valorEstoque" name="valorEstoque" step="any" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  />
                         </div>
                         <button type="submit" class="btn btn-primary mt-4">Cadastrar</button>
                     </form>

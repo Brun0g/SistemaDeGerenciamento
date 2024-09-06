@@ -17,9 +17,12 @@ class CreateSaidasTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('produto_id')->constrained('produtos');
-            $table->foreignId('pedido_id')->nullable()->constrained('orders');
+            $table->foreignId('pedido_id')->nullable()->constrained('order_totals');
             $table->integer('quantidade');
+            $table->integer('quantidade_anterior');
+            $table->string('tipo');
             $table->string('observacao')->nullable();
+            $table->foreignId('registro_id')->nullable()->constrained('registro_multiplos');
             $table->timestamps();
         });
     }
