@@ -151,7 +151,7 @@ class EntradaController extends Controller
         }
    
 
-        $provider_produto->atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, null, $tipo, null);
+        $provider_produto->atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, null, $tipo, null, null);
 
         return redirect($url);
     }

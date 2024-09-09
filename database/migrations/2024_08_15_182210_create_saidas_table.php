@@ -19,10 +19,10 @@ class CreateSaidasTable extends Migration
             $table->foreignId('produto_id')->constrained('produtos');
             $table->foreignId('pedido_id')->nullable()->constrained('order_totals');
             $table->integer('quantidade');
-            $table->integer('quantidade_anterior');
             $table->string('tipo');
             $table->string('observacao')->nullable();
-            $table->foreignId('registro_id')->nullable()->constrained('registro_multiplos');
+            $table->foreignId('ajuste_id')->nullable()->constrained('ajustes');
+            $table->foreignId('multiplo_id')->nullable()->constrained('multiplos');
             $table->timestamps();
         });
     }

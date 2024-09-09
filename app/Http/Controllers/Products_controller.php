@@ -71,19 +71,11 @@ class Products_controller extends Controller
         $saidas = $provider_saida->buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida);
         $entradas_saidas = array_merge($entradas['entradas_array'], $saidas['saidas_array']);
         $sort = array_column($entradas_saidas, 'data');
-
         array_multisort($sort, SORT_ASC, $entradas_saidas);
 
-        $quantidade_carrinho = $provider_carrinho->buscarQuantidade($produto_id)['quantidade'];
-
- 
-
-        $resultado = $entradas['total'] - $saidas['total'];
-
-
-
-
-        return view('/showFilterProducts', ['resultado' => $resultado, 'EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas, 'resultado' => $resultado]);
+        $resultado = $estoqueProdutos['quantidade_estoque'];
+        
+        return view('/showFilterProducts', ['resultado' => $resultado, 'EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas]);
     }
 
     public function deleteProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
@@ -156,17 +148,16 @@ class Products_controller extends Controller
             'observacao' => 'nullable|string',
         ]);
 
-
-
         $url = url()->previous();
 
         if($validator->fails())
             return redirect()->to($url)->withErrors($validator);
             
         $validated = $validator->validated();
-        $registro_id = $provider_registro->adicionarRegistro();
 
-       
+        $multiplo_id = $provider_registro->adicionarMultiplos();
+
+
         foreach ($validated['quantidade'] as $key => $value) {
 
             $produto_id = $key;
@@ -174,7 +165,7 @@ class Products_controller extends Controller
    
             if($quantidade != "0")
             {
-                $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, null, 'Múltipla entrada', $registro_id);
+                $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, null, 'Múltipla entrada', null, $multiplo_id);
 
                 session()->flash('status', 'Múltiplas entradas adicionada com sucesso!');       
             }
@@ -208,7 +199,8 @@ class Products_controller extends Controller
             
         $validated = $validator->validated();
 
-        $registro_id = $provider_registro->adicionarRegistro();
+        $ajuste_id = $provider_registro->adicionarAjuste();
+
 
 
         foreach ($validated['quantidade'] as $key => $value) {
@@ -225,15 +217,15 @@ class Products_controller extends Controller
 
                     session()->flash('status', 'Ajuste de múltiplas entradas realizada com sucesso!');       
 
-                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste-A', $registro_id);
+                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste entrada', $ajuste_id, null);
                 }
                 else
                 {
-                    $quantidade = $quantidade_estoque - $quantidade;
+                    // $quantidade = $quantidade_estoque - $quantidade;
 
                     session()->flash('status', 'Ajuste de múltiplas saidas realizada com sucesso!');    
 
-                    $provider_produto->atualizarEstoque($produto_id, -$quantidade, 'saida', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste', $registro_id);
+                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'saida', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste saida', $ajuste_id, null);
                 }
             }
         }

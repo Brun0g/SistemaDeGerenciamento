@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRegistroMultiplosTable extends Migration
+class CreateAjustesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateRegistroMultiplosTable extends Migration
      */
     public function up()
     {
-        Schema::create('registro_multiplos', function (Blueprint $table) {
+        Schema::create('ajustes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            // $table->foreignId('registro_id')->constrained('registros');
-            // $table->foreignId('entrada_id')->nullable()->constrained('entradas');
-            // $table->foreignId('saida_id')->nullable()->constrained('saidas');
             $table->timestamps();
+            
         });
     }
 
@@ -30,6 +28,6 @@ class CreateRegistroMultiplosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('registro_multiplos');
+        Schema::dropIfExists('ajustes');
     }
 }

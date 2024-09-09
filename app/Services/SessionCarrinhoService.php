@@ -91,23 +91,6 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                 $fora_de_estoque = $quantidade_estoque < $quantidade;
 
-                // $unidade_desconto = $preco_unidade;
-
-                // $promocao = $provider_promotions->buscarQuantidade($produto_id, $quantidade);
-                // if(isset($promocao['produto_id']))
-                // {
-                //     if($quantidade >= $promocao['quantidade'])
-                //     {
-                //         $promocao_ativa = $promocao['ativo'];
-
-                //         if($promocao['ativo'] == 1)
-                //             $unidade_desconto = $preco_unidade - ($preco_unidade / 100 * $promocao['porcentagem']); 
-                //     }
-                //
-
-                // if(isset($value['promocao_porcentagem']))
-                //         $unidade_desconto = $preco_unidade - ($preco_unidade / 100 * $value['promocao_porcentagem']); 
-
                 $carrinho[$key] = ['cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'total' => $total, 'total_final' => $total_final, 'produto' => $produto['produto'], 'preco_unidade' => $preco_unidade, 'unidade_desconto' => $unidade_desconto, 'deleted_at' => $deleted_at, 'quantidade_estoque' => $quantidade_estoque, 'fora_de_estoque' => $fora_de_estoque, 'promocao_porcentagem' => $promocao_porcentagem];
             }       
         }
@@ -188,30 +171,9 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                 $preco_unidade = $provider_produto->buscarProduto($produto_id)['valor'];
 
-                // if($value['total_final'] == $value['total'])
-                //     $porcentagem_unidade = 0;
-
-                // $promocao = $provider_promotions->buscarQuantidade($produto_id, $quantidade);
-
-                // if(isset($promocao['produto_id']))
-                // {      
-                //     if($produto_id == $promocao['produto_id'])
-                //     {
-                //         if($quantidade >= $promocao['quantidade'])
-                //         {
-                //             if($promocao['ativo'] == 1)
-                //                 $porcentagem_unidade = $promocao['porcentagem'];
-                            
-                //         }
-                //     }    
-                // }
-
-                // if(isset($value['promocao_porcentagem']))
-                //         $porcentagem_unidade = $value['promocao_porcentagem'];
-
                $id = $provider_pedidos->salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, $provider_saida);
 
-               $provider_produto->atualizarEstoque($produto_id, -$quantidade, 'saida', null, $provider_entradas, $provider_saida, $pedido_id, 'Pedido', null);
+               $provider_produto->atualizarEstoque($produto_id, -$quantidade, 'saida', null, $provider_entradas, $provider_saida, $pedido_id, 'Pedido', null, null);
 
                 $provider_carrinho->excluirProduto($cliente_id, $produto_id);
             }

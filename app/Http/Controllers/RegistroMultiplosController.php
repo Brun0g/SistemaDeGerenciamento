@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Registro_multiplos;
-
 use Illuminate\Http\Request;
 use Illuminate\Session\Store;
 use Illuminate\Support\Arr;
@@ -31,23 +29,31 @@ class RegistroMultiplosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, $registro_id, EntradasServiceInterface $provider_entrada, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, ProdutosServiceInterface $provider_produto)
+    public function show_ajuste(Request $request, $ajuste_id, EntradasServiceInterface $provider_entrada, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, ProdutosServiceInterface $provider_produto)
     {
-        
-        $multipla_entrada = $provider_entrada->buscarRegistro($registro_id, $provider_user, $provider_produto);
-        $multipla_saida = $provider_saida->buscarRegistro($registro_id, $provider_user, $provider_produto);
+        $saida = $provider_saida->buscarAjuste($ajuste_id, $provider_user, $provider_produto);
+        $entrada = $provider_entrada->buscarAjuste($ajuste_id, $provider_user, $provider_produto);
+
+        $array_merge = array_merge($entrada, $saida);
 
 
-        $multiplos = array_merge($multipla_entrada, $multipla_saida);
-        $sort = array_column($multiplos, 'quantidade');
+        $sort = array_column($array_merge, 'quantidade');
 
-        array_multisort($sort, SORT_DESC, $multiplos);
+        array_multisort($sort, SORT_DESC, $array_merge);
 
+  
+        return view('detalhes_ajuste', ['registro_id' => $ajuste_id, 'multiplos' => $array_merge]);
+    }
 
+    public function show_multiplos(Request $request, $multiplo_id, EntradasServiceInterface $provider_entrada, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, ProdutosServiceInterface $provider_produto)
+    {
+        $entrada = $provider_entrada->buscarMultiplos($multiplo_id, $provider_user, $provider_produto);
 
+        $sort = array_column($entrada, 'quantidade');
 
+        array_multisort($sort, SORT_DESC, $entrada);
 
-        return view('detalhes', ['registro_id' => $registro_id, 'multiplos' => $multiplos]);
+        return view('detalhes_multiplos', ['registro_id' => $multiplo_id, 'multiplos' => $entrada]);
     }
 
     /**
@@ -84,8 +90,12 @@ class RegistroMultiplosController extends Controller
         $array_merge = array_merge($multipla_entrada, $multipla_saida);
 
 
-        $multiplos = collect($array_merge)->unique('registro_id')->sortBy(['data', 'asc']);
+
+        $multiplos = collect($array_merge)->unique('ajuste_id')->sortBy(['data', 'asc']);
         $now = now();
+
+      
+
 
         $dia_atual = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
@@ -120,9 +130,8 @@ class RegistroMultiplosController extends Controller
     public function entradas_view(Request $request, EntradasServiceInterface $provider_entrada, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, ProdutosServiceInterface $provider_produto)
     {
         $multipla_entrada = $provider_entrada->listarEntrada($provider_user);
-      
-        $multipla_entrada = collect($multipla_entrada)->unique('registro_id')->sortBy(['data', 'asc']);
-     
+        $multipla_entrada = collect($multipla_entrada)->unique('multiplo_id')->sortBy(['data', 'asc']);
+        
         $now = now();
 
 

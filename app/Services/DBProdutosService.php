@@ -27,7 +27,7 @@ class DBProdutosService implements ProdutosServiceInterface
       
         $produto->save();
 
-        $provider_entradas->adicionarEntrada($produto->id, $quantidade, null, 'Primeira entrada no sistema', null, 0);
+        $provider_entradas->adicionarEntrada($produto->id, $quantidade, null, 'Primeira entrada no sistema', null, null);
 	}
     
     public function editarProduto($produto_id, $nome, $valor, $imagem)
@@ -119,7 +119,7 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->save();
     }
 
-    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id, $tipo, $registro_id)
+    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id, $tipo, $ajuste_id, $multiplo_id)
     {
         $produto = Produto::find($produto_id);
 
@@ -127,15 +127,14 @@ class DBProdutosService implements ProdutosServiceInterface
         {
             $quantidade_anterior = $produto->quantidade;
             $produto->quantidade += $quantidade;
-            
 
-            if($tipo == 'Ajuste-A')
+            if($tipo == 'Ajuste entrada' || $tipo == 'Ajuste saida')
                 $produto->quantidade = $quantidade;
-
+            
             if($entrada_ou_saida == 'entrada')
-                $entrada_id = $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior);
+                $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id);
             else
-                $saida_id = $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior);
+                $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id);
 
         } else 
             $produto->quantidade = $quantidade;

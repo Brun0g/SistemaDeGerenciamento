@@ -100,7 +100,7 @@ padding: 5px;
                                 </tr>
                             </thead>
                             <tbody>
-
+                              
                                 @if(isset($multiplos))
                                 @foreach ($multiplos as $key => $value )
                                 <tr>
@@ -109,9 +109,8 @@ padding: 5px;
                                     @if($value['tipo'] == 'ENTRADA')
                                     <td  style="color: green; font-weight: 900; width: 5%; border: 1px solid black;">{{$value['quantidade']}}</td>
                                     @else
-                                    <td  style="color: red; font-weight: 900; width: 5%; border: 1px solid black;">{{$value['quantidade_anterior'] - $value['quantidade']}}</td>
+                                    <td  style="color: red; font-weight: 900; width: 5%; border: 1px solid black;">{{$value['quantidade']}}</td>
                                     @endif
-                                    {{-- <td  style="color: black; font-weight: 900; width: 5%; border: 1px solid black;">{{$value['quantidade_anterior']}}</td> --}}
                                      <td  style=" width: 5%; border: 1px solid black;">{{$value['data']}}</td>
 
                                 

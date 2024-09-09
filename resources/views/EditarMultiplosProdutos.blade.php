@@ -191,7 +191,7 @@ td {
                                     <input style="text-align: center; width: 20%" 
                                     type="number" 
                                     name="quantidade[{{$key}}]" 
-                                    value={{$value['quantidade']}}
+                                    value="{{$value['quantidade_estoque']}}"
 
                                     min="0"
                                     max="9999"

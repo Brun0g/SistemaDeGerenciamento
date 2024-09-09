@@ -17,7 +17,7 @@ class SessionProdutosService implements ProdutosServiceInterface
 
         $produto_id = array_key_last($estoque);
 
-        $provider_entradas->adicionarEntrada($produto_id, $quantidade, null, 'Primeira entrada no sistema', null, 0);
+        $provider_entradas->adicionarEntrada($produto_id, $quantidade, null, 'Primeira entrada no sistema', null, null);
 	}
     
     public function editarProduto($produto_id, $nome, $valor, $imagem)
@@ -59,6 +59,8 @@ class SessionProdutosService implements ProdutosServiceInterface
     {
         $produtos = session()->get('EstoqueProdutos', []);
         $listarProdutos = [];
+
+     
 
         foreach ($produtos as $key => $value) 
         {
@@ -130,7 +132,7 @@ class SessionProdutosService implements ProdutosServiceInterface
         session()->put('EstoqueProdutos', $produto);
     }
 
-    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id, $tipo, $registro_id)
+    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id, $tipo, $ajuste_id, $multiplo_id)
     {
         $produto = session()->get('EstoqueProdutos', []);
 
@@ -139,15 +141,16 @@ class SessionProdutosService implements ProdutosServiceInterface
             {
                 if(isset($entrada_ou_saida))
                 {
+                    $quantidade_anterior = $value['quantidade'];
                     $produto[$key]['quantidade'] += $quantidade;
 
-                    if($tipo == 'Ajuste-A')
-                        $produto[$key]['quantidade'] = abs($quantidade);
+                    if($tipo == 'Ajuste entrada' || $tipo == 'Ajuste saida')
+                        $produto[$key]['quantidade'] = $quantidade;
 
                     if($entrada_ou_saida == 'entrada')
-                        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior);
+                        $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id);
                     else
-                        $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior);
+                        $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id);
                 
                 } else 
                     $produto[$key]['quantidade'] = $quantidade;

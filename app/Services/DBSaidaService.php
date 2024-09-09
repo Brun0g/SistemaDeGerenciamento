@@ -11,7 +11,7 @@ use App\Services\SaidaServiceInterface;
 
 class DBSaidaService implements SaidaServiceInterface
 {
-    public function adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior)
+    public function adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id)
     {
         $saida = new Saida();
 
@@ -21,8 +21,8 @@ class DBSaidaService implements SaidaServiceInterface
         $saida->quantidade = abs($quantidade);
         $saida->tipo = $tipo;
         $saida->observacao = $observacao;
-        $saida->registro_id = $registro_id;
-        $saida->quantidade_anterior = $quantidade_anterior;
+        $saida->ajuste_id = $ajuste_id;
+        $saida->multiplo_id = $multiplo_id;
 
         $saida->save();
 
@@ -36,27 +36,22 @@ class DBSaidaService implements SaidaServiceInterface
         $saidas_array = [];
         $total_entrada = 0;
 
-
         foreach ($saidas as $key => $value) {
             
-                $user_id = $value['user_id'];
-                $nome = $provider_user->buscarUsuario($user_id);
-                $produto_id = $value['produto_id'];
-                $pedido_id = $value['pedido_id'];
-                $quantidade = $value['quantidade'];
-                $data = $value['created_at'];
-                $tipo = $value['tipo'];
-                $registro_id = $value['registro_id'];
-                $observacao = $value['observacao'];
-                $quantidade_anterior = $value['quantidade_anterior'];
-                
-           
-
-                $total_entrada += $quantidade;
-         
-
-                $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'status' => 1, 'observacao' => $observacao, 'tipo' => $tipo, 'registro_id' => $registro_id, 'quantidade_anterior' => $quantidade_anterior];
+            $user_id = $value['user_id'];
+            $nome = $provider_user->buscarUsuario($user_id);
+            $produto_id = $value['produto_id'];
+            $pedido_id = $value['pedido_id'];
+            $quantidade = $value['quantidade'];
+            $data = $value['created_at'];
+            $tipo = $value['tipo'];
+            $ajuste_id = $value['ajuste_id'];
+            $observacao = $value['observacao'];
             
+            $total_entrada += $quantidade;
+     
+
+            $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'status' => 1, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id]; 
         }
 
         return ['saidas_array' => $saidas_array, 'total' => $total_entrada];
@@ -77,17 +72,18 @@ class DBSaidaService implements SaidaServiceInterface
             $data = $value['created_at']; 
             $tipo = $value['tipo']; 
             $observacao = $value['observacao'];
-            $registro_id = $value['registro_id'];
+            $ajuste_id = $value['ajuste_id'];
+            $multiplo_id = $value['multiplo_id'];
 
-            $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'registro_id' => $registro_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
+            $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'multiplo_id' => $multiplo_id];
         }
 
         return $saidas_array;
     }
     
-    function buscarRegistro($registro_id, $provider_user, $provider_produto)
+    function buscarAjuste($ajuste_id, $provider_user, $provider_produto)
     {
-        $saidas = Saida::where('registro_id', $registro_id)->get();
+        $saidas = Saida::where('ajuste_id', $ajuste_id)->get();
 
         $saidas_array = [];
 
@@ -102,10 +98,10 @@ class DBSaidaService implements SaidaServiceInterface
             $data = $value['created_at']; 
             $tipo = 'SAÍDA'; 
             $observacao = $value['observacao'];
-            $registro_id = $value['registro_id'];
-            $quantidade_anterior = $value['quantidade_anterior'];
+            $ajuste_id = $value['ajuste_id'];
 
-            $saidas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'registro_id' => $registro_id, 'quantidade_anterior' => $quantidade_anterior];
+
+            $saidas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id];
         }
 
         return $saidas_array;

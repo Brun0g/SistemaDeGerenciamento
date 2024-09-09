@@ -82,7 +82,7 @@ padding: 10px;
                 @foreach($entradas_saidas as $key => $value)
                 @if($value['produto_id'] == $produto_id)
                 
-                @if($value['status'] == 1 && isset($value['pedido_id']) && $value['tipo'] != 'Ajuste' && $value['tipo'] != 'Ajuste-A')
+                @if($value['status'] == 1 && isset($value['pedido_id']) && $value['tipo'] != 'Ajuste' && $value['tipo'] != 'Ajuste entrada')
                 <tr>
                     <td>{{  strtoupper($value['user_id'])}}</td>
                     <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
@@ -97,37 +97,47 @@ padding: 10px;
                 @elseif($value['quantidade'] > 0)
                  <tr>
                     <td>{{  strtoupper($value['user_id'])}}</td>
-                    @if($value['registro_id'] != null)
-                    <form action="/detalhes/{{$value['registro_id']}}" method="POST">
+                    @if($value['ajuste_id'] != null)
+                    <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
                             @csrf
                             @method('GET')
-                    <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['registro_id']}}</span></button></td>
+                    <td ><button type="submit">Ajuste N°:  <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
                     </form>
+                    @elseif($value['multiplo_id'] != null)
+                    <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">
+                            @csrf
+                            @method('GET')
+                    <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['multiplo_id']}}</span></button></td>
+                     </form>
                     @else
                     <td>{{$value['tipo']}}</td>
                     @endif
 
-                    @if($value['tipo'] == 'Ajuste-A')
-                    <td style="font-weight: 900; color: green">{{ $value['quantidade'] }}</td>
+                    @if($value['tipo'] == 'Ajuste entrada')
+                    <td style="font-weight: 900; color: black">{{ $value['quantidade'] }}</td>
                     @else
                     <td style="font-weight: 900; color: green">{{  $value['quantidade'] }}</td>
                     @endif
+
                 <td>{{  $value['observacao'] }}</td>
                     <td>{{  $value['data'] }}</td>
                 </tr>
-                @elseif($value['quantidade'] < 0)
+                @elseif($value['quantidade'] <= 0)
                  <tr>
                     <td>{{  strtoupper($value['user_id'])}}</td>
-                    @if($value['registro_id'] != null)
-                    <form action="/detalhes/{{$value['registro_id']}}" method="POST">
+                    @if($value['ajuste_id'] != null)
+                    <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
                             @csrf
                             @method('GET')
-                    <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['registro_id']}}</span></button></td>
+                    <td><button type="submit">Ajuste N°:  <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
                     </form>
+                    <td style="font-weight: 900; color: black;">{{ abs($value['quantidade']) }}</td>
+
                     @else
                     <td>{{$value['tipo']}}</td>
+                
+                    <td style="font-weight: 900; color: red;">{{ $value['quantidade'] }}</td>
                     @endif
-                    <td style="font-weight: 900; color: red;">{{  $value['quantidade'] }}</td>
                     <td>{{  $value['observacao'] }}</td>
                     <td>{{  $value['data'] }}</td>
                 </tr>

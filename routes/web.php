@@ -109,7 +109,8 @@ Route::GET('/entradas_saidas/{id}',[EntradaController::class,'index'])->middlewa
 Route::PATCH('/entradas_saidas/{id}',[EntradaController::class,'update'])->middleware(['auth']);
 
 // MULTIPLAS ENTRADAS E SAIDAS
-Route::GET('/detalhes/{id}',[RegistroMultiplosController::class,'index'])->middleware(['auth']);
+Route::GET('/detalhes_ajuste/{id}',[RegistroMultiplosController::class,'show_ajuste'])->middleware(['auth']);
+Route::GET('/detalhes_multiplos/{id}',[RegistroMultiplosController::class,'show_multiplos'])->middleware(['auth']);
 Route::GET('/visualizar_ajuste',[RegistroMultiplosController::class,'show'])->middleware(['auth'])->name('visualizar_ajuste');
 Route::GET('/visualizar_entradas',[RegistroMultiplosController::class,'entradas_view'])->middleware(['auth'])->name('visualizar_entradas');
 

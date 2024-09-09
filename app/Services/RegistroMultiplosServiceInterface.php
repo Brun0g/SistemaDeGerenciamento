@@ -4,5 +4,6 @@ namespace App\Services;
 
 interface RegistroMultiplosServiceInterface
 {
-	function adicionarRegistro();
+	function adicionarAjuste();
+	function adicionarMultiplos();
 }

@@ -4,14 +4,15 @@ namespace App\Services;
 
 use App\Services\SessionSaidaService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class SessionSaidaService implements SaidaServiceInterface
 {
-    public function adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $registro_id, $quantidade_anterior)
+    public function adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id)
     {
         $saida = session()->get('saida', []);
 
-        $saida[] = ['user_id' => Auth::id(), 'pedido_id' => $pedido_id, 'produto_id' => $produto_id, 'quantidade' => abs((int)$quantidade), 'created_at' => date("Y-m-d H:i:s"), 'observacao' => $observacao, 'tipo' => $tipo, 'registro_id' => $registro_id, 'quantidade_anterior' => $quantidade_anterior];
+        $saida[] = ['user_id' => Auth::id(), 'pedido_id' => $pedido_id, 'produto_id' => $produto_id, 'quantidade' => abs((int)$quantidade), 'created_at' => now(), 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id];
 
         session()->put('saida', $saida);
     }
@@ -36,10 +37,9 @@ class SessionSaidaService implements SaidaServiceInterface
                 $data = $value['created_at'];   
                 $tipo = $value['tipo'];   
                 $observacao = $value['observacao'];
-                $registro_id = $value['registro_id'];
-                $quantidade_anterior = $value['quantidade_anterior'];
+                $ajuste_id = $value['ajuste_id'];
 
-                $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'status' => $saida_ativa, 'observacao' => $observacao, 'tipo' => $tipo, 'registro_id' => $registro_id, 'quantidade_anterior' => $quantidade_anterior];
+                $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'status' => $saida_ativa, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id];
             }   
         }
 
@@ -50,26 +50,26 @@ class SessionSaidaService implements SaidaServiceInterface
 
         $saida = session()->get('saida' ,[]);
 
-        $saida_array = [];
+        $saidas_array = [];
 
         foreach ($saida as $key => $value) {
             $user_id = $value['user_id'];
+            $nome = $provider_user->buscarUsuario($user_id);
             $pedido_id = $value['pedido_id'];
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $data = $value['created_at'];
             $tipo = $value['tipo'];
             $observacao = $value['observacao'];
-            $registro_id = $value['registro_id'];
-            $quantidade_anterior = $value['quantidade_anterior'];  
+            $ajuste_id = $value['ajuste_id'];
 
-            $saida_array[] = ['user_id' => $user_id, 'pedido_id' => $pedido_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'registro_id' => $registro_id, 'quantidade_anterior' => $quantidade_anterior];
+            $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
         }
 
-        return $saida_array;
+        return $saidas_array;
     }
 
-    function buscarRegistro($registro_id, $provider_user, $provider_produto)
+    function buscarAjuste($ajuste_id, $provider_user, $provider_produto)
     {
         $saidas = session()->get('saida' ,[]);
 
@@ -77,7 +77,7 @@ class SessionSaidaService implements SaidaServiceInterface
 
         foreach ($saidas as $key => $value) 
         {
-            if($value['registro_id'] == $registro_id)
+            if($ajuste_id == $value['ajuste_id'])
             {
                 $user_id = $value['user_id'];
                 $nome = $provider_user->buscarUsuario($user_id);
@@ -89,11 +89,10 @@ class SessionSaidaService implements SaidaServiceInterface
                 $data = $value['created_at']; 
                 $tipo = 'SAÍDA'; 
                 $observacao = $value['observacao'];
-                $registro_id = $value['registro_id'];
-                $quantidade_anterior = $value['quantidade_anterior'];
+                $ajuste_id = $value['ajuste_id'];
 
-            $saidas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'registro_id' => $registro_id, 'quantidade_anterior' => $quantidade_anterior];
-            }
+                $saidas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id];
+            }  
         }
 
         return $saidas_array;
