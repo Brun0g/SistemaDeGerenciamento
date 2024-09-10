@@ -24,7 +24,6 @@ class Quantity_product_controller extends Controller
 
         if(isset($produtos, $nomeDoClientPorID, $produtosPorCliente))
         {
-
             foreach($produtos as $key => $value) {
                 // PEGAR NOME DO PRODUTO
                 $nome_produto = $value['produto'];

@@ -101,7 +101,7 @@ padding: 10px;
                     <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
                             @csrf
                             @method('GET')
-                    <td ><button type="submit">Ajuste N°:  <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
+                    <td ><button type="submit">{{$value['tipo']}} N°: <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
                     </form>
                     @elseif($value['multiplo_id'] != null)
                     <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">
@@ -114,7 +114,9 @@ padding: 10px;
                     @endif
 
                     @if($value['tipo'] == 'Ajuste entrada')
-                    <td style="font-weight: 900; color: black">{{ $value['quantidade'] }}</td>
+                    <td style="font-weight: 900; color: green">{{ $value['quantidade'] }}</td>
+                    @elseif($value['tipo'] == 'Ajuste saida')
+                    <td style="font-weight: 900; color: red">{{  -$value['quantidade'] }}</td>
                     @else
                     <td style="font-weight: 900; color: green">{{  $value['quantidade'] }}</td>
                     @endif
@@ -129,9 +131,9 @@ padding: 10px;
                     <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
                             @csrf
                             @method('GET')
-                    <td><button type="submit">Ajuste N°:  <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
+                    <td><button type="submit">{{$value['tipo']}} N°: <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
                     </form>
-                    <td style="font-weight: 900; color: black;">{{ abs($value['quantidade']) }}</td>
+                    <td style="font-weight: 900; color: red;">{{ $value['quantidade'] }}</td>
 
                     @else
                     <td>{{$value['tipo']}}</td>

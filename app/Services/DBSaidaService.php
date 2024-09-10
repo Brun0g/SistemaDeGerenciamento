@@ -51,10 +51,10 @@ class DBSaidaService implements SaidaServiceInterface
             $total_entrada += $quantidade;
      
 
-            $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'status' => 1, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id]; 
+            $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'status' => 1, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month]; 
         }
 
-        return ['saidas_array' => $saidas_array, 'total' => $total_entrada];
+        return ['saidas_array' => $saidas_array, 'total' => $total_entrada, 'ajuste_id' => $ajuste_id];
     }
 
     function listarSaida($provider_user)
@@ -101,7 +101,7 @@ class DBSaidaService implements SaidaServiceInterface
             $ajuste_id = $value['ajuste_id'];
 
 
-            $saidas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id];
+            $saidas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id];
         }
 
         return $saidas_array;

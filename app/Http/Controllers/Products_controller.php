@@ -69,12 +69,43 @@ class Products_controller extends Controller
 
         $entradas = $provider_entradas->buscarEntrada($produto_id, $provider_user);
         $saidas = $provider_saida->buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida);
+            
+        $total_ajuste_saida = 0;
+        $total_ajuste_entrada = 0;
+
+        foreach ($entradas['entradas_array'] as $k_entrada => $v_entrada) 
+        {
+            foreach ($saidas['saidas_array'] as $k_saida => $v_saida) 
+            {
+                if($v_entrada['data'] <= $v_saida['data'] && isset($v_saida['ajuste_id']) )
+                {
+                    $total = 0;
+                    $total -= $v_entrada['quantidade'];
+                    $total_ajuste_saida -= $v_entrada['quantidade'];
+                    $saidas['saidas_array'][$k_saida]['quantidade'] -= $total;
+                    break;
+                } 
+                else if(isset($v_entrada['ajuste_id']))
+                {
+                    $total = abs($v_entrada['quantidade'] / 2);
+                    $total_ajuste_entrada = $total;
+                    $entradas['entradas_array'][$k_entrada]['quantidade'] = $total;
+                    break;
+                }
+            } 
+        }
+
+
+
         $entradas_saidas = array_merge($entradas['entradas_array'], $saidas['saidas_array']);
+
         $sort = array_column($entradas_saidas, 'data');
         array_multisort($sort, SORT_ASC, $entradas_saidas);
 
-        $resultado = $estoqueProdutos['quantidade_estoque'];
-        
+           
+
+        $resultado = $entradas['total'] + $total_ajuste_saida - $saidas['total'] - $total_ajuste_entrada;
+
         return view('/showFilterProducts', ['resultado' => $resultado, 'EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas]);
     }
 
@@ -201,8 +232,6 @@ class Products_controller extends Controller
 
         $ajuste_id = $provider_registro->adicionarAjuste();
 
-
-
         foreach ($validated['quantidade'] as $key => $value) {
 
             $produto_id = $key;
@@ -213,8 +242,6 @@ class Products_controller extends Controller
             {
                 if($quantidade_estoque < $quantidade)
                 {
-                    // $quantidade = $quantidade - $quantidade_estoque;
-
                     session()->flash('status', 'Ajuste de múltiplas entradas realizada com sucesso!');       
 
                     $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste entrada', $ajuste_id, null);
@@ -222,7 +249,7 @@ class Products_controller extends Controller
                 else
                 {
                     // $quantidade = $quantidade_estoque - $quantidade;
-
+                    
                     session()->flash('status', 'Ajuste de múltiplas saidas realizada com sucesso!');    
 
                     $provider_produto->atualizarEstoque($produto_id, $quantidade, 'saida', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste saida', $ajuste_id, null);

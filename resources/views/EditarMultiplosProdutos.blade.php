@@ -188,13 +188,13 @@ td {
                                 <td style="width: 5%; font-weight: 900;">{{strtoupper($value['produto'])}}
                                 </td>
                                 <td style="width: 5%; font-weight: 900;">
-                                    <input style="text-align: center; width: 20%" 
+                                    <input style="text-align: center; width: 30%" 
                                     type="number" 
                                     name="quantidade[{{$key}}]" 
                                     value="{{$value['quantidade_estoque']}}"
 
                                     min="0"
-                                    max="9999"
+                                    max="99999"
                                     required>
                                 </td>
                             </tr>

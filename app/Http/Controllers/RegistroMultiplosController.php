@@ -33,12 +33,9 @@ class RegistroMultiplosController extends Controller
     {
         $saida = $provider_saida->buscarAjuste($ajuste_id, $provider_user, $provider_produto);
         $entrada = $provider_entrada->buscarAjuste($ajuste_id, $provider_user, $provider_produto);
-
         $array_merge = array_merge($entrada, $saida);
 
-
         $sort = array_column($array_merge, 'quantidade');
-
         array_multisort($sort, SORT_DESC, $array_merge);
 
   
@@ -89,13 +86,8 @@ class RegistroMultiplosController extends Controller
         $multipla_saida = $provider_saida->listarSaida($provider_user);
         $array_merge = array_merge($multipla_entrada, $multipla_saida);
 
-
-
         $multiplos = collect($array_merge)->unique('ajuste_id')->sortBy(['data', 'asc']);
         $now = now();
-
-      
-
 
         $dia_atual = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 

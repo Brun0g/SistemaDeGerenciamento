@@ -36,7 +36,6 @@ class PromotionController extends Controller
         $produtos = $provider_produto->listarProduto($provider_promotions, $softDelete);
         $promotionsList = $provider_promotions->listarPromocoes($provider_produto, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
 
-
         return view('promotions', ['produtos' => $produtos, 'listaPromocoes' => $promotionsList]);
     }
 
@@ -61,7 +60,6 @@ class PromotionController extends Controller
         $produto_id = $request->input('produto_id');
         $quantidade = $request->input('quantidade');
         $porcentagem = $request->input('porcentagem');
-
 
         $validator = Validator::make($request->all(), [
             'produto_id' => 'required|integer', 
