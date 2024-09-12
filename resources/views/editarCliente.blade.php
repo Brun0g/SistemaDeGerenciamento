@@ -1,9 +1,5 @@
 <x-app-layout>
-
 <x-slot name="header">
-
-
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -65,7 +61,7 @@ justify-content: center;
         @csrf
         @method('PATCH')
         <div style="display: flex; justify-content: center; margin-bottom: 20px; margin-top: 20px;">
-     
+            
             <table id="table">
                 <thead class="thead">
                     <tr>
@@ -81,10 +77,10 @@ justify-content: center;
                         <td>
                             <input type="text" class="form-control" name="name" value="{{  $cliente[$id]['name'] }}" >
                         </td>
-                        <td>    
+                        <td>
                             <input type="email" class="form-control" name="email" value="{{  $cliente[$id]['email'] }}" >
                         </td>
-                        <td>      
+                        <td>
                             <input type="text" class="form-control" name="contato" value="{{  $cliente[$id]['contato'] }}" >
                         </td>
                         <td>
@@ -111,7 +107,6 @@ justify-content: center;
                     <th class="row-inform-item">Estado</th>
                     <th class="row-inform-item">CEP</th>
                     <th class="row-inform-item">Ação</th>
-
                     @if(count($listarEnderecos) > 1)
                     <th class="row-inform-item">Ação</th>
                     @endif
@@ -128,7 +123,6 @@ justify-content: center;
                     <td style="border: 1px solid;">{{$endereco['estado']}}</td>
                     <td style="border: 1px solid;">{{$endereco['cep']}}</td>
                     @if(count($listarEnderecos) > 1)
-
                     <td style="border: 1px solid;" class="bg-white">
                         
                         <form action="/DeletarEndereco/{{$endereco_id}}" method="POST" >

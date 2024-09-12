@@ -59,12 +59,12 @@ justify-content: center;
 		</ul>
 	</table>
 </div>
-	@endif
+@endif
 <div class="lg">
 	<div>
 		<h3 class="id-cliente-container">Cliente</h3>
 		<hr></hr>
-	
+		
 		@if($id == $enderecos[$endereco_id]['cliente_id'])
 		<form method="POST" action="/EditarEndereco/{{$endereco_id}}" >
 			@csrf
@@ -138,8 +138,7 @@ justify-content: center;
 					<input type="number" class="form-control" name="numero" value="{{$enderecos[$endereco_id]['numero']}}">
 				</div>
 				@endif
-
-			
+				
 				
 				
 			</div>

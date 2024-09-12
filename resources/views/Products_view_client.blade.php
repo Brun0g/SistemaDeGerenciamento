@@ -8,61 +8,51 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </x-slot>
-
 <style type="text/css">
-
 .container {
-    width: 100%;
-    max-width: 1700px;
-    margin: 0 auto;
-    padding: 20px;
+width: 100%;
+max-width: 1700px;
+margin: 0 auto;
+padding: 20px;
 }
-
 .table-container {
-    position: relative;
-    overflow-x: auto;
-    overflow-y: auto;
-    max-height: 600px; /* Ajuste conforme necessário */
-    border: 2px solid #ddd; /* Borda ao redor do container da tabela */
+position: relative;
+overflow-x: auto;
+overflow-y: auto;
+max-height: 600px;
+border: 2px solid #ddd;
 }
-
 table {
-    border-collapse: collapse;
-    width: 100%;
-  
-}
+border-collapse: collapse;
+width: 100%;
 
+}
 thead {
-   
-    position: sticky;
-    top: 0;
-    background-color: royalblue;
-    color: white;
-    z-index: 1; 
-}
 
+position: sticky;
+top: 0;
+background-color: royalblue;
+color: white;
+z-index: 1;
+}
 th, td {
-    border: 2px solid #ddd;
-    padding: 15px;
-    text-align: center;
-    white-space: nowrap;
+border: 2px solid #ddd;
+padding: 15px;
+text-align: center;
+white-space: nowrap;
 }
-
 th {
-    font-weight: bold;
+font-weight: bold;
 }
-
 .caption-style {
-    background-color: black;
-    color: white;
-    text-align: center;
-    font-weight: 900;
-    font-size: 20px;
-    padding: 10px;
+background-color: black;
+color: white;
+text-align: center;
+font-weight: 900;
+font-size: 20px;
+padding: 10px;
 }
-
 </style>
-
 <div class="container">
     <div class="caption-style">
         Relatório de Clientes e Produtos
@@ -96,5 +86,4 @@ th {
         </table>
     </div>
 </div>
-
 </x-app-layout>

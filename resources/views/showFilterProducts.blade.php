@@ -1,12 +1,8 @@
 <x-app-layout>
-
 <x-slot name="header">
 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
 {{ __('Entradas e saídas') }}
 </h2>
-
-
-
 </x-slot>
 <style type="text/css">
 #te {
@@ -50,21 +46,17 @@ font-weight: 900;
 font-size: 18px;
 padding: 10px;
 }
-
 :root {
-  --bs-box-shadow-sm: 0;
+--bs-box-shadow-sm: 0;
 }
-
 </style>
-
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="caption-style" style="display: flex; flex-direction: column;"> 
-            ENTRADAS E SAÍDAS
-            <div>{{strtoupper($EstoqueProdutos['produto'])}}</div>
-        </div>
-
+            <div class="caption-style" style="display: flex; flex-direction: column;">
+                ENTRADAS E SAÍDAS
+                <div>{{strtoupper($EstoqueProdutos['produto'])}}</div>
+            </div>
             <table id="table">
                 <thead class="thead">
                     <tr>
@@ -77,75 +69,71 @@ padding: 10px;
                     </tr>
                 </thead>
                 <tbody>
-
-                @if(isset($entradas_saidas))
-                @foreach($entradas_saidas as $key => $value)
-                @if($value['produto_id'] == $produto_id)
-                
-                @if($value['status'] == 1 && isset($value['pedido_id']) && $value['tipo'] != 'Ajuste' && $value['tipo'] != 'Ajuste entrada')
-                <tr>
-                    <td>{{  strtoupper($value['user_id'])}}</td>
-                    <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
+                    @if(isset($entradas_saidas))
+                    @foreach($entradas_saidas as $key => $value)
+                    @if($value['produto_id'] == $produto_id)
+                    
+                    @if($value['status'] == 1 && isset($value['pedido_id']) && $value['tipo'] != 'Ajuste' && $value['tipo'] != 'Ajuste entrada')
+                    <tr>
+                        <td>{{  strtoupper($value['user_id'])}}</td>
+                        <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
                             @csrf
                             @method('GET')
-                    <td><button type="submit">Saída realizada {{$value['tipo']}} N°: <span style="color: purple; font-weight: 900"> {{$value['pedido_id']}}</span></button></td>
-                    </form>
-                    <td style="font-weight: 900; color: red">{{  $value['quantidade'] }}</td>
-                    <td>{{  $value['observacao'] }}</td>
-                    <td>{{  $value['data'] }}</td>
-                </tr>
-                @elseif($value['quantidade'] > 0)
-                 <tr>
-                    <td>{{  strtoupper($value['user_id'])}}</td>
-                    @if($value['ajuste_id'] != null)
-                    <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
+                            <td><button type="submit">Saída realizada {{$value['tipo']}} N°: <span style="color: purple; font-weight: 900"> {{$value['pedido_id']}}</span></button></td>
+                        </form>
+                        <td style="font-weight: 900; color: red">{{  $value['quantidade'] }}</td>
+                        <td>{{  $value['observacao'] }}</td>
+                        <td>{{  $value['data'] }}</td>
+                    </tr>
+                    @elseif($value['quantidade'] > 0)
+                    <tr>
+                        <td>{{  strtoupper($value['user_id'])}}</td>
+                        @if($value['ajuste_id'] != null)
+                        <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
                             @csrf
                             @method('GET')
-                    <td ><button type="submit">{{$value['tipo']}} N°: <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
-                    </form>
-                    @elseif($value['multiplo_id'] != null)
-                    <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">
+                            <td ><button type="submit">{{$value['tipo']}} N°: <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
+                        </form>
+                        @elseif($value['multiplo_id'] != null)
+                        <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">
                             @csrf
                             @method('GET')
-                    <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['multiplo_id']}}</span></button></td>
-                     </form>
-                    @else
-                    <td>{{$value['tipo']}}</td>
+                            <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['multiplo_id']}}</span></button></td>
+                        </form>
+                        @else
+                        <td>{{$value['tipo']}}</td>
+                        @endif
+                        @if($value['tipo'] == 'Ajuste entrada')
+                        <td style="font-weight: 900; color: green;">{{ $value['quantidade'] }}</td>
+                        @elseif($value['tipo'] == 'Ajuste saida')
+                        <td style="font-weight: 900; color: red">{{  -$value['quantidade'] }}</td>
+                        @else
+                        <td style="font-weight: 900; color: green">{{  $value['quantidade'] }}</td>
+                        @endif
+                        <td>{{  $value['observacao'] }}</td>
+                        <td>{{  $value['data'] }}</td>
+                    </tr>
+                    @elseif($value['quantidade'] <= 0)
+                    <tr>
+                        <td>{{  strtoupper($value['user_id'])}}</td>
+                        @if($value['ajuste_id'] != null)
+                        <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
+                            @csrf
+                            @method('GET')
+                            <td><button type="submit">{{$value['tipo']}} N°: <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
+                        </form>
+                        <td style="font-weight: 900; color: red;">{{ $value['quantidade'] }}</td>
+                        @else
+                        <td>{{$value['tipo']}}</td>
+                        
+                        <td style="font-weight: 900; color: red;">{{ $value['quantidade'] }}</td>
+                        @endif
+                        <td>{{  $value['observacao'] }}</td>
+                        <td>{{  $value['data'] }}</td>
+                    </tr>
                     @endif
-
-                    @if($value['tipo'] == 'Ajuste entrada')
-                    <td style="font-weight: 900; color: green;">{{ $value['quantidade'] }}</td>
-                    @elseif($value['tipo'] == 'Ajuste saida')
-                    <td style="font-weight: 900; color: red">{{  -$value['quantidade'] }}</td>
-                    @else
-                    <td style="font-weight: 900; color: green">{{  $value['quantidade'] }}</td>
                     @endif
-
-                <td>{{  $value['observacao'] }}</td>
-                    <td>{{  $value['data'] }}</td>
-                </tr>
-                @elseif($value['quantidade'] <= 0)
-                 <tr>
-                    <td>{{  strtoupper($value['user_id'])}}</td>
-                    @if($value['ajuste_id'] != null)
-                    <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
-                            @csrf
-                            @method('GET')
-                    <td><button type="submit">{{$value['tipo']}} N°: <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
-                    </form>
-                    <td style="font-weight: 900; color: red;">{{ $value['quantidade'] }}</td>
-
-                    @else
-                    <td>{{$value['tipo']}}</td>
-                
-                    <td style="font-weight: 900; color: red;">{{ $value['quantidade'] }}</td>
-                    @endif
-                    <td>{{  $value['observacao'] }}</td>
-                    <td>{{  $value['data'] }}</td>
-                </tr>
-                @endif
-                @endif
-                @endforeach
+                    @endforeach
                     <tr>
                         <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden; "></td>
                         <td style="border: black solid 1px; font-weight: 900; text-align: right; background: #e5e7eb;">TOTAL: </td>
@@ -153,20 +141,15 @@ padding: 10px;
                         <td style="border-top: 1px solid black; border-left: 1px solid black; background-color: rgb(243 244 246); border-bottom: hidden; border-right: hidden"></td>
                         <td style="border-top: 1px solid black; border-left: 1px solid black; background-color: rgb(243 244 246); border-bottom: hidden; border-right: hidden"></td>
                     </tr>
-                @else
-                Sem dados de registro!
-                @endif
+                    @else
+                    Sem dados de registro!
+                    @endif
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
-
-
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-
 </x-app-layout>

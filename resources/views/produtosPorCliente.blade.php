@@ -1,13 +1,12 @@
 <x-app-layout>
 <x-slot name="header">
-
 <div style="display: flex; justify-content:space-between; ">
-<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-{{ __('Pedido de ' . strtoupper($clienteID[$id]['name']) ) }}
-</h2>
-<div style=" display: flex; justify-content: right; width: 60%;" >
-  <a href={{'/carrinho/' . $id }}><i class="fa-solid fa-cart-shopping" style="font-size: 26px;"></i></a>
-</div>
+  <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+  {{ __('Pedido de ' . strtoupper($clienteID[$id]['name']) ) }}
+  </h2>
+  <div style=" display: flex; justify-content: right; width: 60%;" >
+    <a href={{'/carrinho/' . $id }}><i class="fa-solid fa-cart-shopping" style="font-size: 26px;"></i></a>
+  </div>
 </div>
 <div>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -124,165 +123,163 @@
           
           <div style="display: flex; justify-content: center">
             <h3>Carrinho</h3>
-          </div>                
+          </div>
           <table id="table">
+            <thead class="thead">
+              <tr>
+                {{-- <th class="row-inform-item">ID PEDIDO</th> --}}
+                <th class="row-inform-item">ID CLIENTE</th>
+                <th class="row-inform-item">Nome do Produto</th>
+                <th class="row-inform-item">Quantidade</th>
+                <th class="row-inform-item">Total</th>
+                <th class="row-inform-item">Desconto</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+              @if(sizeof($listarPedidos) > 0)
+              
+              @foreach ($listarPedidos as $id_pedido => $value )
+              @if ($value['cliente_id'] == $id )
+              <tr class="bg-white">
+                <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $value['cliente_id'] }}</td>
+                <td>{{  $value['produto'] }}</td>
+                <td>{{  $value['quantidade'] }}</td>
+                <td style="color:green;">R$ {{number_format($value['total_final'] - ($value['total_final'] / 100 * abs($porcentagem)), 2, ",", ".") }}</td>
+                <td style="font-weight: 900;">{{ '-'. $porcentagem . "%" }}</td>
+                @endif
+                @endforeach
+                @else
+                <td style="background: white;" colspan="5" >Sem dados de registro!</td>
+                @endif
+              </tbody>
+              <tr style = "border-top: black solid 1px;">
+                <td style="border-bottom: hidden; border-left: hidden;"></td>
+                <td style="border-bottom: hidden"></td>
+                <td style="border-bottom: hidden"></td>
+                
+                <td style="border-left: black solid 1px; color:white; background: black; font-weight: 900;">R$ {{isset($totalPedido) ? number_format($totalPedido - ($totalPedido / 100 * $porcentagem), 2, ",", ".") : 0}}</td>
+                <td style="border-bottom: hidden; border-right: hidden;"></td>
+              </tr>
+            </table>
+            
+            <div class="container-center" style="display: flex; justify-content: center; margin-top: 15px;">
+              <form method="GET" action="/carrinho/{{$id}}">
+                @csrf
+                <button class="btn btn-success"  type="submit">Ir até o carrinho</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <div style="display: flex; justify-content: center">
+          <h3>Pedidos concluídos</h3>
+        </div>
+        <table id="table">
           <thead class="thead">
             <tr>
-              {{-- <th class="row-inform-item">ID PEDIDO</th> --}}
-              <th class="row-inform-item">ID CLIENTE</th>
-              <th class="row-inform-item">Nome do Produto</th>
-              <th class="row-inform-item">Quantidade</th>
+              <th class="row-inform-item">ID PEDIDO</th>
               <th class="row-inform-item">Total</th>
-              <th class="row-inform-item">Desconto</th>
+              <th class="row-inform-item">Ação</th>
+              <th class="row-inform-item">Ação</th>
             </tr>
           </thead>
           <tbody>
-            
-            @if(sizeof($listarPedidos) > 0)
-            
-            @foreach ($listarPedidos as $id_pedido => $value )
-            @if ($value['cliente_id'] == $id )
-            <tr class="bg-white">
-              {{-- <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $id_pedido }}</td> --}}
-              <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $value['cliente_id'] }}</td>
-              <td>{{  $value['produto'] }}</td>
-              <td>{{  $value['quantidade'] }}</td>
-              <td style="color:green;">R$ {{number_format($value['total_final'] - ($value['total_final'] / 100 * abs($porcentagem)), 2, ",", ".") }}</td>
-              <td style="font-weight: 900;">{{ '-'. $porcentagem . "%" }}</td>
-              @endif
-              @endforeach
-              @else
-              <td style="background: white;" colspan="5" >Sem dados de registro!</td>
-              @endif
-            </tbody>
-            <tr style = "border-top: black solid 1px;">
-              <td style="border-bottom: hidden; border-left: hidden;"></td>
-              <td style="border-bottom: hidden"></td>
-              {{-- <td style="border-bottom: hidden"></td> --}}
-              <td style="border-bottom: hidden"></td>
-              
-              <td style="border-left: black solid 1px; color:white; background: black; font-weight: 900;">R$ {{isset($totalPedido) ? number_format($totalPedido - ($totalPedido / 100 * $porcentagem), 2, ",", ".") : 0}}</td>
-              <td style="border-bottom: hidden; border-right: hidden;"></td>
-            </tr>
-          </table>
-          
-          <div class="container-center" style="display: flex; justify-content: center; margin-top: 15px;">
-            <form method="GET" action="/carrinho/{{$id}}">
-              @csrf
-              <button class="btn btn-success"  type="submit">Ir até o carrinho</button>
-            </form>
-          </div>
-        </div>
-      </div>
-      
-          <div style="display: flex; justify-content: center">
-            <h3>Pedidos concluídos</h3>
-          </div>    
-      <table id="table">
-        <thead class="thead">
-          <tr>
-            <th class="row-inform-item">ID PEDIDO</th>
-            <th class="row-inform-item">Total</th>
-            <th class="row-inform-item">Ação</th>
-            <th class="row-inform-item">Ação</th>
-          </tr>
-        </thead>
-        <tbody>
-          @if(!session()->has('PedidosTotalValor'))
-          <x-dynamic :listarPedidosAprovados="$listarPedidosAprovados" :id="$id"></x-dynamic>
-          @else
-          <x-dynamic2 :listarPedidosAprovados="$listarPedidosAprovados" :id="$id"></x-dynamic2>
-          @endif
-        </tbody>
-      </table>
-      
-      
-      <!-- Modal -->
-      <div class="modal fade" id="ModalLongoExemplo" tabindex="-1" role="dialog" aria-labelledby="TituloModalLongoExemplo" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="TituloModalLongoExemplo">Cadastrar Produto</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-              <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <form  method="POST" action="/CadastrarProduto/Cliente/{{$id}}" >
-                @csrf
-                <div class="container-select">
-                  <div class = "select-container">
-                    <label for="produto-select">Escolha uma categoria:</label>
-                    <select  name="categoria" id="categoria-select" required>
-                      <option value="">-- Por favor escolha uma categoria --</option>
-                      @if($categorias != [])
-                      @foreach ($categorias as $key => $value )
-                      <option value="{{$value['categoria']}}">{{  $value['categoria'] }}</option>
-                      @endforeach
-                      @else
-                      Sem dados de registro!
-                      @endif
-                    </select>
-                  </div>
-                  @if($produtosEstoque != [])
-                  <table style="margin-top: 20px;" class="produto-table">
-                    <thead>
-                      <tr>
-                        <th>Produto</th>
-                        <th>Quantidade</th>
-                        <th>Estoque</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach ($produtosEstoque as $id => $value)
-                      <tr>
-                        <td class="produto-cell">{{ strtoupper($value['produto']) }}</td>
-                        <td class="quantidade-cell">
-                          <input
-                          type="number"
-                          value="0"
-                          name="produto[{{$id}}]"
-                          class="form-control quantidade-input"
-                          placeholder="0"
-                          
-                          min="0"
-                          max="9999"
-                          required
-                          >
-                        </td>
-                        <td class="produto-cell">{{ $value['quantidade']}}</td>
-                      </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
-                  @else
-                  <p class="no-data-message">Sem dados de registro!</p>
-                  @endif
-                </div>
-                
-                <div class="form-group">
-                  <label for="exampleInputPassword1">Valor:</label>
-                  <div class="result" style="font-weight: 900;">R$ <span style=" font-weight: 300; color: green">XXXX</span></div>
-                </div>
-                <button type="submit" class="btn btn-primary">Cadastrar</button>
-              </form>
-            </div>
-            @if ($errors->any())
-            <div class="alert alert-danger">
-              <ul class="mt-3 list-disc list-inside text-sm text-red-600">
-                @foreach ($errors->all() as $error )
-                <li>{{ $error }}</li>
-                @endforeach
-              </ul>
-            </div>
+            @if(!session()->has('PedidosTotalValor'))
+            <x-dynamic :listarPedidosAprovados="$listarPedidosAprovados" :id="$id"></x-dynamic>
+            @else
+            <x-dynamic2 :listarPedidosAprovados="$listarPedidosAprovados" :id="$id"></x-dynamic2>
             @endif
-            <div class="modal-footer">
-              <button  type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+          </tbody>
+        </table>
+        
+        
+        <!-- Modal -->
+        <div class="modal fade" id="ModalLongoExemplo" tabindex="-1" role="dialog" aria-labelledby="TituloModalLongoExemplo" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="TituloModalLongoExemplo">Cadastrar Produto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form  method="POST" action="/CadastrarProduto/Cliente/{{$id}}" >
+                  @csrf
+                  <div class="container-select">
+                    <div class = "select-container">
+                      <label for="produto-select">Escolha uma categoria:</label>
+                      <select  name="categoria" id="categoria-select" required>
+                        <option value="">-- Por favor escolha uma categoria --</option>
+                        @if($categorias != [])
+                        @foreach ($categorias as $key => $value )
+                        <option value="{{$value['categoria']}}">{{  $value['categoria'] }}</option>
+                        @endforeach
+                        @else
+                        Sem dados de registro!
+                        @endif
+                      </select>
+                    </div>
+                    @if($produtosEstoque != [])
+                    <table style="margin-top: 20px;" class="produto-table">
+                      <thead>
+                        <tr>
+                          <th>Produto</th>
+                          <th>Quantidade</th>
+                          <th>Estoque</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach ($produtosEstoque as $id => $value)
+                        <tr>
+                          <td class="produto-cell">{{ strtoupper($value['produto']) }}</td>
+                          <td class="quantidade-cell">
+                            <input
+                            type="number"
+                            value="0"
+                            name="produto[{{$id}}]"
+                            class="form-control quantidade-input"
+                            placeholder="0"
+                            
+                            min="0"
+                            max="9999"
+                            required
+                            >
+                          </td>
+                          <td class="produto-cell">{{ $value['quantidade']}}</td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                    @else
+                    <p class="no-data-message">Sem dados de registro!</p>
+                    @endif
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Valor:</label>
+                    <div class="result" style="font-weight: 900;">R$ <span style=" font-weight: 300; color: green">XXXX</span></div>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </form>
+              </div>
+              @if ($errors->any())
+              <div class="alert alert-danger">
+                <ul class="mt-3 list-disc list-inside text-sm text-red-600">
+                  @foreach ($errors->all() as $error )
+                  <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+              @endif
+              <div class="modal-footer">
+                <button  type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <script>
-      
-      </script>
-</x-app-layout>
+        <script>
+        
+        </script>
+        </x-app-layout>
