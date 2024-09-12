@@ -240,21 +240,4 @@ input[type="radio"]:checked+label {
 
 @endif
   
- {{--    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#atualizarQuantidade').on('submit', function(event) {
-                event.preventDefault();
-
-                $.ajax({
-                    url: "{{ url('atualizarPedido/') }}",
-                    data: $('#atualizarQuantidade').serialize(),
-                    type: 'patch',
-                    success: function(result) {
-                    },
-                    error: function(xhr, status, error) {
-                    }
-                });
-            });
-        });
-    </script> --}}
     </x-app-layout>
