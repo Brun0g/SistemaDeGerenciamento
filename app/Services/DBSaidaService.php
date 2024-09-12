@@ -11,7 +11,7 @@ use App\Services\SaidaServiceInterface;
 
 class DBSaidaService implements SaidaServiceInterface
 {
-    public function adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id)
+    public function adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id)
     {
         $saida = new Saida();
 
@@ -22,7 +22,6 @@ class DBSaidaService implements SaidaServiceInterface
         $saida->tipo = $tipo;
         $saida->observacao = $observacao;
         $saida->ajuste_id = $ajuste_id;
-        $saida->multiplo_id = $multiplo_id;
 
         $saida->save();
 
@@ -54,7 +53,7 @@ class DBSaidaService implements SaidaServiceInterface
             $saidas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'pedido_id' => $pedido_id, 'quantidade' => -$quantidade, 'data' => $data, 'status' => 1, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month]; 
         }
 
-        return ['saidas_array' => $saidas_array, 'total' => $total_entrada, 'ajuste_id' => $ajuste_id];
+        return ['saidas_array' => $saidas_array, 'total' => $total_entrada];
     }
 
     function listarSaida($provider_user)

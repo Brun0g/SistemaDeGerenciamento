@@ -46,10 +46,10 @@ Route::GET('/Products_view_client',[Quantity_product_controller::class,'quantity
 Route::POST('/Products_view_client',[Quantity_product_controller::class,'criar'])->middleware(['auth']);
 
 // CLIENTE
-Route::POST('/Clients',[Clients_controller::class,'mainViewClient'])->middleware(['auth']);
+Route::POST('/Clients',[Clients_controller::class,'mainViewClient'])->middleware(['auth'])->middleware(['cors']);
 Route::POST('/cadastrarCliente',[Clients_controller::class,'registerClient'])->middleware(['auth']);
-Route::GET('/Cliente/{id}',[Clients_controller::class,'show'])->middleware(['auth']);
-Route::GET('/Clients',[Clients_controller::class,'mainViewClient'])->middleware(['auth'])->name('Clients');
+Route::GET('/Cliente/{id}',[Clients_controller::class,'show'])->middleware(['auth'])->middleware(['cors']);
+Route::GET('/Clients',[Clients_controller::class,'mainViewClient'])->middleware(['auth'])->name('Clients')->middleware(['cors']);
 Route::GET('/Editar/Cliente/{id}',[Clients_controller::class,'viewClient'])->middleware(['auth']);
 Route::PATCH('/EditarCliente/{id}',[Clients_controller::class,'editClient'])->middleware(['auth']);
 Route::DELETE('/DeletarCliente/{id}',[Clients_controller::class,'deleteClient'])->middleware(['auth']);

@@ -8,11 +8,11 @@ use Illuminate\Support\Carbon;
 
 class SessionSaidaService implements SaidaServiceInterface
 {
-    public function adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id)
+    public function adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id)
     {
         $saida = session()->get('saida', []);
 
-        $saida[] = ['user_id' => Auth::id(), 'pedido_id' => $pedido_id, 'produto_id' => $produto_id, 'quantidade' => abs((int)$quantidade), 'created_at' => now(), 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id];
+        $saida[] = ['user_id' => Auth::id(), 'pedido_id' => $pedido_id, 'produto_id' => $produto_id, 'quantidade' => abs((int)$quantidade), 'created_at' => now(), 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id];
 
         session()->put('saida', $saida);
     }

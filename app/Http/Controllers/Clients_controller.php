@@ -63,6 +63,12 @@ class Clients_controller extends Controller
         $tabela_clientes = $provider_cliente->listarClientes();
         $listar_enderecos = $provider_endereco->listarEnderecos();
 
+        // dd($request->search_string);
+
+        if($request->search_string != null)
+            $tabela_clientes = $provider_cliente->searchCliente($request->search_string);
+
+
         foreach ($tabela_clientes as $cliente_id => $value) {
             $valorTotalPorPedido[$cliente_id] = 0;
             $buscarPedidoCliente = $provider_pedido->listarPedidos($cliente_id);

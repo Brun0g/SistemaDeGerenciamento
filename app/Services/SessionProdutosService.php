@@ -144,8 +144,8 @@ class SessionProdutosService implements ProdutosServiceInterface
                     $quantidade_anterior = $value['quantidade'];
                     $produto[$key]['quantidade'] += $quantidade;
 
-                    if($tipo == 'Ajuste entrada' || $tipo == 'Ajuste saida')
-                        $produto[$key]['quantidade'] = $quantidade;
+                    // if($tipo == 'Ajuste entrada' || $tipo == 'Ajuste saida')
+                    //     $produto[$key]['quantidade'] = $quantidade;
 
                     if($entrada_ou_saida == 'entrada')
                         $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id);

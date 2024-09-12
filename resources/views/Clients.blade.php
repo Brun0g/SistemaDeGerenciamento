@@ -5,10 +5,7 @@
 </h2>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script
-              src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
-              integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
-              crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
@@ -52,7 +49,7 @@ font-size: 13px;
     <div class="max-w mx-auto sm:px-6 lg:px-8">
     
     <div class="input-group" style="width: 20%">
-  <input   id= "live_search" type="search" class="form-control rounded" placeholder="Procurar clientes" aria-label="Search" aria-describedby="search-addon" />
+  <input   id= "search" type="search" class="form-control rounded" placeholder="Procurar clientes" aria-label="Search" aria-describedby="search-addon" />
   <button type="button" class="btn btn-outline-primary" data-mdb-ripple-init>Procurar</button>
 </div>
         <div style="display: flex; justify-content: center; margin-bottom: 10px;">
@@ -133,27 +130,34 @@ font-size: 13px;
 </div>
 
 <script>
-    $(document).ready(function(){
+    $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+</script>
+
+<script>
+      $(document).ready(function(){
+
+        $(document).on('keyup', function (e){
+            e.preventDefault();
+
+            let search_string = $('#search').val();
+            console.log(search_string);
+
+            $.ajax({
+                url:"{{ route('Clients') }}",
+                method: 'GET',
+                data:{search_string:search_string},
+                success: function(res){
+                    $('#table').html(res);
+                }
+            });
+        })
 
 
-       
-
-        $("#live_search").on("click", function (){
-
-            const array = $.param($tabela_clientes);
-            
-            console.log(array);
-
-            // if(input != ""){
-            //     $.ajax({
-            //         url:
-            //     })
-            // }
-
-        });
-
-
-    });
+      });
 </script>
 </x-app-layout>
 <div class="modal fade" id="CadastrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">

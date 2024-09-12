@@ -114,7 +114,7 @@ padding: 10px;
                     @endif
 
                     @if($value['tipo'] == 'Ajuste entrada')
-                    <td style="font-weight: 900; color: green">{{ $value['quantidade'] }}</td>
+                    <td style="font-weight: 900; color: green;">{{ $value['quantidade'] }}</td>
                     @elseif($value['tipo'] == 'Ajuste saida')
                     <td style="font-weight: 900; color: red">{{  -$value['quantidade'] }}</td>
                     @else
@@ -146,13 +146,13 @@ padding: 10px;
                 @endif
                 @endif
                 @endforeach
-                                <tr>
-                                    <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden; "></td>
-                                    <td style="border: black solid 1px; font-weight: 900; text-align: right; background: #e5e7eb;">TOTAL: </td>
-                                    <td style="border-top: 1px solid black; border-left: hidden;background: #e5e7eb; border-bottom: 1px solid black; border-right: 1px solid right; font-weight: 900">{{$resultado}}</td>
-                                    <td style="border-top: 1px solid black; border-left: 1px solid black; background-color: rgb(243 244 246); border-bottom: hidden; border-right: hidden"></td>
-                                    <td style="border-top: 1px solid black; border-left: 1px solid black; background-color: rgb(243 244 246); border-bottom: hidden; border-right: hidden"></td>
-                                </tr>
+                    <tr>
+                        <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden; "></td>
+                        <td style="border: black solid 1px; font-weight: 900; text-align: right; background: #e5e7eb;">TOTAL: </td>
+                        <td style="border-top: 1px solid black; border-left: hidden;background: #e5e7eb; border-bottom: 1px solid black; border-right: 1px solid right; font-weight: 900">{{$resultado}}</td>
+                        <td style="border-top: 1px solid black; border-left: 1px solid black; background-color: rgb(243 244 246); border-bottom: hidden; border-right: hidden"></td>
+                        <td style="border-top: 1px solid black; border-left: 1px solid black; background-color: rgb(243 244 246); border-bottom: hidden; border-right: hidden"></td>
+                    </tr>
                 @else
                 Sem dados de registro!
                 @endif

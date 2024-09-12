@@ -174,10 +174,18 @@ class Carrinho_controller extends Controller
         if(isset($fora_estoque))
              return redirect($url)->with('array_erros', $array_erros);
         
+        if($pedidos_no_carrinho)
+        {
+            session()->flash('status', 'Pedido encaminhado com sucesso!');
 
-        session()->flash('status', 'Pedido encaminhado com sucesso!');
+            $provider_carrinho->finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_registro);
+        } else {
 
-        $provider_carrinho->finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_registro);
+            $array_erros[] = 'Não há produtos no carrinho!';
+
+            return redirect($url)->with('array_erros', $array_erros);
+        }
+        
        
         return redirect($url);
     }

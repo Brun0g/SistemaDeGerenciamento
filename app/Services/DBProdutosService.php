@@ -128,13 +128,13 @@ class DBProdutosService implements ProdutosServiceInterface
             $quantidade_anterior = $produto->quantidade;
             $produto->quantidade += $quantidade;
 
-            if($tipo == 'Ajuste entrada' || $tipo == 'Ajuste saida')
-                $produto->quantidade = $quantidade;
+            // if($tipo == 'Ajuste entrada' || $tipo == 'Ajuste saida')
+            //     $produto->quantidade = $quantidade;
             
             if($entrada_ou_saida == 'entrada')
                 $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id);
             else
-                $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id);
+                $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id);
 
         } else 
             $produto->quantidade = $quantidade;

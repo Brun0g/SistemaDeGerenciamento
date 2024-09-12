@@ -19,6 +19,7 @@ use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
 use \App\Services\SaidaServiceInterface;
 use \App\Services\UserServiceInterface;
+use \App\Services\RegistroMultiplosServiceInterface;
 
 
 
@@ -29,16 +30,19 @@ class RegistroMultiplosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show_ajuste(Request $request, $ajuste_id, EntradasServiceInterface $provider_entrada, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, ProdutosServiceInterface $provider_produto)
+    public function show_ajuste(Request $request, $ajuste_id, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, ProdutosServiceInterface $provider_produto, RegistroMultiplosServiceInterface $provider_registro)
     {
-        $saida = $provider_saida->buscarAjuste($ajuste_id, $provider_user, $provider_produto);
-        $entrada = $provider_entrada->buscarAjuste($ajuste_id, $provider_user, $provider_produto);
-        $array_merge = array_merge($entrada, $saida);
+        // $saida = $provider_saida->buscarAjuste($ajuste_id, $provider_user, $provider_produto);
+        // $entrada = $provider_entradas->buscarAjuste($ajuste_id, $provider_user, $provider_produto);
+        // $array_merge = array_merge($entrada, $saida);
+        // $sort = array_column($array_merge, 'quantidade');
+        // array_multisort($sort, SORT_DESC, $array_merge);
 
-        $sort = array_column($array_merge, 'quantidade');
-        array_multisort($sort, SORT_DESC, $array_merge);
+        $array_merge = $provider_registro->listarAjuste($ajuste_id, $provider_user, $provider_produto);
 
-  
+
+
+
         return view('detalhes_ajuste', ['registro_id' => $ajuste_id, 'multiplos' => $array_merge]);
     }
 
