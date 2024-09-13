@@ -148,7 +148,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         session()->put('porcentagem', $descontos);
     }
 
-    public function finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promotions, $provider_entradas, $provider_saida, $provider_user, $provider_registro)
+    public function finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto, $provider_pedidos, $provider_promotions, $provider_entradas_saidas, $provider_user, $provider_registro)
     {
         $pedidos_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho);
         $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promotions);
@@ -171,9 +171,9 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                 $preco_unidade = $provider_produto->buscarProduto($produto_id)['valor'];
 
-               $id = $provider_pedidos->salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, $provider_saida);
+               $id = $provider_pedidos->salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade);
 
-               $provider_produto->atualizarEstoque($produto_id, -$quantidade, 'saida', null, $provider_entradas, $provider_saida, $pedido_id, 'Pedido', null, null);
+               $provider_produto->atualizarEstoque($produto_id, -$quantidade, 'saida', null, $provider_entradas_saidas, $pedido_id, 'Pedido', null, null);
 
                 $provider_carrinho->excluirProduto($cliente_id, $produto_id);
             }

@@ -10,12 +10,12 @@ use \App\Services\PedidosServiceInterface;
 use \App\Services\ProdutosServiceInterface;
 use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
-use \App\Services\SaidaServiceInterface;
+
 use \App\Services\UserServiceInterface;
 
 class Quantity_product_controller extends Controller
 {
-    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user)
+    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
     {   
         $nomeDoClientPorID = $provider_cliente->listarClientes();
         $produtos = $provider_produto->listarProduto($provider_promotions, false);

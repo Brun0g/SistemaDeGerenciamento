@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Entrada extends Model
+class Entradas_saidas extends Model
 {
     use HasFactory;
 }

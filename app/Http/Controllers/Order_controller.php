@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use \App\Services\PedidosServiceInterface;
 use \App\Services\EnderecoServiceInterface;
 use \App\Services\EntradasServiceInterface;
-use \App\Services\SaidaServiceInterface;
+
 use \App\Services\UserServiceInterface;
 
 
@@ -31,10 +31,10 @@ class Order_controller extends Controller
         return redirect('Cliente/' . $cliente_id);
     }
     
-    public function showFinishOrder(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user)
+    public function showFinishOrder(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
     {
         $pedidoEncontrado = $provider_pedidos->buscarPedido($pedido_id);
-        $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+        $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos);
         $endereco_id = $pedidoEncontrado['endereco_id'];
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);
 

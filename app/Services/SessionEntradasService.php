@@ -8,17 +8,27 @@ use Illuminate\Support\Carbon;
 
 class SessionEntradasService implements EntradasServiceInterface
 {
-    public function adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id)
+    public function adicionarEntrada($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id)
     {
-        $entrada = session()->get('entrada', []);
+        $entradas = session()->get('entradas', []);
 
-        $entrada[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id];
+        $entradas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id];
 
     
-        session()->put('entrada', $entrada);
+        session()->put('entradas', $entradas);
     }
 
-    function buscarEntrada($produto_id, $provider_user)
+    public function adicionarSaida($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id)
+    {
+        $saidas = session()->get('saidas', []);
+
+        $saidas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id];
+
+    
+        session()->put('saidas', $saidas);
+    }
+
+    function buscarEntradaSaidas($produto_id, $provider_user)
     {
         $entradas = session()->get('entrada', []);
 
@@ -49,7 +59,7 @@ class SessionEntradasService implements EntradasServiceInterface
         return ['entradas_array' => $entradas_array, 'total'  => $total];
     }
 
-    function listarEntrada($provider_user)
+    function listarEntradaSaidas($provider_user)
     {
         $entradas = session()->get('entrada' ,[]);
 

@@ -16,7 +16,7 @@ use \App\Services\EnderecoServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
-use \App\Services\SaidaServiceInterface;
+
 use \App\Services\UserServiceInterface;
 
 
@@ -82,7 +82,7 @@ class Clients_controller extends Controller
         return view('Clients', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
     }
 
-    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user)
+    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
     {
         $cliente = $provider_cliente->buscarCliente($cliente_id);
         $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho);  

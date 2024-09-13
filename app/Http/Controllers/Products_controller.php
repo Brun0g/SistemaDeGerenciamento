@@ -11,7 +11,7 @@ use \App\Services\CategoriaServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
-use \App\Services\SaidaServiceInterface;
+
 use \App\Services\UserServiceInterface;
 use \App\Services\PedidosServiceInterface;
 use \App\Services\RegistroMultiplosServiceInterface;
@@ -32,7 +32,7 @@ class Products_controller extends Controller
         return view('/Produtos', ['categorias' => $listarCategorias,'EstoqueProdutos' => $estoqueProdutos]);
     }
 
-    public function newProduct(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, EntradasServiceInterface $provider_entradas)
+    public function newProduct(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, EntradasServiceInterface $provider_entradas_saidas)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
         
@@ -57,22 +57,19 @@ class Products_controller extends Controller
         if($validator->fails())
             return redirect($url)->withErrors($validator);
 
-        $provider_produto->adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas);
+        $provider_produto->adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas_saidas);
 
         return redirect('/Produtos');
     }
 
-    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho)
+    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho)
     {
         $estoqueProdutos = $provider_produto->buscarProduto($produto_id);
 
 
-        $entradas = $provider_entradas->buscarEntrada($produto_id, $provider_user);
-        $saidas = $provider_saida->buscarSaida($produto_id, $provider_user, $provider_entradas, $provider_saida);
-        $entradas_saidas = array_merge($entradas['entradas_array'], $saidas['saidas_array']);
-
-        $sort = array_column($entradas_saidas, 'data');
-        array_multisort($sort, SORT_ASC, $entradas_saidas);
+        $entradas_saidas = $provider_entradas_saidas->buscarEntradaSaidas($produto_id, $provider_user);
+        // $sort = array_column($entradas_saidas, 'data');
+        // array_multisort($sort, SORT_ASC, $entradas_saidas);
 
         $resultado = $estoqueProdutos['quantidade_estoque'];
 
@@ -85,7 +82,7 @@ class Products_controller extends Controller
 
         return redirect('/Produtos');
     }
-    public function editProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida)
+    public function editProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, EntradasServiceInterface $provider_entradas_saidas)
     {
         $nome = $request->input('produto');
         $valor =  $request->input('valor');
@@ -116,7 +113,7 @@ class Products_controller extends Controller
         return redirect($url);
     }
 
-    public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
     {
         $EstoqueProdutos = $provider_produto->buscarProduto($produto_id);
           
@@ -139,7 +136,7 @@ class Products_controller extends Controller
         return view('multiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $estoqueProdutos]);
     }
 
-    public function newMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, RegistroMultiplosServiceInterface $provider_registro)
+    public function newMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, RegistroMultiplosServiceInterface $provider_registro)
     {
         $quantidade = $request->input('quantidade');
         $observacao = $request->input('observacao');
@@ -164,12 +161,9 @@ class Products_controller extends Controller
             $produto_id = $key;
             $quantidade = $value;
 
-            $provider_registro->adicionarMultiplosIndividuais($multiplo_id, $produto_id, $quantidade);
-
-   
             if($quantidade != "0")
             {
-                $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, null, 'Múltipla entrada', null, $multiplo_id);
+                $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas_saidas, null, 'Múltipla entrada', null, $multiplo_id);
 
                 session()->flash('status', 'Múltiplas entradas adicionada com sucesso!');       
             }
@@ -177,6 +171,7 @@ class Products_controller extends Controller
 
         return redirect($url);
     }
+
     public function editMultipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromotionsServiceInterface $provider_promotions)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
@@ -185,7 +180,7 @@ class Products_controller extends Controller
         return view('EditarMultiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $estoqueProdutos]);
     }
 
-    public function EditMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, RegistroMultiplosServiceInterface $provider_registro)
+    public function EditMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, RegistroMultiplosServiceInterface $provider_registro)
     {
         $quantidade = $request->input('quantidade');
         $observacao = $request->input('observacao');
@@ -211,17 +206,18 @@ class Products_controller extends Controller
             $quantidade = $value;
             $quantidade_estoque = $provider_produto->buscarProduto($produto_id)['quantidade_estoque'];
 
-            $provider_registro->adicionarAjusteIndividuais($ajuste_id, $produto_id, $quantidade);
 
             if($quantidade_estoque != $quantidade)
             {
+                            $provider_registro->adicionarAjusteIndividuais($ajuste_id, $produto_id, $quantidade);
+
                 if($quantidade_estoque < $quantidade)
                 {
                     $quantidade = $quantidade - $quantidade_estoque;
 
                     session()->flash('status', 'Ajuste de múltiplas entradas realizada com sucesso!');       
 
-                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste entrada', $ajuste_id, null);
+                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas_saidas, $observacao, 'Ajuste entrada', $ajuste_id, null);
                 }
                 else
                 {
@@ -229,7 +225,7 @@ class Products_controller extends Controller
                     
                     session()->flash('status', 'Ajuste de múltiplas saidas realizada com sucesso!');    
 
-                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'saida', $observacao, $provider_entradas, $provider_saida, $observacao, 'Ajuste saida', $ajuste_id, null);
+                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'saida', $observacao, $provider_entradas_saidas, $observacao, 'Ajuste saida', $ajuste_id, null);
                 }
             }
         }

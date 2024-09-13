@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEntradasTable extends Migration
+class CreateEntradasSaidasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateEntradasTable extends Migration
      */
     public function up()
     {
-        Schema::create('entradas', function (Blueprint $table) {
+        Schema::create('entradas_saidas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('produto_id')->constrained('produtos');
@@ -21,7 +21,8 @@ class CreateEntradasTable extends Migration
             $table->string('tipo');
             $table->string('observacao')->nullable();
             $table->foreignId('ajuste_id')->nullable()->constrained('ajustes');
-            $table->foreignId('multiplo_id')->nullable()->constrained('multiplos');
+            $table->foreignId('multiplo_id')->nullable()->constrained('multipla_entradas');
+            $table->foreignId('pedido_id')->nullable()->constrained('order_totals');
             $table->timestamps();
         });
     }
@@ -33,6 +34,6 @@ class CreateEntradasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('entradas');
+        Schema::dropIfExists('entradas_saidas');
     }
 }

@@ -11,7 +11,7 @@ use App\Http\Controllers\Carrinho_controller;
 use App\Http\Controllers\Address_controller;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\EntradaController;
-use App\Http\Controllers\SaidaController;
+
 use App\Http\Controllers\RegistroMultiplosController;
 
 /*

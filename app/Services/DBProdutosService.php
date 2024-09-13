@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DBProdutosService implements ProdutosServiceInterface
 {
-	public function adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas)
+	public function adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas_saidas)
 	{
         $produto = new Produto();
 
@@ -27,7 +27,7 @@ class DBProdutosService implements ProdutosServiceInterface
       
         $produto->save();
 
-        $provider_entradas->adicionarEntrada($produto->id, $quantidade, null, 'Primeira entrada no sistema', null, null);
+        $provider_entradas_saidas->adicionarEntrada($produto->id, $quantidade, 'Primeira entrada no sistema', null, null, null, null);
 	}
     
     public function editarProduto($produto_id, $nome, $valor, $imagem)
@@ -119,7 +119,7 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->save();
     }
 
-    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas, $provider_saida, $pedido_id, $tipo, $ajuste_id, $multiplo_id)
+    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas_saidas, $pedido_id, $tipo, $ajuste_id, $multiplo_id)
     {
         $produto = Produto::find($produto_id);
 
@@ -128,13 +128,10 @@ class DBProdutosService implements ProdutosServiceInterface
             $quantidade_anterior = $produto->quantidade;
             $produto->quantidade += $quantidade;
 
-            // if($tipo == 'Ajuste entrada' || $tipo == 'Ajuste saida')
-            //     $produto->quantidade = $quantidade;
-            
             if($entrada_ou_saida == 'entrada')
-                $provider_entradas->adicionarEntrada($produto_id, $quantidade, $observacao, $tipo, $ajuste_id, $multiplo_id);
+                $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id);
             else
-                $provider_saida->adicionarSaida($produto_id, $pedido_id, $quantidade, $observacao, $tipo, $ajuste_id);
+                $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id);
 
         } else 
             $produto->quantidade = $quantidade;

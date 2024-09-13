@@ -15,7 +15,6 @@ class CreateAjusteIndividuaisTable extends Migration
     {
         Schema::create('ajuste_individuais', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
             $table->foreignId('produto_id')->constrained('produtos');
             $table->integer('quantidade');
             $table->foreignId('ajuste_id')->nullable()->constrained('ajustes');

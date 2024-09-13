@@ -70,10 +70,10 @@ padding: 10px;
                 </thead>
                 <tbody>
                     @if(isset($entradas_saidas))
-                    @foreach($entradas_saidas as $key => $value)
+                    @foreach($entradas_saidas['entradas_array'] as $key => $value)
                     @if($value['produto_id'] == $produto_id)
                     
-                    @if($value['status'] == 1 && isset($value['pedido_id']) && $value['tipo'] != 'Ajuste' && $value['tipo'] != 'Ajuste entrada')
+                    @if(isset($value['pedido_id']))
                     <tr>
                         <td>{{  strtoupper($value['user_id'])}}</td>
                         <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">

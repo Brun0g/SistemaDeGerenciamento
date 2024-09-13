@@ -9,7 +9,7 @@ use \App\Services\DBProdutosService;
 use \App\Services\DBClientesService;
 use App\Models\Order;
 use App\Models\OrderTotal;
-use App\Models\Saida;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -50,7 +50,7 @@ class DBPedidosService implements PedidosServiceInterface
         return $pedidosPorClientes; 
     }
 
-    public function buscarItemPedido($pedido_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
+    public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
     {
         $pedidos = Order::where('pedido_id', $pedido_id)->get();
 
@@ -133,7 +133,7 @@ class DBPedidosService implements PedidosServiceInterface
 
     }
 
-    function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, $provider_saida)
+    function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
     {
         $pedido = new Order;
 

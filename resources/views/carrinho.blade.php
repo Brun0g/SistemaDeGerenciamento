@@ -41,7 +41,7 @@ background-color: hsl(172, 67%, 45%);
 color: red;
 }
 </style>
-@if($pedidosSession)
+
 <div class="py-12">
     <div class="max-w-8xl mx-auto sm:px-8 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -216,17 +216,6 @@ color: red;
         </div>
     </div>
 </div>
-@else
-<div style="margin-top: 250px; ">
-    
-    <div style="display: flex; justify-content: center;">
-        <div class="alert alert-danger" style="text-align: center; width: 25%; margin-right: 10px; font-weight: 600;">
-            NÃO HÁ PRODUTOS NO CARRINHO!
-        </div>
-    </div>
-</div>
-</div>
-</div>
-@endif
+
 
 </x-app-layout>

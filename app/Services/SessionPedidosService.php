@@ -93,7 +93,7 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidoEncontrado;
     }
 
-    public function buscarItemPedido($pedido_id, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
+    public function buscarItemPedido($pedido_id, $provider_entradas_saidas, , $provider_user, $provider_pedidos)
     {
         $pedidoUnitario = session()->get('pedidoUnitario', []);
         $service_produtos = new SessionProdutosService();
@@ -134,7 +134,7 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedido_id;
     }
 
-    function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, $provider_saida)
+    function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
     {
         $pedidoUnitario = session()->get('pedidoUnitario', []);
         $pedidosTotalValor = session()->get('PedidosTotalValor', []);

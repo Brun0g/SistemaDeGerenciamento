@@ -61,7 +61,7 @@ class SessionPromotionsService implements PromotionsServiceInterface
         session()->put('promotions', $promotions);
     }
     
-    public function listarPromocoes($provider_produto, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos)
+    public function listarPromocoes($provider_produto, $provider_entradas_saidas, $provider_user, $provider_pedidos)
     {
         $promotions = session()->get('promotions', []);
         $Promotionslist = [];

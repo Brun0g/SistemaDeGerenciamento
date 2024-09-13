@@ -19,7 +19,7 @@ use \App\Services\EnderecoServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromotionsServiceInterface;
 use \App\Services\EntradasServiceInterface;
-use \App\Services\SaidaServiceInterface;
+
 use \App\Services\UserServiceInterface;
 
 class PromotionController extends Controller
@@ -29,12 +29,12 @@ class PromotionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas, SaidaServiceInterface $provider_saida, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function index(Request $request, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
     {
         $softDelete = false;
         
         $produtos = $provider_produto->listarProduto($provider_promotions, $softDelete);
-        $promotionsList = $provider_promotions->listarPromocoes($provider_produto, $provider_entradas, $provider_saida, $provider_user, $provider_pedidos);
+        $promotionsList = $provider_promotions->listarPromocoes($provider_produto, $provider_entradas_saidas, $provider_user, $provider_pedidos);
 
         return view('promotions', ['produtos' => $produtos, 'listaPromocoes' => $promotionsList]);
     }
