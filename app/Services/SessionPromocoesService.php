@@ -3,70 +3,70 @@
 namespace App\Services;
 
 
-use App\Models\Promotion;
+use App\Models\promocoes;
 
 
 
-use App\Services\PromotionsServiceInterface;
+use App\Services\PromocoesServiceInterface;
 
-class SessionPromotionsService implements PromotionsServiceInterface
+class SessionPromocoesService implements PromocoesServiceInterface
 {
 	public function adicionarPromocao($produto_id, $quantidade, $porcentagem)
 	{
-        $promotion = session()->get('promotions', []);
+        $promocoes = session()->get('promocoes', []);
 
-        $promotion[] = ['produto_id' => (int)$produto_id, 'porcentagem' => (int)$porcentagem, 'quantidade'=> (int)$quantidade, 'ativo' => 0];
+        $promocoes[] = ['produto_id' => (int)$produto_id, 'porcentagem' => (int)$porcentagem, 'quantidade'=> (int)$quantidade, 'ativo' => 0];
 
-        session()->put('promotions', $promotion);
+        session()->put('promocoes', $promocoes);
 	}
     
-    public function ativarPromocao($promotion_id, $situacao)
+    public function ativarPromocao($promocoes_id, $situacao)
     {
-        $promotions = session()->get('promotions', []);
+        $promocoes = session()->get('promocoes', []);
 
-        foreach ($promotions as $key => $value) {
-            if($promotion_id == $key)
-                $promotions[$key]['ativo'] =  (int)$situacao;   
+        foreach ($promocoes as $key => $value) {
+            if($promocoes_id == $key)
+                $promocoes[$key]['ativo'] =  (int)$situacao;   
         }
 
-        session()->put('promotions', $promotions);
+        session()->put('promocoes', $promocoes);
     }
 
-    public function deletarPromocao($promotion_id)
+    public function deletarPromocao($promocoes_id)
     {
-        $promotions = session()->get('promotions', []);
+        $promocoes = session()->get('promocoes', []);
         $array = [];
 
-        foreach ($promotions as $key => $value) {
-            if($promotion_id == $key)
-                unset($promotions[$key]);
+        foreach ($promocoes as $key => $value) {
+            if($promocoes_id == $key)
+                unset($promocoes[$key]);
         }
 
-        session()->put('promotions', $promotions);
+        session()->put('promocoes', $promocoes);
     }
 
-    public function editarPromocao($promotion_id, $quantidade, $porcentagem)
+    public function editarPromocao($promocoes_id, $quantidade, $porcentagem)
     {
-        $promotions = session()->get('promotions', []);
+        $promocoes = session()->get('promocoes', []);
 
-        foreach ($promotions as $key => $value) {
-            if($promotion_id == $key)
+        foreach ($promocoes as $key => $value) {
+            if($promocoes_id == $key)
             {
-                $promotions[$key]['quantidade'] =  (int)$quantidade;
-                $promotions[$key]['porcentagem'] = (int)$porcentagem;
+                $promocoes[$key]['quantidade'] =  (int)$quantidade;
+                $promocoes[$key]['porcentagem'] = (int)$porcentagem;
 
             }
         }
 
-        session()->put('promotions', $promotions);
+        session()->put('promocoes', $promocoes);
     }
     
     public function listarPromocoes($provider_produto, $provider_entradas_saidas, $provider_user, $provider_pedidos)
     {
-        $promotions = session()->get('promotions', []);
-        $Promotionslist = [];
+        $promocoes = session()->get('promocoes', []);
+        $promocoeslist = [];
 
-        foreach ($promotions as $key => $value) 
+        foreach ($promocoes as $key => $value) 
         {
             $produto_id = $value['produto_id'];
             $buscar = $provider_produto->buscarProduto($produto_id);
@@ -77,17 +77,17 @@ class SessionPromotionsService implements PromotionsServiceInterface
             $preco_original = $buscar['valor'];
             $preco_desconto = $buscar['valor'] - ($buscar['valor'] / 100 * $porcentagem);
            
-            $Promotionslist[$key] = ['produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'quantidade' => $quantidade, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'ativo' => $ativo];       
+            $promocoeslist[$key] = ['produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'quantidade' => $quantidade, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'ativo' => $ativo];       
         }
 
 
 
-        return $Promotionslist;
+        return $promocoeslist;
     }
 
     public function buscarQuantidade($produto_id, $quantidade)
     {
-        $produto = session()->get('promotions', []);
+        $produto = session()->get('promocoes', []);
         $produtoEncontrado = [];
         
         $quantity = array_column($produto, 'quantidade');
@@ -115,7 +115,7 @@ class SessionPromotionsService implements PromotionsServiceInterface
 
     public function buscarPromocao($produto_id)
     {
-        $produto = session()->get('promotions', []);
+        $produto = session()->get('promocoes', []);
         $produtoEncontrado = [];
         $ativo = 0;
 

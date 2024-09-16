@@ -8,60 +8,61 @@ use Illuminate\Support\Carbon;
 
 class SessionEntradasService implements EntradasServiceInterface
 {
-    public function adicionarEntrada($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id)
+    public function adicionarEntrada($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id)
     {
-        $entradas = session()->get('entradas', []);
+        $entradas = session()->get('entradas_saidas', []);
 
-        $entradas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id];
+        $entradas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id];
 
     
-        session()->put('entradas', $entradas);
+        session()->put('entradas_saidas', $entradas);
     }
 
-    public function adicionarSaida($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id)
+    public function adicionarSaida($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id)
     {
-        $saidas = session()->get('saidas', []);
+        $saidas = session()->get('entradas_saidas', []);
 
-        $saidas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id];
+        $saidas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao,  'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id];
 
     
-        session()->put('saidas', $saidas);
+        session()->put('entradas_saidas', $saidas);
     }
 
     function buscarEntradaSaidas($produto_id, $provider_user)
     {
-        $entradas = session()->get('entrada', []);
+        $entradas = session()->get('entradas_saidas', []);
 
         $entradas_array = [];
         $total = 0;
+
+       
 
         foreach ($entradas as $key => $value) {
             if($value['produto_id'] == $produto_id)
             {
                 $user_id = $value['user_id'];
-
                 $nome = $provider_user->buscarUsuario($user_id);
-
                 $produto_id = $value['produto_id'];
-                $quantidade = $value['quantidade'];
-                $total += $value['quantidade'];
-                $data = $value['created_at'];   
-                $entrada_ativa = 0;
-                $tipo = $value['tipo'];
+                $data = $value['created_at'];  
                 $observacao = $value['observacao'];
                 $multiplo_id = $value['multiplo_id'];
+                $quantidade = $value['quantidade'];
                 $ajuste_id = $value['ajuste_id'];
+                $pedido_id = $value['pedido_id'];
 
-                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'status' => 0, 'observacao' => $observacao, 'tipo' => $tipo, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id];
+                $total += $quantidade;
+
+                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0,  'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
             }
         }
 
+        
         return ['entradas_array' => $entradas_array, 'total'  => $total];
     }
 
     function listarEntradaSaidas($provider_user)
     {
-        $entradas = session()->get('entrada' ,[]);
+        $entradas = session()->get('entradas_saidas' ,[]);
 
         $entradas_array = [];
 
@@ -71,13 +72,13 @@ class SessionEntradasService implements EntradasServiceInterface
             $nome = $provider_user->buscarUsuario($user_id);
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
-            $data = $value['created_at'];
-            $tipo = $value['tipo'];
+            $data = $value['created_at'];   
             $observacao = $value['observacao'];
             $multiplo_id = $value['multiplo_id'];
             $ajuste_id = $value['ajuste_id'];
+            $pedido_id = $value['pedido_id'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id];
+            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id];
         }
 
 
@@ -87,7 +88,7 @@ class SessionEntradasService implements EntradasServiceInterface
 
     function buscarAjuste($ajuste_id, $provider_user, $provider_produto)
     {
-        $entradas = session()->get('entrada' ,[]);
+        $entradas = session()->get('entradas_saidas' ,[]);
 
         $entradas_array = [];
 
@@ -104,7 +105,7 @@ class SessionEntradasService implements EntradasServiceInterface
                 $observacao = $value['observacao'];
                 $multiplo_id = $value['multiplo_id'];
 
-                $entradas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id];
+            $entradas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
             }
         }
 
@@ -113,7 +114,7 @@ class SessionEntradasService implements EntradasServiceInterface
 
     function buscarMultiplos($multiplo_id, $provider_user, $provider_produto)
     {
-        $entradas = session()->get('entrada' ,[]);
+        $entradas = session()->get('entradas_saidas' ,[]);
 
         $entradas_array = [];
 

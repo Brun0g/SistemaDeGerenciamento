@@ -79,7 +79,7 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div  class="p-6 bg-white border-b border-gray-200">
                             <div style="display: flex; justify-content: left">
-                                <h4 style="">N° AJUSTES: <span style=" font-weight: 900;color: blue">{{$registro_id}}</span></h4>
+                                <h4 style="">N° AJUSTES: <span style=" font-weight: 900;color: blue">{{$estoque_id}}</span></h4>
                             </div>
                             <table id="table">
                                 <thead class="thead">

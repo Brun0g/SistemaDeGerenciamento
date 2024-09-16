@@ -160,6 +160,7 @@ color: red;
                             </tr>
                         </tbody>
                     </table>
+                    @if($pedidosSession)
                     <div style="margin-top: 20px; display: flex; justify-content: center;">
                         <button class="btn btn-primary" type="submit">Atualizar</button>
                     </div>
@@ -216,6 +217,11 @@ color: red;
         </div>
     </div>
 </div>
+@elseif(!session('status'))
+<div style="display: flex; justify-content: center; margin-top: 20px;">
+    <div class="alert alert-danger"  type="submit">Não há produtos no carrinho!</div>
+</div>
+@endif
 
 
 </x-app-layout>

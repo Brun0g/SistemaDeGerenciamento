@@ -9,20 +9,20 @@ class SessionProdutosService implements ProdutosServiceInterface
 {
 	public function adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas_saidas)
 	{
-        $estoque = session()->get('EstoqueProdutos', []);
+        $estoque = session()->get('Produtos', []);
 
         $estoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'quantidade' => (int)$quantidade,  'imagem' => $imagem, 'deleted_at' => null];
 
-        session()->put('EstoqueProdutos', $estoque);
+        session()->put('Produtos', $estoque);
 
         $produto_id = array_key_last($estoque);
 
-        $provider_entradas_saidas->adicionarEntrada($produto->id, $quantidade, 'Primeira entrada no sistema', null, null, null, null);
+        $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade, 'Primeira entrada no sistema', null, null, null, null);
 	}
     
     public function editarProduto($produto_id, $nome, $valor, $imagem)
     {
-        $produtos = session()->get('EstoqueProdutos', []);
+        $produtos = session()->get('Produtos', []);
 
 
         foreach ($produtos as $key => $value) {
@@ -36,14 +36,14 @@ class SessionProdutosService implements ProdutosServiceInterface
             }
         }
 
-        session()->put('EstoqueProdutos', $produtos);
+        session()->put('Produtos', $produtos);
     }
 
     public function excluirProduto($produto_id)
     {
-        if(session()->has('EstoqueProdutos'))
+        if(session()->has('Produtos'))
         {
-            $produtos = session()->get('EstoqueProdutos');
+            $produtos = session()->get('Produtos');
 
             foreach ($produtos as $key => $value) {
                     if($key == $produto_id)
@@ -51,16 +51,14 @@ class SessionProdutosService implements ProdutosServiceInterface
                     
             }
 
-            session()->put('EstoqueProdutos', $produtos);
+            session()->put('Produtos', $produtos);
         }
     }
 
-    public function listarProduto($provider_promotions, $softDelete)
+    public function listarProduto($provider_promocoes, $softDelete)
     {
-        $produtos = session()->get('EstoqueProdutos', []);
+        $produtos = session()->get('Produtos', []);
         $listarProdutos = [];
-
-     
 
         foreach ($produtos as $key => $value) 
         {
@@ -72,7 +70,7 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $quantidade_estoque = $value['quantidade'];
                 $produto_id = $key;
 
-                $promocao = $provider_promotions->buscarPromocao($produto_id);
+                $promocao = $provider_promocoes->buscarPromocao($produto_id);
                 $ativo = $promocao['ativo'];
                 $array[$produto_id] = $promocao['promocao'];
 
@@ -94,8 +92,7 @@ class SessionProdutosService implements ProdutosServiceInterface
     public function buscarProduto($produto_id)
     {
         $produtoEncontrado = [];
-        $produtos = session()->get('EstoqueProdutos', []);
-
+        $produtos = session()->get('Produtos', []);
 
         foreach ($produtos as $key => $value) {
             if($produto_id == $key)
@@ -116,45 +113,18 @@ class SessionProdutosService implements ProdutosServiceInterface
             }
         }
 
-   
         return $produtoEncontrado;
     }
 
     public function deletarImagem($produto_id)
     {
-        $produto = session()->get('EstoqueProdutos', []);
+        $produto = session()->get('Produtos', []);
 
         foreach ($produto as $key => $value) {
             if($produto_id == $key)
                 $produto[$produto_id]['imagem'] = false; 
         }
 
-        session()->put('EstoqueProdutos', $produto);
-    }
-
-    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas_saidas, , $pedido_id, $tipo, $ajuste_id, $multiplo_id)
-    {
-        $produto = session()->get('EstoqueProdutos', []);
-
-        foreach ($produto as $key => $value) {
-            if($produto_id == $key)
-            {
-                if(isset($entrada_ou_saida))
-                {
-                    $quantidade_anterior = $value['quantidade'];
-                    $produto[$key]['quantidade'] += $quantidade;
-
-
-                    if($entrada_ou_saida == 'entrada')
-                    $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id);
-                    else
-                    $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id);
-                
-                } else 
-                    $produto[$key]['quantidade'] = $quantidade;
-            }
-        }
-
-        session()->put('EstoqueProdutos', $produto);
+        session()->put('Produtos', $produto);
     }
 }

@@ -2,17 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Quantity_product_controller;
-use App\Http\Controllers\Clients_controller;
+use App\Http\Controllers\Clientes_controller;
 use App\Http\Controllers\Products_controller;
 use App\Http\Controllers\Order_controller;
 use App\Http\Controllers\Categoria_controller;
 use App\Http\Controllers\Graficos_controller;
 use App\Http\Controllers\Carrinho_controller;
 use App\Http\Controllers\Address_controller;
-use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\PromocoesController;
 use App\Http\Controllers\EntradaController;
 
-use App\Http\Controllers\RegistroMultiplosController;
+use App\Http\Controllers\AjusteEstoqueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,13 +46,13 @@ Route::GET('/Products_view_client',[Quantity_product_controller::class,'quantity
 Route::POST('/Products_view_client',[Quantity_product_controller::class,'criar'])->middleware(['auth']);
 
 // CLIENTE
-Route::POST('/Clients',[Clients_controller::class,'mainViewClient'])->middleware(['auth'])->middleware(['cors']);
-Route::POST('/cadastrarCliente',[Clients_controller::class,'registerClient'])->middleware(['auth']);
-Route::GET('/Cliente/{id}',[Clients_controller::class,'show'])->middleware(['auth'])->middleware(['cors']);
-Route::GET('/Clients',[Clients_controller::class,'mainViewClient'])->middleware(['auth'])->name('Clients')->middleware(['cors']);
-Route::GET('/Editar/Cliente/{id}',[Clients_controller::class,'viewClient'])->middleware(['auth']);
-Route::PATCH('/EditarCliente/{id}',[Clients_controller::class,'editClient'])->middleware(['auth']);
-Route::DELETE('/DeletarCliente/{id}',[Clients_controller::class,'deleteClient'])->middleware(['auth']);
+Route::POST('/Clientes',[Clientes_controller::class,'mainViewClient'])->middleware(['auth'])->middleware(['cors']);
+Route::POST('/cadastrarCliente',[Clientes_controller::class,'registerClient'])->middleware(['auth']);
+Route::GET('/Cliente/{id}',[Clientes_controller::class,'show'])->middleware(['auth'])->middleware(['cors']);
+Route::GET('/Clientes',[Clientes_controller::class,'mainViewClient'])->middleware(['auth'])->name('Clientes')->middleware(['cors']);
+Route::GET('/Editar/Cliente/{id}',[Clientes_controller::class,'viewClient'])->middleware(['auth']);
+Route::PATCH('/EditarCliente/{id}',[Clientes_controller::class,'editClient'])->middleware(['auth']);
+Route::DELETE('/DeletarCliente/{id}',[Clientes_controller::class,'deleteClient'])->middleware(['auth']);
 
 
 //ENDERECO
@@ -98,21 +98,21 @@ Route::PATCH('/editarCategoria/{id}', [Categoria_controller::class, 'editCategor
 Route::GET('/graficos',[Graficos_controller::class,'viewChart'])->middleware(['auth'])->name('graficos');
 
 // PROMOÇÕES
-Route::GET('/promotions',[PromotionController::class,'index'])->middleware(['auth'])->name('promotions');
-Route::POST('/newpromotion',[PromotionController::class,'store'])->middleware(['auth']);
-Route::PATCH('/situation/{id}',[PromotionController::class,'update'])->middleware(['auth']);
-Route::PATCH('/updatePromotion/{id}',[PromotionController::class,'edit'])->middleware(['auth']);
-Route::DELETE('/deletePromotion/{id}',[PromotionController::class,'destroy'])->middleware(['auth']);
+Route::GET('/promocoes',[PromocoesController::class,'index'])->middleware(['auth'])->name('promocoes');
+Route::POST('/adicionarpromocao',[PromocoesController::class,'store'])->middleware(['auth']);
+Route::PATCH('/ativarpromocao/{id}',[PromocoesController::class,'update'])->middleware(['auth']);
+Route::PATCH('/atualizarpromocao/{id}',[PromocoesController::class,'edit'])->middleware(['auth']);
+Route::DELETE('/deletarPromocao/{id}',[PromocoesController::class,'destroy'])->middleware(['auth']);
 
 // ENTRADAS/SAIDAS
 Route::GET('/entradas_saidas/{id}',[EntradaController::class,'index'])->middleware(['auth'])->name('entradas_saidas');
 Route::PATCH('/entradas_saidas/{id}',[EntradaController::class,'update'])->middleware(['auth']);
 
 // MULTIPLAS ENTRADAS E SAIDAS
-Route::GET('/detalhes_ajuste/{id}',[RegistroMultiplosController::class,'show_ajuste'])->middleware(['auth']);
-Route::GET('/detalhes_multiplos/{id}',[RegistroMultiplosController::class,'show_multiplos'])->middleware(['auth']);
-Route::GET('/visualizar_ajuste',[RegistroMultiplosController::class,'show'])->middleware(['auth'])->name('visualizar_ajuste');
-Route::GET('/visualizar_entradas',[RegistroMultiplosController::class,'entradas_view'])->middleware(['auth'])->name('visualizar_entradas');
+Route::GET('/detalhes_ajuste/{id}',[AjusteEstoqueController::class,'show_ajuste'])->middleware(['auth']);
+Route::GET('/detalhes_multiplos/{id}',[AjusteEstoqueController::class,'show_multiplos'])->middleware(['auth']);
+Route::GET('/visualizar_ajuste',[AjusteEstoqueController::class,'show'])->middleware(['auth'])->name('visualizar_ajuste');
+Route::GET('/visualizar_entradas',[AjusteEstoqueController::class,'entradas_view'])->middleware(['auth'])->name('visualizar_entradas');
 
 
 

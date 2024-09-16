@@ -3,77 +3,77 @@
 namespace App\Services;
 
 
-use App\Models\Promotion;
+use App\Models\Promocoes;
 use Illuminate\Support\Collection;
 
 
 
-use App\Services\PromotionsServiceInterface;
+use App\Services\PromocoesServiceInterface;
 
-class DBPromotionsService implements PromotionsServiceInterface
+class DBPromocoesService implements PromocoesServiceInterface
 {
 	public function adicionarPromocao($produto_id, $quantidade, $porcentagem)
 	{
-        $promotion = new Promotion();
+        $promocoes = new Promocoes();
 
-        $promotion->produto_id = $produto_id;
-        $promotion->porcentagem = $porcentagem;
-        $promotion->quantidade = $quantidade;
-        $promotion->ativo = 0;
+        $promocoes->produto_id = $produto_id;
+        $promocoes->porcentagem = $porcentagem;
+        $promocoes->quantidade = $quantidade;
+        $promocoes->ativo = 0;
 
-        $promotion->save();
+        $promocoes->save();
 	}
     
-    public function ativarPromocao($promotion_id, $situacao)
+    public function ativarPromocao($promocoes_id, $situacao)
     {
-        $promotion = Promotion::find($promotion_id);
+        $promocoes = Promocoes::find($promocoes_id);
 
-        $promotion->ativo = $situacao;
-        $promotion->save();
+        $promocoes->ativo = $situacao;
+        $promocoes->save();
     }
 
-    public function deletarPromocao($promotion_id)
+    public function deletarPromocao($promocoes_id)
     {
-        $promotion = Promotion::find($promotion_id);
+        $promocoes = Promocoes::find($promocoes_id);
 
-        $promotion->delete($promotion_id);
+        $promocoes->delete($promocoes_id);
     }
 
-    public function editarPromocao($promotion_id, $quantidade, $porcentagem)
+    public function editarPromocao($promocoes_id, $quantidade, $porcentagem)
     {
-        $promotion = Promotion::find($promotion_id);
+        $promocoes = Promocoes::find($promocoes_id);
 
-        $promotion->quantidade =  $quantidade;
-        $promotion->porcentagem = $porcentagem;
+        $promocoes->quantidade =  $quantidade;
+        $promocoes->porcentagem = $porcentagem;
 
-        $promotion->save();
+        $promocoes->save();
     }
     
     public function listarPromocoes($provider_produto, $provider_entradas_saidas, $provider_user, $provider_pedidos)
     {
-        $promotions = Promotion::all();
-        $Promotionslist = [];
+        $promocoes = Promocoes::all();
+        $promocoeslist = [];
 
-        foreach ($promotions as $promotion) 
+        foreach ($promocoes as $promocoes) 
         {
-            $produto_id = $promotion->produto_id;
+            $produto_id = $promocoes->produto_id;
             $buscar = $provider_produto->buscarProduto($produto_id);
-            $porcentagem = $promotion->porcentagem;
-            $quantidade = $promotion->quantidade;
-            $ativo = $promotion->ativo;
+            $porcentagem = $promocoes->porcentagem;
+            $quantidade = $promocoes->quantidade;
+            $ativo = $promocoes->ativo;
 
             $preco_original = $buscar['valor'];
             $preco_desconto = $buscar['valor'] - ($buscar['valor'] / 100 * $porcentagem);
            
-            $Promotionslist[$promotion->id] = ['produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade, 'ativo' => $ativo];       
+            $promocoeslist[$promocoes->id] = ['produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade, 'ativo' => $ativo];       
         }
 
-        return $Promotionslist;
+        return $promocoeslist;
     }
 
     public function buscarQuantidade($produto_id, $quantidade)
     {
-        $produto = Promotion::where('produto_id', $produto_id)->get();
+        $produto = Promocoes::where('produto_id', $produto_id)->get();
         $produto = $produto->toArray();
 
         $produtoEncontrado = [];
@@ -104,7 +104,7 @@ class DBPromotionsService implements PromotionsServiceInterface
 
     public function buscarPromocao($produto_id)
     {
-        $produto = Promotion::where('produto_id', $produto_id)->get();
+        $produto = Promocoes::where('produto_id', $produto_id)->get();
         $produtoEncontrado = [];
         $ativo = 0;
 

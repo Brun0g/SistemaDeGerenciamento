@@ -18,7 +18,6 @@ class CreateEntradasSaidasTable extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('produto_id')->constrained('produtos');
             $table->integer('quantidade');
-            $table->string('tipo');
             $table->string('observacao')->nullable();
             $table->foreignId('ajuste_id')->nullable()->constrained('ajustes');
             $table->foreignId('multiplo_id')->nullable()->constrained('multipla_entradas');

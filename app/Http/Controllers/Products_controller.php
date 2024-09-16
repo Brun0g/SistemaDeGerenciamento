@@ -9,27 +9,27 @@ use Illuminate\Support\Facades\Validator;
 use \App\Services\ProdutosServiceInterface;
 use \App\Services\CategoriaServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
-use \App\Services\PromotionsServiceInterface;
+use \App\Services\PromocoesServiceInterface;
 use \App\Services\EntradasServiceInterface;
 
 use \App\Services\UserServiceInterface;
 use \App\Services\PedidosServiceInterface;
-use \App\Services\RegistroMultiplosServiceInterface;
+use \App\Services\EstoqueServiceInterface;
 
 use Illuminate\Support\Facades\Storage;
 
 
 class Products_controller extends Controller
 {
-    public function ProductsStorageView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromotionsServiceInterface $provider_promotions)
+    public function ProductsStorageView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes)
     {
         $softDelete = false;
         
-        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions, $softDelete);
+        $Produtos = $provider_produto->listarProduto($provider_promocoes, $softDelete);
         
         $listarCategorias = $provider_categoria->listarCategoria();
 
-        return view('/Produtos', ['categorias' => $listarCategorias,'EstoqueProdutos' => $estoqueProdutos]);
+        return view('/Produtos', ['categorias' => $listarCategorias,'Produtos' => $Produtos]);
     }
 
     public function newProduct(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, EntradasServiceInterface $provider_entradas_saidas)
@@ -64,16 +64,18 @@ class Products_controller extends Controller
 
     public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho)
     {
-        $estoqueProdutos = $provider_produto->buscarProduto($produto_id);
+        $Produtos = $provider_produto->buscarProduto($produto_id);
 
 
         $entradas_saidas = $provider_entradas_saidas->buscarEntradaSaidas($produto_id, $provider_user);
+
+
         // $sort = array_column($entradas_saidas, 'data');
         // array_multisort($sort, SORT_ASC, $entradas_saidas);
 
-        $resultado = $estoqueProdutos['quantidade_estoque'];
+        $resultado = $Produtos['quantidade_estoque'];
 
-        return view('/showFilterProducts', ['resultado' => $resultado, 'EstoqueProdutos' => $estoqueProdutos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas]);
+        return view('/showFilterProducts', ['resultado' => $resultado, 'Produtos' => $Produtos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas]);
     }
 
     public function deleteProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
@@ -115,9 +117,9 @@ class Products_controller extends Controller
 
     public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
     {
-        $EstoqueProdutos = $provider_produto->buscarProduto($produto_id);
+        $Produtos = $provider_produto->buscarProduto($produto_id);
           
-        return view('editFilterProducts', ['EstoqueProdutos' => $EstoqueProdutos, 'produto_id'=> $produto_id]);
+        return view('editFilterProducts', ['Produtos' => $Produtos, 'produto_id'=> $produto_id]);
     }
 
     public function deleteImage(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
@@ -128,15 +130,15 @@ class Products_controller extends Controller
         return redirect($url);
     }
 
-    public function multipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromotionsServiceInterface $provider_promotions)
+    public function multipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
-        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions, false);
+        $Produtos = $provider_produto->listarProduto($provider_promocoes, false);
 
-        return view('multiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $estoqueProdutos]);
+        return view('multiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $Produtos]);
     }
 
-    public function newMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, RegistroMultiplosServiceInterface $provider_registro)
+    public function newMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, EstoqueServiceInterface $provider_estoque)
     {
         $quantidade = $request->input('quantidade');
         $observacao = $request->input('observacao');
@@ -153,7 +155,7 @@ class Products_controller extends Controller
             
         $validated = $validator->validated();
 
-        $multiplo_id = $provider_registro->adicionarMultiplos();
+        $multiplo_id = $provider_estoque->adicionarMultiplos();
 
 
         foreach ($validated['quantidade'] as $key => $value) {
@@ -163,7 +165,7 @@ class Products_controller extends Controller
 
             if($quantidade != "0")
             {
-                $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas_saidas, null, 'Múltipla entrada', null, $multiplo_id);
+                $provider_estoque->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas_saidas, null, null, $multiplo_id);
 
                 session()->flash('status', 'Múltiplas entradas adicionada com sucesso!');       
             }
@@ -172,15 +174,15 @@ class Products_controller extends Controller
         return redirect($url);
     }
 
-    public function editMultipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromotionsServiceInterface $provider_promotions)
+    public function editMultipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
-        $estoqueProdutos = $provider_produto->listarProduto($provider_promotions, false);
+        $Produtos = $provider_produto->listarProduto($provider_promocoes, false);
 
-        return view('EditarMultiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $estoqueProdutos]);
+        return view('EditarMultiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $Produtos]);
     }
 
-    public function EditMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, RegistroMultiplosServiceInterface $provider_registro)
+    public function EditMultiple(Request $request, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, EstoqueServiceInterface $provider_estoque)
     {
         $quantidade = $request->input('quantidade');
         $observacao = $request->input('observacao');
@@ -198,7 +200,9 @@ class Products_controller extends Controller
             
         $validated = $validator->validated();
 
-        $ajuste_id = $provider_registro->adicionarAjuste();
+        $ajuste_id = $provider_estoque->adicionarAjuste();
+
+
 
         foreach ($validated['quantidade'] as $key => $value) {
 
@@ -209,7 +213,7 @@ class Products_controller extends Controller
 
             if($quantidade_estoque != $quantidade)
             {
-                            $provider_registro->adicionarAjusteIndividuais($ajuste_id, $produto_id, $quantidade);
+                $provider_estoque->adicionarAjusteIndividuais($ajuste_id, $produto_id, $quantidade);
 
                 if($quantidade_estoque < $quantidade)
                 {
@@ -217,7 +221,7 @@ class Products_controller extends Controller
 
                     session()->flash('status', 'Ajuste de múltiplas entradas realizada com sucesso!');       
 
-                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas_saidas, $observacao, 'Ajuste entrada', $ajuste_id, null);
+                    $provider_estoque->atualizarEstoque($produto_id, $quantidade, 'entrada', $observacao, $provider_entradas_saidas, null, $ajuste_id, null);
                 }
                 else
                 {
@@ -225,7 +229,7 @@ class Products_controller extends Controller
                     
                     session()->flash('status', 'Ajuste de múltiplas saidas realizada com sucesso!');    
 
-                    $provider_produto->atualizarEstoque($produto_id, $quantidade, 'saida', $observacao, $provider_entradas_saidas, $observacao, 'Ajuste saida', $ajuste_id, null);
+                    $provider_estoque->atualizarEstoque($produto_id, $quantidade, 'saida', $observacao, $provider_entradas_saidas, null, $ajuste_id, null);
                 }
             }
         }

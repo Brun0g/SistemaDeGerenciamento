@@ -76,7 +76,7 @@ class Address_controller extends Controller
         $cliente_id = $provider_endereco->encontrarClienteID($endereco_id);
 
         if($validator->fails())
-            return redirect('Clients')->withErrors($validator);
+            return redirect('Clientes')->withErrors($validator);
         
         $provider_endereco->editarEndereco($endereco_id, $cidade, $cep, $rua, $numero, $estado);
 

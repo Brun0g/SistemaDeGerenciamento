@@ -10,11 +10,11 @@ class SessionClientesService implements ClientesServiceInterface
 {
 	public function adicionarCliente($name,$email,$idade,$cidade, $cep, $rua, $numero, $estado, $contato)
 	{
-		$clientes = session()->get('Clients', []);
+		$clientes = session()->get('Clientes', []);
         
 		$clientes[] = ['name' => $name, 'email' => $email,'idade' => $idade, 'cidade' => $cidade, 'cep' => $cep, 'rua' => $rua, 'numero' => $numero, 'estado' => $estado, 'contato' => $contato];
 	
-		session()->put("Clients", $clientes);
+		session()->put("Clientes", $clientes);
 
         $enderecos = session()->get('enderecos', []);
 
@@ -29,9 +29,9 @@ class SessionClientesService implements ClientesServiceInterface
 
 	public function editarCliente($cliente_id, $name,$email,$idade, $contato)
 	{
-		if(session()->has('Clients'))
+		if(session()->has('Clientes'))
         {
-            $EditClientID = session()->get('Clients');
+            $EditClientID = session()->get('Clientes');
 
             if(array_key_exists($cliente_id, $EditClientID))
             {
@@ -40,14 +40,14 @@ class SessionClientesService implements ClientesServiceInterface
                 $EditClientID[$cliente_id]['idade'] = $idade;
                 $EditClientID[$cliente_id]['contato'] = $contato;
                     
-                session()->put('Clients', $EditClientID);
+                session()->put('Clientes', $EditClientID);
             }
         }
 	}
 
     public function listarClientes()
     {
-        $clientes = session()->get('Clients', []);
+        $clientes = session()->get('Clientes', []);
         $listarClientes = [];
 
         foreach ($clientes as $key => $value) 
@@ -70,23 +70,23 @@ class SessionClientesService implements ClientesServiceInterface
           
     public function excluirCliente($cliente_id)
     {
-        if(session()->has('Clients'))
+        if(session()->has('Clientes'))
         {
-            $clientes = session()->get('Clients');
+            $clientes = session()->get('Clientes');
 
             if(array_key_exists($cliente_id, $clientes))
             {
                 unset($clientes[$cliente_id]);
-                session()->put('Clients', $clientes);
+                session()->put('Clientes', $clientes);
             }
         }
     }   
 
     public function buscarCliente($cliente_id)
     {
-        if(session()->has('Clients'))
+        if(session()->has('Clientes'))
         {
-            $clientes = session()->get('Clients');
+            $clientes = session()->get('Clientes');
             $clienteID = [];
 
             foreach ($clientes as $key => $value) 

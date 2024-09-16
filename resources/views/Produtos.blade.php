@@ -144,8 +144,8 @@ transform: scale(1.05);
 
 <div class="container-geral">
     <div class="sub-container">
-        @if(isset($EstoqueProdutos))
-        @foreach ($EstoqueProdutos as $key => $value)
+        @if(isset($Produtos))
+        @foreach ($Produtos as $key => $value)
         
         <div class="sub-container-item">
             <div style="font-weight: 900">
@@ -166,7 +166,7 @@ transform: scale(1.05);
             </div>
             <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
             <p class="sub-preco-desconto"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade_estoque']}}</p>
-            @if(count($EstoqueProdutos[$key]['promocao']) != [])
+            @if(count($Produtos[$key]['promocao']) != [])
             <div class="sub-preco-desconto">Desconto por quantidade</div>
             <div style="display: flex; justify-content: center;">
                 <table>
@@ -174,7 +174,7 @@ transform: scale(1.05);
                         <th class="sub-preco-desconto">Quantidade</th>
                         <th class="sub-preco-desconto">Preço</th>
                     </tr>
-                    @foreach ($EstoqueProdutos[$key]['promocao'] as $id => $valor)
+                    @foreach ($Produtos[$key]['promocao'] as $id => $valor)
                     @foreach($valor as $chave => $dado)
                     @if($dado['produto_id'] == $key)
                     <tr>

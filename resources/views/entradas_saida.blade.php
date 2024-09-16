@@ -55,7 +55,7 @@ text-align: center;
     <div class="d-flex justify-content-center">
         
         <div class="container_edit">
-            @if(isset($EstoqueProdutos))
+            @if(isset($Produtos))
             <form method="POST" action="/entradas_saidas/{{$produto_id}}" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
@@ -63,20 +63,20 @@ text-align: center;
                     ID: {{$produto_id}}
                 </div>
                 <div class="form-group">
-                    @if($EstoqueProdutos['image_url'] == null)
+                    @if($Produtos['image_url'] == null)
                     <div class="container-default">
                         <img class="image" src="{{ asset('images/default.png') }}">
                     </div>
                     @else
                     
                     <div class="container">
-                        <img class="image" src="{{ $EstoqueProdutos['image_url'] }}">
+                        <img class="image" src="{{ $Produtos['image_url'] }}">
                     </div>
                     @endif
                 </div>
                 <div class="form-group">
                     
-                    <h4>{{ strtoupper($EstoqueProdutos['produto']) }}</h4>
+                    <h4>{{ strtoupper($Produtos['produto']) }}</h4>
                 </div>
                 <div class="form-group">
                     @if (session('status'))
@@ -90,7 +90,7 @@ text-align: center;
                     </div>
                     @endif
                     <label for="produto">Quantidade no estoque:</label>
-                    <input type="text" class="form-control" id="produto" value="{{ strtoupper($EstoqueProdutos['quantidade_estoque']) }}" readonly>
+                    <input type="text" class="form-control" id="produto" value="{{ strtoupper($Produtos['quantidade_estoque']) }}" readonly>
                     <label for="produto">Quantidade no carrinho:</label>
                     <input type="text" class="form-control" id="produto" value="{{$carrinho}}" readonly>
                 </div>

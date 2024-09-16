@@ -11,21 +11,21 @@ use \App\Services\PedidosServiceInterface;
 use \App\Services\ProdutosServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\EnderecoServiceInterface;
-use \App\Services\PromotionsServiceInterface;
+use \App\Services\PromocoesServiceInterface;
 use \App\Services\EntradasServiceInterface;
 
 use \App\Services\UserServiceInterface;
-use \App\Services\RegistroMultiplosServiceInterface;
+use \App\Services\EstoqueServiceInterface;
 
 use \App\Services\DBClientesService;
 use \App\Services\DBCategoriasService;
 use \App\Services\DBPedidosService;
 use \App\Services\DBProdutosService;
 use \App\Services\DBEnderecosService;
-use \App\Services\DBPromotionsService;
+use \App\Services\DBPromocoesService;
 use \App\Services\DBEntradasService;
 use \App\Services\DBUserService;
-use \App\Services\DBRegistroMultiplosService;
+use \App\Services\DBEstoqueService;
 
 use \App\Services\SessionClientesService;
 use \App\Services\SessionCategoriaService;
@@ -33,10 +33,10 @@ use \App\Services\SessionPedidosService;
 use \App\Services\SessionProdutosService;
 use \App\Services\SessionCarrinhoService;
 use \App\Services\SessionEnderecoService;
-use \App\Services\SessionPromotionsService;
+use \App\Services\SessionPromocoesService;
 use \App\Services\SessionEntradasService;
 use \App\Services\SessionUserService;
-use \App\Services\SessionRegistroMultiplosService;
+use \App\Services\SessionEstoqueService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -50,9 +50,9 @@ class AppServiceProvider extends ServiceProvider
         // ProdutosServiceInterface::class => SessionProdutosService::class,
         // PedidosServiceInterface::class => SessionPedidosService::class,
         // EnderecoServiceInterface::class => SessionEnderecoService::class,
-        // PromotionsServiceInterface::class => SessionPromotionsService::class,
+        // PromocoesServiceInterface::class => SessionPromocoesService::class,
         // EntradasServiceInterface::class => SessionEntradasService::class,
-        // RegistroMultiplosServiceInterface::class => SessionRegistroMultiplosService::class,
+        // EstoqueServiceInterface::class => SessionEstoqueService::class,
 
 
         ClientesServiceInterface::class => DBClientesService::class,
@@ -60,9 +60,9 @@ class AppServiceProvider extends ServiceProvider
         ProdutosServiceInterface::class => DBProdutosService::class,
         PedidosServiceInterface::class => DBPedidosService::class,
         EnderecoServiceInterface::class => DBEnderecosService::class,
-        PromotionsServiceInterface::class => DBPromotionsService::class,
+        PromocoesServiceInterface::class => DBPromocoesService::class,
         EntradasServiceInterface::class => DBEntradasService::class,
-        RegistroMultiplosServiceInterface::class => DBRegistroMultiplosService::class,
+        EstoqueServiceInterface::class => DBEstoqueService::class,
 
         UserServiceInterface::class => DBUserService::class,
         CarrinhoServiceInterface::class => SessionCarrinhoService::class,

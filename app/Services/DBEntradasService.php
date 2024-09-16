@@ -10,14 +10,13 @@ use Illuminate\Support\Facades\Auth;
 
 class DBEntradasService implements EntradasServiceInterface
 {
-    public function adicionarEntrada($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id)
+    public function adicionarEntrada($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id)
     {
         $entrada = new Entradas_saidas();
 
         $entrada->user_id = Auth::id();
         $entrada->produto_id = $produto_id;
         $entrada->quantidade = $quantidade;
-        $entrada->tipo = $tipo;
         $entrada->observacao = $observacao;
         $entrada->ajuste_id = $ajuste_id;
         $entrada->multiplo_id = $multiplo_id;
@@ -28,14 +27,13 @@ class DBEntradasService implements EntradasServiceInterface
         return $entrada->id;
     }
 
-    public function adicionarSaida($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id)
+    public function adicionarSaida($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id)
     {
         $saida = new Entradas_saidas();
 
         $saida->user_id = Auth::id();
         $saida->produto_id = $produto_id;
         $saida->quantidade = $quantidade;
-        $saida->tipo = $tipo;
         $saida->observacao = $observacao;
         $saida->ajuste_id = $ajuste_id;
         $saida->multiplo_id = $multiplo_id;
@@ -58,11 +56,9 @@ class DBEntradasService implements EntradasServiceInterface
             if($value['produto_id'] == $produto_id)
             {
                 $user_id = $value['user_id'];
-
                 $nome = $provider_user->buscarUsuario($user_id);
                 $produto_id = $value['produto_id'];
-                $data = $value['created_at'];  
-                $tipo = $value['tipo'];  
+                $data = $value['created_at'];    
                 $observacao = $value['observacao'];
                 $multiplo_id = $value['multiplo_id'];
                 $quantidade = $value['quantidade'];
@@ -71,7 +67,7 @@ class DBEntradasService implements EntradasServiceInterface
 
                 $total_entrada += $quantidade;
 
-                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0, 'tipo' => $tipo, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
+                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
             }
         }
 
@@ -80,7 +76,6 @@ class DBEntradasService implements EntradasServiceInterface
     
     function listarEntradaSaidas($provider_user)
     {
-
         $entradas = Entradas_saidas::all();
 
         $entradas_array = [];
@@ -91,14 +86,13 @@ class DBEntradasService implements EntradasServiceInterface
             $nome = $provider_user->buscarUsuario($user_id);
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
-            $data = $value['created_at'];   
-            $tipo = $value['tipo'];   
+            $data = $value['created_at']; 
             $observacao = $value['observacao'];
             $multiplo_id = $value['multiplo_id'];
             $ajuste_id = $value['ajuste_id'];
             $pedido_id = $value['pedido_id'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id];
+            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id];
         }
 
         return $entradas_array;
@@ -146,7 +140,7 @@ class DBEntradasService implements EntradasServiceInterface
             $observacao = $value['observacao'];
             $multiplo_id = $value['multiplo_id'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'multiplo_id' => $multiplo_id];
+            $entradas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo,  'multiplo_id' => $multiplo_id];
         }
 
         return $entradas_array;

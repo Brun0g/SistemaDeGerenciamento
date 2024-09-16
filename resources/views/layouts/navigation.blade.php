@@ -13,7 +13,7 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
 
-                      <x-nav-link :href="route('Clients')" :active="request()->routeIs('Clients')">
+                      <x-nav-link :href="route('Clientes')" :active="request()->routeIs('Clientes')">
                         {{ __('Clientes') }}
                     </x-nav-link>
                     <div class="hidden sm:flex sm:items-center sm:ml-6">
@@ -80,7 +80,7 @@
                 </x-dropdown>
             </div>
                       
-                    <x-nav-link :href="route('promotions')" :active="request()->routeIs('promotions')">
+                    <x-nav-link :href="route('promocoes')" :active="request()->routeIs('promocoes')">
                         {{ __('Promoções') }}
                     </x-nav-link>
                       <x-nav-link :href="route('Categoria')" :active="request()->routeIs('Categoria')">

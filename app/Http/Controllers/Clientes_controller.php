@@ -14,7 +14,7 @@ use \App\Services\PedidosServiceInterface;
 use \App\Services\ProdutosServiceInterface;
 use \App\Services\EnderecoServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
-use \App\Services\PromotionsServiceInterface;
+use \App\Services\PromocoesServiceInterface;
 use \App\Services\EntradasServiceInterface;
 
 use \App\Services\UserServiceInterface;
@@ -22,7 +22,7 @@ use \App\Services\UserServiceInterface;
 
 
 
-class Clients_controller extends Controller
+class Clientes_controller extends Controller
 {
     public function registerClient(Request $request, ClientesServiceInterface $provider_cliente)
     {
@@ -49,11 +49,11 @@ class Clients_controller extends Controller
         ]);
 
         if($validator->fails())
-            return redirect('Clients')->withErrors($validator);
+            return redirect('Clientes')->withErrors($validator);
 
         $provider_cliente->adicionarCliente($name,$email,$idade,$cidade, $cep, $rua, $numero, $estado, $contato);
 
-        return redirect('Clients');
+        return redirect('Clientes');
     }
     
     public function mainViewClient(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco)
@@ -79,18 +79,18 @@ class Clients_controller extends Controller
             }
         }
 
-        return view('Clients', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
+        return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
     }
 
-    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
+    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
     {
         $cliente = $provider_cliente->buscarCliente($cliente_id);
-        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promotions, $provider_carrinho);  
+        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);  
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
-        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promotions);
+        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
 
         $softDelete = false;
-        $listarProduto = $provider_produto->listarProduto($provider_promotions, $softDelete);
+        $listarProduto = $provider_produto->listarProduto($provider_promocoes, $softDelete);
         $listarCategoria = $provider_categoria->listarCategoria();
         $listarPedidosAprovados = $provider_pedidos->listarPedidos($cliente_id);
 
@@ -103,7 +103,7 @@ class Clients_controller extends Controller
     {
         $provider_cliente->excluirCliente($cliente_id);
 
-        return redirect('Clients');
+        return redirect('Clientes');
     }
 
     public function editClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)

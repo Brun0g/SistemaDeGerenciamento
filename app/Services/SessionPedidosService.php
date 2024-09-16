@@ -13,8 +13,8 @@ class SessionPedidosService implements PedidosServiceInterface
 {
     public function excluirPedido($cliente_id, $id_pedido)
     {
-        $PedidosEncerrados = session()->get('PedidosTotalValor',[]);
-        $PedidosConcluidos = session()->get('pedidoUnitario',[]);
+        $PedidosEncerrados = session()->get('Pedido_encerrado',[]);
+        $PedidosConcluidos = session()->get('Pedido_encerrado_individual',[]);
 
             foreach ($PedidosConcluidos as $id => $valor) {
                 if($valor['cliente_id'] == $cliente_id)
@@ -29,33 +29,33 @@ class SessionPedidosService implements PedidosServiceInterface
                 }
             }
             
-        session()->put('pedidoUnitario', $PedidosConcluidos);
-        session()->put('PedidosTotalValor', $PedidosEncerrados);
+        session()->put('Pedido_encerrado_individual', $PedidosConcluidos);
+        session()->put('Pedido_encerrado', $PedidosEncerrados);
     }
     
 
     public function listarQuantidadePedidos()
     {
-        $pedidoUnitario = session()->get('pedidoUnitario', []); 
+        $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []); 
         $service_produtos = new SessionProdutosService();
 
-        foreach ($pedidoUnitario as $pedidoKey => $value) {
+        foreach ($Pedido_encerrado_individual as $pedidoKey => $value) {
             $id = $value['cliente_id'];
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
    
 
-            $pedidoUnitario[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'total' => $valor]; 
+            $Pedido_encerrado_individual[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'total' => $valor]; 
         } 
 
-        return $pedidoUnitario; 
+        return $Pedido_encerrado_individual; 
     }
 
     public function listarPedidos($cliente_id)
     {
         $listaPedidos = [];
-        $pedidos = session()->get('PedidosTotalValor',[]);
+        $pedidos = session()->get('Pedido_encerrado',[]);
 
         $service_produtos = new SessionProdutosService();
 
@@ -78,7 +78,7 @@ class SessionPedidosService implements PedidosServiceInterface
     public function buscarPedido($pedido_id)
     {
         $pedidoEncontrado = [];
-        $pedidos = session()->get('PedidosTotalValor')[$pedido_id]; 
+        $pedidos = session()->get('Pedido_encerrado')[$pedido_id]; 
 
         foreach ($pedidos as $pedido) {
             $id_cliente = $pedidos['cliente_id'];
@@ -93,13 +93,13 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidoEncontrado;
     }
 
-    public function buscarItemPedido($pedido_id, $provider_entradas_saidas, , $provider_user, $provider_pedidos)
+    public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
     {
-        $pedidoUnitario = session()->get('pedidoUnitario', []);
+        $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
         $service_produtos = new SessionProdutosService();
         $total = 0;
 
-        foreach ($pedidoUnitario as $pedidoKey => $pedido) 
+        foreach ($Pedido_encerrado_individual as $pedidoKey => $pedido) 
         {
             if($pedido['pedido_id'] == $pedido_id)
             {
@@ -123,35 +123,35 @@ class SessionPedidosService implements PedidosServiceInterface
 
     public function salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total)
     {
-        $pedidosTotalValor = session()->get('PedidosTotalValor', []);
-        $index = count($pedidosTotalValor);
+        $Pedido_encerrado = session()->get('Pedido_encerrado', []);
+        $index = count($Pedido_encerrado);
         $pedido_id = $index + 1;
         
-        $pedidosTotalValor[$pedido_id] = ['pedido_id' => $pedido_id, 'cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $valor_final, 'porcentagem' => $porcentagem, 'totalSemDesconto' => $valor_total, 'excluido' => 0];
+        $Pedido_encerrado[$pedido_id] = ['pedido_id' => $pedido_id, 'cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $valor_final, 'porcentagem' => $porcentagem, 'totalSemDesconto' => $valor_total, 'excluido' => 0];
 
-        session()->put('PedidosTotalValor', $pedidosTotalValor);
+        session()->put('Pedido_encerrado', $Pedido_encerrado);
 
         return $pedido_id;
     }
 
     function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
     {
-        $pedidoUnitario = session()->get('pedidoUnitario', []);
-        $pedidosTotalValor = session()->get('PedidosTotalValor', []);
+        $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
+        $Pedido_encerrado = session()->get('Pedido_encerrado', []);
 
-        $count = sizeof($pedidosTotalValor);
+        $count = sizeof($Pedido_encerrado);
     
-        $pedidoUnitario[] = ['pedido_id' => $pedido_id,'cliente_id' => $cliente_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total];
+        $Pedido_encerrado_individual[] = ['pedido_id' => $pedido_id,'cliente_id' => $cliente_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total];
 
 
-        session()->put('pedidoUnitario', $pedidoUnitario);
+        session()->put('Pedido_encerrado_individual', $Pedido_encerrado_individual);
 
         return $count;
     }
 
     public function buscarItem($pedido_id)
     {
-        $pedidos = session()->get('pedidoUnitario');
+        $pedidos = session()->get('Pedido_encerrado_individual');
 
         foreach ($pedidos as $key => $value) {
             if($value['pedido_id'] == $pedido_id)

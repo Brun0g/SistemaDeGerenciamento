@@ -99,7 +99,7 @@ width: 99%;
                         {{  $key }}</td>
                         @if($value['ativo'] == 0)
                         <td style="border: 3px solid; width: 5%">
-                            <form  action="/situation/{{$key}}" method="POST">
+                            <form  action="/ativarpromocao/{{$key}}" method="POST">
                                 @csrf
                                 @method('PATCH')
                                 <button name= 'situacao' value="{{$value['ativo'] + 1}}" class="{{$value['ativo'] == 0 ? 'btn btn-danger' : 'btn btn-success'}}"  type="submit">{{  $value['ativo'] == 0 ? 'DESATIVADO' : 'ATIVADO' }}</button>
@@ -107,14 +107,14 @@ width: 99%;
                         </td>
                         @else
                         <td style="border: 1px solid; width: 5%">
-                            <form action="/situation/{{$key}}" method="POST">
+                            <form action="/ativarpromocao/{{$key}}" method="POST">
                                 @csrf
                                 @method('PATCH')
                                 <button name= 'situacao' value="{{$value['ativo'] - 1}}" class="{{$value['ativo'] == 0 ? 'btn btn-danger' : 'btn btn-success'}}"  type="submit">{{  $value['ativo'] == 0 ? 'DESATIVADO' : 'ATIVADO' }}</button>
                             </form>
                         </td>
                         @endif
-                        <form action="/updatePromotion/{{$key}}" method="POST">
+                        <form action="/atualizarpromocao/{{$key}}" method="POST">
                             @csrf
                             @method('PATCH')
                             <td style="border: 1px solid; width: 20%">{{  $value['produto'] }}</td>
@@ -134,7 +134,7 @@ width: 99%;
                         </form>
                         
                         <td style="border: 1px solid; width: 15%">
-                            <form  action="/deletePromotion/{{$key}}" method="POST" >
+                            <form  action="/deletarPromocao/{{$key}}" method="POST" >
                                 @csrf
                                 @method('delete')
                                 <button    class="btn btn-danger"  type="submit">Deletar</button>
@@ -176,7 +176,7 @@ width: 99%;
                                 </table>
                             </div>
                             @endif
-                            <form id="po-insert"  method="POST" action ="/newpromotion">
+                            <form id="po-insert"  method="POST" action ="/adicionarpromocao">
                                 @csrf
                                 
                                 <label for="produto-select">Escolha um produto:</label>

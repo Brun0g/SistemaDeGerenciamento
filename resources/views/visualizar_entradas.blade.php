@@ -72,7 +72,7 @@ padding: 10px;
                     @if(isset($multiplos))
                     @foreach($multiplos as $key => $value)
                     
-                    @if(isset($value['multiplo_id']) && $value['tipo'] == 'Múltipla entrada')
+                    @if(isset($value['multiplo_id']))
                     <tr>
                         <td>{{  strtoupper($value['user_id'])}}</td>
                         
@@ -80,7 +80,7 @@ padding: 10px;
                             <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">
                                 @csrf
                                 @method('GET')
-                                <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">{{$value['tipo']}} N° <span style="color: black; font-weight: 900;">{{$value['multiplo_id']}}</span></button>
+                                <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Múltipla entrada N° <span style="color: black; font-weight: 900;">{{$value['multiplo_id']}}</span></button>
                             </form>
                         </td>
                         <td>{{  $value['observacao'] }}</td>

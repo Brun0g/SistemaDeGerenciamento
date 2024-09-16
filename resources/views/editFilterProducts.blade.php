@@ -105,7 +105,7 @@ padding: 49px 80px;
                     </tr>
                 </thead>
                 <tbody>
-                    @if(isset($EstoqueProdutos))
+                    @if(isset($Produtos))
                     <tr style="vertical-align: middle;">
                         <form method="POST" action="/EditarProduto/{{$produto_id}}" enctype="multipart/form-data" >
                             @csrf
@@ -113,14 +113,14 @@ padding: 49px 80px;
                             <td style="width: 3%; background: black; color: white; font-weight: 900">{{$produto_id}}
                             </td>
                             <td style="width: 18%; text-align: center; vertical-align: middle; ">
-                                @if($EstoqueProdutos['image_url'] == null)
+                                @if($Produtos['image_url'] == null)
                                 <div class="container-default">
                                     <img class="image" src="{{ asset('images/default.png') }}">
                                 </div>
                                 @else
                                 
                                 <div class="container">
-                                    <img class="image" src="{{ $EstoqueProdutos['image_url'] }}">
+                                    <img class="image" src="{{ $Produtos['image_url'] }}">
                                     
                                     <div class="middle" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
                                         <div class="text">Excluir imagem</div>
@@ -129,9 +129,9 @@ padding: 49px 80px;
                             </div>
                             @endif
                         </td>
-                        <td style="width: 20%; font-weight: 900;"><input style="text-align: center; width: 60%" type="text" name="produto" value="{{strtoupper($EstoqueProdutos['produto']) }}">
+                        <td style="width: 20%; font-weight: 900;"><input style="text-align: center; width: 60%" type="text" name="produto" value="{{strtoupper($Produtos['produto']) }}">
                     </td>
-                    <td style="width: 15%; font-weight: 900; color: green">R$ <input style="text-align: center; width: 50%" type="text" name="valor" value="{{$EstoqueProdutos['valor'] }}">
+                    <td style="width: 15%; font-weight: 900; color: green">R$ <input style="text-align: center; width: 50%" type="text" name="valor" value="{{$Produtos['valor'] }}">
                 </td>
                 <td style="width: 10%">
                     <input type="file" accept="image/*" name="imagem" id="imageFile"/>
@@ -167,7 +167,7 @@ padding: 49px 80px;
 </div>
 <div class="modal-body">
 <div style="display: flex; justify-content: center;">
-<img style="width: 50%" src="{{ $EstoqueProdutos['image_url'] }}">
+<img style="width: 50%" src="{{ $Produtos['image_url'] }}">
 </div>
 </div>
 <div class="modal-footer">

@@ -185,7 +185,7 @@
             </tr>
           </thead>
           <tbody>
-            @if(!session()->has('PedidosTotalValor'))
+            @if(!session()->has('Pedido_encerrado'))
             <x-dynamic :listarPedidosAprovados="$listarPedidosAprovados" :id="$id"></x-dynamic>
             @else
             <x-dynamic2 :listarPedidosAprovados="$listarPedidosAprovados" :id="$id"></x-dynamic2>

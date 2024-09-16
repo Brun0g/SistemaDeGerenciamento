@@ -50,7 +50,7 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->delete($produto_id);
     }
     
-    public function listarProduto($provider_promotions, $softDelete)
+    public function listarProduto($provider_promocoes, $softDelete)
     {
         $produtos = Produto::all();
         
@@ -67,7 +67,7 @@ class DBProdutosService implements ProdutosServiceInterface
             $produto_id = $produto->id;
             $quantidade_estoque = $produto->quantidade;
 
-            $promocao = $provider_promotions->buscarPromocao($produto_id);
+            $promocao = $provider_promocoes->buscarPromocao($produto_id);
             $ativo = $promocao['ativo'];
             $array[$produto_id] = $promocao['promocao'];
 
@@ -119,23 +119,4 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->save();
     }
 
-    public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas_saidas, $pedido_id, $tipo, $ajuste_id, $multiplo_id)
-    {
-        $produto = Produto::find($produto_id);
-
-        if(isset($entrada_ou_saida))
-        {
-            $quantidade_anterior = $produto->quantidade;
-            $produto->quantidade += $quantidade;
-
-            if($entrada_ou_saida == 'entrada')
-                $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id);
-            else
-                $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade, $tipo, $observacao, $ajuste_id, $multiplo_id, $pedido_id);
-
-        } else 
-            $produto->quantidade = $quantidade;
-
-        $produto->save();
-    }
 }

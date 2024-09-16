@@ -16,11 +16,11 @@ use \App\Services\ClientesServiceInterface;
 use \App\Services\ProdutosServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\EnderecoServiceInterface;
-use \App\Services\PromotionsServiceInterface;
+use \App\Services\PromocoesServiceInterface;
 use \App\Services\EntradasServiceInterface;
 
 use \App\Services\UserServiceInterface;
-use \App\Services\RegistroMultiplosServiceInterface;
+use \App\Services\EstoqueServiceInterface;
 
 class EntradaController extends Controller
 {
@@ -29,67 +29,18 @@ class EntradaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(request $request, $produto_id, EntradasServiceInterface $provider_entradas_saidas, ProdutosServiceInterface $provider_produto, PromotionsServiceInterface $provider_promotions, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho)
+    public function index(request $request, $produto_id, EntradasServiceInterface $provider_entradas_saidas, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho)
     {
        $entradas = $provider_entradas_saidas->listarEntradaSaidas($provider_user);
+
        $produtos = $provider_produto->buscarProduto($produto_id);
        $quantidade_carrinho = $provider_carrinho->buscarQuantidade($produto_id)['quantidade'];
 
         
-       return view('entradas_saida', ['entradas' => $entradas, 'EstoqueProdutos' => $produtos, 'produto_id' => $produto_id, 'carrinho' => $quantidade_carrinho]);
+       return view('entradas_saida', ['entradas' => $entradas, 'Produtos' => $produtos, 'produto_id' => $produto_id, 'carrinho' => $quantidade_carrinho]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Entrada  $entrada
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Entrada $entrada)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Entrada  $entrada
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Entrada $entrada)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Entrada  $entrada
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $produto_id, EntradasServiceInterface $provider_entradas_saidas, ProdutosServiceInterface $provider_produto, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho, PromotionsServiceInterface $provider_promotions, RegistroMultiplosServiceInterface $provider_registro)
+    public function update(Request $request, $produto_id, EntradasServiceInterface $provider_entradas_saidas, ProdutosServiceInterface $provider_produto, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $entrada_ou_saida =  $request->input('escolha');
         $observacao = $request->input('observacao');
@@ -125,10 +76,10 @@ class EntradaController extends Controller
                     $quantidade = $value['quantidade'];
 
                     if($quantidade == 0)
-                        $provider_carrinho->atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promotions, $provider_entradas_saidas, $provider_user, $provider_pedidos);
+                        $provider_carrinho->atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promocoes, $provider_entradas_saidas, $provider_user, $provider_pedidos);
                 }
             }
-
+            
         } else {
 
             $tipo = 'Saída';
@@ -144,19 +95,8 @@ class EntradaController extends Controller
         }
    
 
-        $provider_produto->atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas_saidas, null, $tipo, null, null);
+        $provider_estoque->atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas_saidas, null,  null, null);
 
         return redirect($url);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Entrada  $entrada
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Entrada $entrada)
-    {
-        //
     }
 }

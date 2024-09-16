@@ -140,7 +140,7 @@ e.preventDefault();
 let search_string = $('#search').val();
 console.log(search_string);
 $.ajax({
-url:"{{ route('Clients') }}",
+url:"{{ route('Clientes') }}",
 method: 'GET',
 data:{search_string:search_string},
 success: function(res){
