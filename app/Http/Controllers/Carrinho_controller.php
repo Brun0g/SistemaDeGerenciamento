@@ -148,6 +148,7 @@ class Carrinho_controller extends Controller
         $endereco_id = $request->input('endereco_id');
 
         $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);
+        $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
 
         $url = url()->previous();
         $array = [];
@@ -155,22 +156,29 @@ class Carrinho_controller extends Controller
 
 
         foreach ($pedidos_no_carrinho as $key => $value) {
-            $fora_de_estoque = $value['fora_de_estoque'];
+            $acima_do_estoque = $value['fora_de_estoque'];
+            $produto_id = $value['produto_id'];
+            $produto = $value['produto'];
+            $quantidade_estoque = $value['quantidade_estoque'];
+            $deleted_at = $provider_produto->buscarProduto($produto_id)['deleted_at'];
 
-            if($fora_de_estoque == true)
+            if( isset($deleted_at) )
+            {        
+                $array_erros[] = strtoupper($produto) . ' fora de estoque!';
+                break;
+            }
+
+            if($acima_do_estoque == true)
             {
-                $quantidade_estoque = $value['quantidade_estoque'];
                 $fora_estoque = true;
-                $produto = $value['produto'];
-
-             
-                $array_erros[] = strtoupper($produto) .'Quantidade desejada ultrapassa valor do estoque! ' . 'Estoque atual: ' . $quantidade_estoque;
+            
+                $array_erros[] = strtoupper($produto) . ' quantidade desejada ultrapassa valor do estoque! ' . 'Estoque atual: ' . $quantidade_estoque;
             }
         }
 
 
 
-        if(isset($fora_estoque))
+        if( isset($fora_estoque) || isset($deleted_at) )
              return redirect($url)->with('array_erros', $array_erros);
         
         if($pedidos_no_carrinho)

@@ -94,7 +94,7 @@
                                 <tbody>
                                     
                                     @if(isset($array))
-                                    @foreach ($array as $id_pedido => $value )
+                                    @foreach ($array as $pedido_id => $value )
                                     <tr>
                                         <td style=" width: 10%; border: 1px solid black;">{{  strtoupper($value['produto']) }}</td>
                                         <td  style="width: 5%; border: 1px solid black;">{{  $value['quantidade'] }}</td>

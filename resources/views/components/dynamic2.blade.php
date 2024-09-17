@@ -2,22 +2,22 @@
 
 
 @if(sizeof($listarPedidosAprovados) > 0)
-@foreach ($listarPedidosAprovados as $id_pedido => $value)
+@foreach ($listarPedidosAprovados as $pedido_id => $value)
 
 @if ($value['cliente_id'] == $id )
 @if ($value['excluido'] == 0)
 <tr class="bg-white">
-    <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $id_pedido }}</td>
+    <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $pedido_id }}</td>
     <td style="color:green;">R$ {{ number_format($value['total'], 2, ",", ".")  }}</td>
     <td>
-        <form  action="/ExcluirPedidoCliente/{{$value['cliente_id']}}/{{$id_pedido}}" method="POST" >
+        <form  action="/ExcluirPedidoCliente/{{$value['cliente_id']}}/{{$pedido_id}}" method="POST" >
             @csrf
             @method('DELETE')
             <button    class="btn btn-danger"  type="submit">Excluir</button>
         </form>
     </td>
       <td>
-        <form  action="/pedidofinalizado/{{$id_pedido}}" method="GET" >
+        <form  action="/pedidofinalizado/{{$pedido_id}}" method="GET" >
             @csrf
             
             <button    class="btn btn-primary"  type="submit">Visualizar pedido</button>

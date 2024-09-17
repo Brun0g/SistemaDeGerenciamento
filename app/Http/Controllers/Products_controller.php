@@ -82,6 +82,9 @@ class Products_controller extends Controller
     {
         $provider_produto->excluirProduto($produto_id);
 
+       
+
+
         return redirect('/Produtos');
     }
     public function editProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, EntradasServiceInterface $provider_entradas_saidas)

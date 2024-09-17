@@ -11,20 +11,20 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionPedidosService implements PedidosServiceInterface
 {
-    public function excluirPedido($cliente_id, $id_pedido)
+    public function excluirPedido($cliente_id, $pedido_id)
     {
         $PedidosEncerrados = session()->get('Pedido_encerrado',[]);
         $PedidosConcluidos = session()->get('Pedido_encerrado_individual',[]);
 
             foreach ($PedidosConcluidos as $id => $valor) {
                 if($valor['cliente_id'] == $cliente_id)
-                    if($valor['pedido_id'] == $id_pedido)
+                    if($valor['pedido_id'] == $pedido_id)
                         unset($PedidosConcluidos[$id]);
             }
 
             foreach ($PedidosEncerrados as $key => $value) {
                 if ($cliente_id == $value['cliente_id']) {
-                        if($id_pedido == $value['pedido_id'])
+                        if($pedido_id == $value['pedido_id'])
                             $PedidosEncerrados[$key]['excluido'] = 1;
                 }
             }
@@ -103,7 +103,7 @@ class SessionPedidosService implements PedidosServiceInterface
         {
             if($pedido['pedido_id'] == $pedido_id)
             {
-                $id_pedido = $pedido['pedido_id'];
+                $pedido_id = $pedido['pedido_id'];
                 $produto_id = $pedido['produto_id'];
                 $quantidade = $pedido['quantidade'];
                 $porcentagem = $pedido['porcentagem'];
@@ -114,7 +114,7 @@ class SessionPedidosService implements PedidosServiceInterface
                 $total += $valor;
 
     
-            $lista[$pedidoKey] = ['produto_id' => $produto_id, 'produto' => $produto, 'pedido_id' => $id_pedido, 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'porcentagem' => $porcentagem, 'totalComDesconto' => $total];  
+            $lista[$pedidoKey] = ['produto_id' => $produto_id, 'produto' => $produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'porcentagem' => $porcentagem, 'totalComDesconto' => $total];  
             } 
         }
 
@@ -147,19 +147,5 @@ class SessionPedidosService implements PedidosServiceInterface
         session()->put('Pedido_encerrado_individual', $Pedido_encerrado_individual);
 
         return $count;
-    }
-
-    public function buscarItem($pedido_id)
-    {
-        $pedidos = session()->get('Pedido_encerrado_individual');
-
-        foreach ($pedidos as $key => $value) {
-            if($value['pedido_id'] == $pedido_id)
-                $total = $value['total'];
-        }
-
-        $lista = ['total' => $total];
-
-        return $lista;          
     }
 }

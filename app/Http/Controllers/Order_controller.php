@@ -24,9 +24,9 @@ class Order_controller extends Controller
         return redirect('Cliente/' . $cliente_id);
     }
 
-    public function deleteOrderFinish(Request $request, $cliente_id, $id_pedido, PedidosServiceInterface $provider_pedido){
+    public function deleteOrderFinish(Request $request, $cliente_id, $pedido_id, PedidosServiceInterface $provider_pedido){
 
-        $provider_pedido->excluirPedido($cliente_id, $id_pedido);
+        $provider_pedido->excluirPedido($cliente_id, $pedido_id);
 
         return redirect('Cliente/' . $cliente_id);
     }

@@ -139,7 +139,7 @@
               
               @if(sizeof($listarPedidos) > 0)
               
-              @foreach ($listarPedidos as $id_pedido => $value )
+              @foreach ($listarPedidos as $pedido_id => $value )
               @if ($value['cliente_id'] == $id )
               <tr class="bg-white">
                 <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $value['cliente_id'] }}</td>
