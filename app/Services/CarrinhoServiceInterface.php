@@ -7,7 +7,7 @@ namespace App\Services;
 interface CarrinhoServiceInterface
 {
 	function adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promocoes);
-	function calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
+	function calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
 	function excluirProduto($cliente_id, $produto_id);
 	function visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);
 	function atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promocoes);

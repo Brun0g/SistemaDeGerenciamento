@@ -85,7 +85,6 @@ class DBEstoqueService implements EstoqueServiceInterface
     {
         $produto = Produto::find($produto_id);
 
-        $quantidade_anterior = $produto->quantidade;
         $produto->quantidade += $quantidade;
 
         if($entrada_ou_saida == 'entrada')

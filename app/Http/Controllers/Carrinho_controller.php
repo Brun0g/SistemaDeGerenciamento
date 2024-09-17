@@ -132,7 +132,7 @@ class Carrinho_controller extends Controller
         $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);
 
         $visualizarCliente = $provider_cliente->listarClientes();
-        $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
+        $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
 
         $enderecos = $provider_endereco->listarEnderecos();
 
@@ -148,26 +148,23 @@ class Carrinho_controller extends Controller
         $endereco_id = $request->input('endereco_id');
 
         $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);
-        $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
 
         $url = url()->previous();
         $array = [];
-
-
 
         foreach ($pedidos_no_carrinho as $key => $value) {
             $acima_do_estoque = $value['fora_de_estoque'];
             $produto_id = $value['produto_id'];
             $produto = $value['produto'];
+            $deleted_at = $value['deleted_at'];
             $quantidade_estoque = $value['quantidade_estoque'];
-            $deleted_at = $provider_produto->buscarProduto($produto_id)['deleted_at'];
 
             if( isset($deleted_at) )
-            {        
+            {
+                $fora_estoque = true;
                 $array_erros[] = strtoupper($produto) . ' fora de estoque!';
-                break;
             }
-
+             
             if($acima_do_estoque == true)
             {
                 $fora_estoque = true;
@@ -177,12 +174,12 @@ class Carrinho_controller extends Controller
         }
 
 
-
-        if( isset($fora_estoque) || isset($deleted_at) )
-             return redirect($url)->with('array_erros', $array_erros);
-        
         if($pedidos_no_carrinho)
         {
+
+            if( isset($fora_estoque) )
+                return redirect($url)->with('array_erros', $array_erros);
+
             session()->flash('status', 'Pedido encaminhado com sucesso!');
 
             $provider_carrinho->finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promocoes, $provider_entradas_saidas, $provider_user, $provider_estoque);

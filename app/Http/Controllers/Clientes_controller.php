@@ -87,7 +87,7 @@ class Clientes_controller extends Controller
         $cliente = $provider_cliente->buscarCliente($cliente_id);
         $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);  
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
-        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
+        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
 
         $softDelete = false;
         $listarProduto = $provider_produto->listarProduto($provider_promocoes, $softDelete);

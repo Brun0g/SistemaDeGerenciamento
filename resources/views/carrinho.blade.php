@@ -119,7 +119,10 @@ color: red;
                                     NÃO APLICADO
                                 </td>
                                 @endif
+               
                                 <td style="font-weight: normal; color: green; border: 1px solid black; width: 10%">R$ {{ strtoupper(number_format($value['total_final'], 2, ',', '.')) }}</td>
+                           
+             
                                 <td style="width: 5%; border: 1px solid;">
                                     <div class="btn btn-danger"><a style="text-decoration: none; color: white;" href="https://laravel.dev.localhost/ExcluirProdutoCliente/{{$value['cliente_id']}}/{{$value['produto_id']}}">Excluir</a></div>
                                 </td>

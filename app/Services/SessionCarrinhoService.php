@@ -40,7 +40,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
             session()->put('Pedidos', $pedidos);
 
-            $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
+            $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
 
             $error = false;
         }
@@ -67,10 +67,8 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
     public function visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho)
     {
-        $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
         $pedidos = session()->get('Pedidos', []);
         $carrinho = [];
-
 
         foreach ($pedidos as $key => $value) 
         {
@@ -121,7 +119,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
         session()->put('Pedidos', $pedidos);
 
-        $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
+        $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
     }
 
     public function atualizarPorcentagem($cliente_id, $porcentagem)
@@ -151,7 +149,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
     public function finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto, $provider_pedidos, $provider_promocoes, $provider_entradas_saidas, $provider_user, $provider_estoque)
     {
         $pedidos_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);
-        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes);
+        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
 
         $porcentagem = $buscarValores['porcentagem'];
         $valor_total = $buscarValores['totalSemDesconto'];
@@ -171,9 +169,9 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                 $preco_unidade = $provider_produto->buscarProduto($produto_id)['valor'];
 
-               $id = $provider_pedidos->salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade);
+                $provider_pedidos->salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade);
 
-               $provider_estoque->atualizarEstoque($produto_id, -$quantidade, 'saida', null, $provider_entradas_saidas, $pedido_id, null, null);
+                $provider_estoque->atualizarEstoque($produto_id, -$quantidade, 'saida', null, $provider_entradas_saidas, $pedido_id, null, null);
 
                 $provider_carrinho->excluirProduto($cliente_id, $produto_id);
             }
@@ -194,7 +192,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         return $porcentagem;
     }
 
-    public function calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes)
+    public function calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto)
     {
         $pedidos = session()->get('Pedidos', []);
     
@@ -205,13 +203,17 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
         
-        foreach ($pedidos as $key => $value) {
+        foreach ($pedidos as $key => $value) 
+        {
             if($cliente_id == $value['cliente_id'])
             {
-                if(!isset($value['deleted_at']))
+                $produto_id = $value['produto_id'];
+                $deleted_at = $provider_produto->buscarProduto($produto_id)['deleted_at'];
+
+                if( !isset($deleted_at) )
                 {
+
                     $total = $value['total'];
-                    $produto_id = $value['produto_id'];
                     $quantidade = $value['quantidade'];
 
                     $totalSemDesconto += $total;
@@ -236,13 +238,14 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
                             if($promocao['quantidade'] >= $quantidade)
                             {
                                 $pedidos[$key]['promocao_porcentagem'] = $promocao['porcentagem'];
-                                $pedidos[$key]['unidade_desconto'] = $preco_unidade - ($preco_unidade / 100 * $promocao['porcentagem']); ;
+                                $pedidos[$key]['unidade_desconto'] = $preco_unidade - ($preco_unidade / 100 * $promocao['porcentagem']);
                             }
                         }
                     }
-                } 
-            }
-    }
+                }
+            } 
+        }
+    
 
         $valor_final = $totalComDesconto - ($totalComDesconto / 100 * $porcentagem);
 

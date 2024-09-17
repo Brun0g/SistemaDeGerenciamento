@@ -78,19 +78,13 @@ class SessionEstoqueService implements EstoqueServiceInterface
         foreach ($produto as $key => $value) {
             if($produto_id == $key)
             {
-                if(isset($entrada_ou_saida))
-                {
-                    $quantidade_anterior = $value['quantidade'];
-                    $produto[$key]['quantidade'] += $quantidade;
+                $quantidade_anterior = $value['quantidade'];
+                $produto[$key]['quantidade'] += $quantidade;
 
-
-                    if($entrada_ou_saida == 'entrada')
-                    $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
-                    else
-                    $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
-                
-                } else 
-                    $produto[$key]['quantidade'] = $quantidade;
+                if($entrada_ou_saida == 'entrada')
+                $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
+                else
+                $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
             }
         }
 

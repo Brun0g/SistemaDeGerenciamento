@@ -40,7 +40,7 @@ class EntradaController extends Controller
        return view('entradas_saida', ['entradas' => $entradas, 'Produtos' => $produtos, 'produto_id' => $produto_id, 'carrinho' => $quantidade_carrinho]);
     }
 
-    public function update(Request $request, $produto_id, EntradasServiceInterface $provider_entradas_saidas, ProdutosServiceInterface $provider_produto, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
+    public function update(Request $request, $produto_id, EntradasServiceInterface $provider_entradas_saidas, ProdutosServiceInterface $provider_produto, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $entrada_ou_saida =  $request->input('escolha');
         $observacao = $request->input('observacao');
@@ -60,29 +60,8 @@ class EntradaController extends Controller
         $produto = $provider_produto->buscarProduto($produto_id);
 
         if($entrada_ou_saida == 'entrada')
-        {
             session()->flash('status', 'Entrada adicionada com sucesso!');
-
-            $tipo = 'Entrada';
-
-            $pedidos = $provider_carrinho->listarPedidosCarrinho();
-
-            if(isset($pedidos))
-            {
-                foreach ($pedidos as $key => $value) {
-
-                    $pedido_id = $key;
-                    $cliente_id = $value['cliente_id'];
-                    $quantidade = $value['quantidade'];
-
-                    if($quantidade == 0)
-                        $provider_carrinho->atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promocoes, $provider_entradas_saidas, $provider_user, $provider_pedidos);
-                }
-            }
-            
         } else {
-
-            $tipo = 'Saída';
 
             if($produto['quantidade_estoque'] - $quantidade < 0)
             {

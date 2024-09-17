@@ -82,9 +82,6 @@ class Products_controller extends Controller
     {
         $provider_produto->excluirProduto($produto_id);
 
-       
-
-
         return redirect('/Produtos');
     }
     public function editProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, EntradasServiceInterface $provider_entradas_saidas)
@@ -205,14 +202,11 @@ class Products_controller extends Controller
 
         $ajuste_id = $provider_estoque->adicionarAjuste();
 
-
-
         foreach ($validated['quantidade'] as $key => $value) {
 
             $produto_id = $key;
             $quantidade = $value;
             $quantidade_estoque = $provider_produto->buscarProduto($produto_id)['quantidade_estoque'];
-
 
             if($quantidade_estoque != $quantidade)
             {
