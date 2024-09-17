@@ -60,7 +60,10 @@ class EntradaController extends Controller
         $produto = $provider_produto->buscarProduto($produto_id);
 
         if($entrada_ou_saida == 'entrada')
+        {
+       
             session()->flash('status', 'Entrada adicionada com sucesso!');
+            
         } else {
 
             if($produto['quantidade_estoque'] - $quantidade < 0)
