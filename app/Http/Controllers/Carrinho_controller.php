@@ -25,7 +25,7 @@ use \App\Services\EstoqueServiceInterface;
 
 class Carrinho_controller extends Controller
 {
-    public function newProductCart(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes)
+    public function newProductCart(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $produtos = $request->input('produto');
     
@@ -50,7 +50,7 @@ class Carrinho_controller extends Controller
             
             if($quantidade != "0")
             {
-                $retornar_erro = $provider_carrinho->adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promocoes);
+                $retornar_erro = $provider_carrinho->adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promocoes, $provider_estoque);
 
                 if($retornar_erro['error']){
                     $produto = $provider_produto->buscarProduto($produto_id)['produto'];
@@ -64,7 +64,7 @@ class Carrinho_controller extends Controller
         return redirect($url);
     }
 
-    public function updateCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes)
+    public function updateCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $array = $request->input('atualizar');
 
@@ -90,8 +90,8 @@ class Carrinho_controller extends Controller
             $quantidade_carrinho = (int)$pedido_no_carrinho['quantidade'];
 
             $produto = $provider_produto->buscarProduto($produto_id);
-            $quantidade_estoque = $produto['quantidade_estoque'];
 
+            $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
        
             if($quantidade <= $quantidade_estoque && $quantidade != $quantidade_carrinho)
             {
@@ -127,9 +127,9 @@ class Carrinho_controller extends Controller
         return redirect($url);
     }
 
-    public function showCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, EnderecoServiceInterface $provider_endereco, PromocoesServiceInterface $provider_promocoes)
+    public function showCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, EnderecoServiceInterface $provider_endereco, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
-        $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);
+        $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
 
         $visualizarCliente = $provider_cliente->listarClientes();
         $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
@@ -147,7 +147,7 @@ class Carrinho_controller extends Controller
     {
         $endereco_id = $request->input('endereco_id');
 
-        $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);
+        $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
 
         $url = url()->previous();
         $array = [];
@@ -157,7 +157,7 @@ class Carrinho_controller extends Controller
             $produto_id = $value['produto_id'];
             $produto = $value['produto'];
             $deleted_at = $value['deleted_at'];
-            $quantidade_estoque = $value['quantidade_estoque'];
+            $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
 
             if( isset($deleted_at) )
             {

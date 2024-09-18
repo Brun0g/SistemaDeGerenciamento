@@ -90,7 +90,7 @@ text-align: center;
                     </div>
                     @endif
                     <label for="produto">Quantidade no estoque:</label>
-                    <input type="text" class="form-control" id="produto" value="{{ strtoupper($Produtos['quantidade_estoque']) }}" readonly>
+                    <input type="text" class="form-control" id="produto" value="{{ $quantidade_estoque }}" readonly>
                     <label for="produto">Quantidade no carrinho:</label>
                     <input type="text" class="form-control" id="produto" value="{{$carrinho}}" readonly>
                 </div>

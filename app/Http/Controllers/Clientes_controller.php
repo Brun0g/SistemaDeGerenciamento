@@ -16,6 +16,7 @@ use \App\Services\EnderecoServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromocoesServiceInterface;
 use \App\Services\EntradasServiceInterface;
+use \App\Services\EstoqueServiceInterface;
 
 use \App\Services\UserServiceInterface;
 
@@ -82,15 +83,15 @@ class Clientes_controller extends Controller
         return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
     }
 
-    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
+    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
     {
         $cliente = $provider_cliente->buscarCliente($cliente_id);
-        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho);  
+        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);  
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
         $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
 
         $softDelete = false;
-        $listarProduto = $provider_produto->listarProduto($provider_promocoes, $softDelete);
+        $listarProduto = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, $softDelete);
         $listarCategoria = $provider_categoria->listarCategoria();
         $listarPedidosAprovados = $provider_pedidos->listarPedidos($cliente_id);
 

@@ -92,7 +92,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+                                   
                                     @if(isset($array))
                                     @foreach ($array as $pedido_id => $value )
                                     <tr>

@@ -21,11 +21,11 @@ use Illuminate\Support\Facades\Storage;
 
 class Products_controller extends Controller
 {
-    public function ProductsStorageView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes)
+    public function ProductsStorageView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $softDelete = false;
         
-        $Produtos = $provider_produto->listarProduto($provider_promocoes, $softDelete);
+        $Produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, $softDelete);
         
         $listarCategorias = $provider_categoria->listarCategoria();
 
@@ -62,9 +62,9 @@ class Products_controller extends Controller
         return redirect('/Produtos');
     }
 
-    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho)
+    public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho, EstoqueServiceInterface $provider_estoque)
     {
-        $Produtos = $provider_produto->buscarProduto($produto_id);
+    
 
 
         $entradas_saidas = $provider_entradas_saidas->buscarEntradaSaidas($produto_id, $provider_user);
@@ -72,8 +72,8 @@ class Products_controller extends Controller
 
         // $sort = array_column($entradas_saidas, 'data');
         // array_multisort($sort, SORT_ASC, $entradas_saidas);
-
-        $resultado = $Produtos['quantidade_estoque'];
+        $Produtos = $provider_produto->buscarProduto($produto_id);
+        $resultado = $provider_estoque->buscarEstoque($produto_id);
 
         return view('/showFilterProducts', ['resultado' => $resultado, 'Produtos' => $Produtos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas]);
     }
@@ -115,7 +115,7 @@ class Products_controller extends Controller
         return redirect($url);
     }
 
-    public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function viewFilterProducts(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, EstoqueServiceInterface $provider_estoque)
     {
         $Produtos = $provider_produto->buscarProduto($produto_id);
           
@@ -130,10 +130,10 @@ class Products_controller extends Controller
         return redirect($url);
     }
 
-    public function multipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes)
+    public function multipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
-        $Produtos = $provider_produto->listarProduto($provider_promocoes, false);
+        $Produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
 
         return view('multiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $Produtos]);
     }
@@ -174,10 +174,10 @@ class Products_controller extends Controller
         return redirect($url);
     }
 
-    public function editMultipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes)
+    public function editMultipleProductView(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
-        $Produtos = $provider_produto->listarProduto($provider_promocoes, false);
+        $Produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
 
         return view('EditarMultiplosProdutos', ['categorias' => $listarCategorias, 'listarMultiplos' => $Produtos]);
     }
@@ -206,7 +206,8 @@ class Products_controller extends Controller
 
             $produto_id = $key;
             $quantidade = $value;
-            $quantidade_estoque = $provider_produto->buscarProduto($produto_id)['quantidade_estoque'];
+            $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
+
 
             if($quantidade_estoque != $quantidade)
             {

@@ -6,7 +6,7 @@ namespace App\Services;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
-
+use App\Services\SessionEstoqueService;
 use App\Services\EstoqueServiceInterface;
 
 class SessionEstoqueService implements EstoqueServiceInterface
@@ -22,6 +22,18 @@ class SessionEstoqueService implements EstoqueServiceInterface
         $estoque_id = sizeof($estoque);
 
         return $estoque_id;
+    }
+
+    public function buscarAjuste($ajuste_id)
+    {
+        $ajuste = session()->get('Ajustes', []);
+
+        foreach ($ajuste as $key => $value) {
+            if($ajuste_id == $key)
+                $user_id = $value['user_id'];
+        }
+
+        return $user_id;
     }
     
     public function adicionarMultiplos()
@@ -90,4 +102,24 @@ class SessionEstoqueService implements EstoqueServiceInterface
 
         session()->put('Produtos', $produto);
     }
+
+    public function buscarEstoque($produto_id)
+    {
+        $estoque = session()->get('Produtos', []);
+
+        $total = 0;
+
+        foreach ($estoque as $key => $value) {
+            if($produto_id == $key)
+            {
+                $quantidade = $value['quantidade'];
+
+                $total += $quantidade;
+            }      
+        }
+
+        return $total;
+    }
+
+
 }

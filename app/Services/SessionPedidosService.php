@@ -19,7 +19,7 @@ class SessionPedidosService implements PedidosServiceInterface
             foreach ($PedidosConcluidos as $id => $valor) {
                 if($valor['cliente_id'] == $cliente_id)
                     if($valor['pedido_id'] == $pedido_id)
-                        unset($PedidosConcluidos[$id]);
+                        $PedidosConcluidos[$id]['excluido'] = 1;
             }
 
             foreach ($PedidosEncerrados as $key => $value) {

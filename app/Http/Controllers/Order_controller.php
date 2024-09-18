@@ -35,6 +35,8 @@ class Order_controller extends Controller
     {
         $pedidoEncontrado = $provider_pedidos->buscarPedido($pedido_id);
         $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos);
+  
+        
         $endereco_id = $pedidoEncontrado['endereco_id'];
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);
 

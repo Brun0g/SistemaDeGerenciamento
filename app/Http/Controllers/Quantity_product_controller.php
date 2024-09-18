@@ -10,15 +10,16 @@ use \App\Services\PedidosServiceInterface;
 use \App\Services\ProdutosServiceInterface;
 use \App\Services\PromocoesServiceInterface;
 use \App\Services\EntradasServiceInterface;
+use \App\Services\EstoqueServiceInterface;
 
 use \App\Services\UserServiceInterface;
 
 class Quantity_product_controller extends Controller
 {
-    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
+    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
     {   
         $nomeDoClientPorID = $provider_cliente->listarClientes();
-        $produtos = $provider_produto->listarProduto($provider_promocoes, false);
+        $produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
         $produtosPorCliente = $provider_pedidos->listarQuantidadePedidos();
         $array = [];
 

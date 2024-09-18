@@ -6,6 +6,7 @@ namespace App\Services;
 use App\Models\Ajuste;
 use App\Models\MultiplaEntradas;
 use App\Models\Produto;
+use App\Models\Entradas_saidas;
 use App\Models\AjusteIndividuais;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -93,5 +94,20 @@ class DBEstoqueService implements EstoqueServiceInterface
             $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
 
         $produto->save();
+    }
+
+    public function buscarEstoque($produto_id)
+    {
+        $estoque = Entradas_saidas::where('produto_id', $produto_id)->get();
+
+        $total = 0;
+
+        foreach ($estoque as $key => $value) {
+                $quantidade = $value['quantidade'];
+
+                $total += $quantidade;
+        }
+
+        return $total;
     }
 }

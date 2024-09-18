@@ -50,7 +50,7 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->delete($produto_id);
     }
     
-    public function listarProduto($provider_promocoes, $softDelete)
+    public function listarProduto($provider_promocoes, $provider_estoque, $softDelete)
     {
         $produtos = Produto::all();
         
@@ -65,9 +65,9 @@ class DBProdutosService implements ProdutosServiceInterface
             $valor_produto = $produto->valor;
             $image_url_produto = $produto->imagem;
             $produto_id = $produto->id;
-            $quantidade_estoque = $produto->quantidade;
-
+            $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
             $promocao = $provider_promocoes->buscarPromocao($produto_id);
+            
             $ativo = $promocao['ativo'];
             $array[$produto_id] = $promocao['promocao'];
 
@@ -96,14 +96,13 @@ class DBProdutosService implements ProdutosServiceInterface
             $produto_id = $produtos->id;
             $image_url_produto = $produtos->imagem;
             $deleted_at = $produtos->deleted_at;
-            $quantidade_estoque = $produtos->quantidade;
 
             $image_url_produto = asset("storage/" . $image_url_produto);
 
             if($produtos->imagem == false)
                 $image_url_produto = false;
 
-            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at, 'quantidade_estoque' => $quantidade_estoque];
+            $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at];
         }
     
 

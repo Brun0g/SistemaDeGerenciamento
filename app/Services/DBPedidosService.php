@@ -149,5 +149,7 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido->save();
 
         return $pedido->id;
+
+        dd('passei aqui');
     }
 }

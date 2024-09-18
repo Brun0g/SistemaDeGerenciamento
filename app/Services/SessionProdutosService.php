@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\ProdutosServiceInterface;
 use Illuminate\Support\Facades\Auth;
 
+
 class SessionProdutosService implements ProdutosServiceInterface
 {
 	public function adicionarProduto($nome, $categoria, $valor, $imagem, $quantidade, $provider_entradas_saidas)
@@ -55,7 +56,7 @@ class SessionProdutosService implements ProdutosServiceInterface
         }
     }
 
-    public function listarProduto($provider_promocoes, $softDelete)
+    public function listarProduto($provider_promocoes, $provider_estoque, $softDelete)
     {
         $produtos = session()->get('Produtos', []);
         $listarProdutos = [];
@@ -64,12 +65,11 @@ class SessionProdutosService implements ProdutosServiceInterface
         {
             if($softDelete == $value['deleted_at'])
             {
+                $produto_id = $key;
                 $nome_produto = $value['produto'];
                 $valor_produto = $value['valor'];
                 $image_url_produto = $value['imagem'];
-                $quantidade_estoque = $value['quantidade'];
-                $produto_id = $key;
-
+                $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);;
                 $promocao = $provider_promocoes->buscarPromocao($produto_id);
                 $ativo = $promocao['ativo'];
                 $array[$produto_id] = $promocao['promocao'];

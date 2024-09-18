@@ -16,16 +16,17 @@ use \App\Services\EnderecoServiceInterface;
 use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromocoesServiceInterface;
 use \App\Services\EntradasServiceInterface;
+use \App\Services\EstoqueServiceInterface;
 
 use \App\Services\UserServiceInterface;
 
 class PromocoesController extends Controller
 {
-    public function index(Request $request, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function index(Request $request, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, EstoqueServiceInterface $provider_estoque)
     {
         $softDelete = false;
         
-        $produtos = $provider_produto->listarProduto($provider_promocoes, $softDelete);
+        $produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, $softDelete);
         $promocoesList = $provider_promocoes->listarPromocoes($provider_produto, $provider_entradas_saidas, $provider_user, $provider_pedidos);
 
         return view('promocoes', ['produtos' => $produtos, 'listaPromocoes' => $promocoesList]);
