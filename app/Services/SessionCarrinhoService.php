@@ -167,7 +167,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                 $preco_unidade = $provider_produto->buscarProduto($produto_id)['valor'];
 
-                $provider_pedidos->salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade);
+                $provider_pedidos->salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade);
 
                 $provider_estoque->atualizarEstoque($produto_id, -$quantidade, 'saida', null, $provider_entradas_saidas, $pedido_id, null, null);
 

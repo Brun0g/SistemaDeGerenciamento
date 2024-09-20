@@ -22,6 +22,7 @@ class CreateEntradasSaidasTable extends Migration
             $table->foreignId('ajuste_id')->nullable()->constrained('ajustes');
             $table->foreignId('multiplo_id')->nullable()->constrained('multipla_entradas');
             $table->foreignId('pedido_id')->nullable()->constrained('pedidos');
+            $table->SoftDeletes();
             $table->timestamps();
         });
     }

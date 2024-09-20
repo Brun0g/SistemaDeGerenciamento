@@ -16,7 +16,6 @@ class CreatePedidosIndividuaisTable extends Migration
         Schema::create('pedidos_individuais', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pedido_id')->constrained('pedidos');
-            $table->foreignId('cliente_id')->constrained('clientes');
             $table->foreignId('produto_id')->constrained('produtos');
             $table->integer('quantidade');
             $table->integer('porcentagem');

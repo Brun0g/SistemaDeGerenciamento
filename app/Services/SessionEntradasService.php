@@ -12,7 +12,7 @@ class SessionEntradasService implements EntradasServiceInterface
     {
         $entradas = session()->get('entradas_saidas', []);
 
-        $entradas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id];
+        $entradas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'deleted_at' => null];
 
     
         session()->put('entradas_saidas', $entradas);
@@ -22,7 +22,7 @@ class SessionEntradasService implements EntradasServiceInterface
     {
         $saidas = session()->get('entradas_saidas', []);
 
-        $saidas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao,  'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id];
+        $saidas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao,  'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'deleted_at' => null];
 
     
         session()->put('entradas_saidas', $saidas);
@@ -33,34 +33,36 @@ class SessionEntradasService implements EntradasServiceInterface
         $entradas = session()->get('entradas_saidas', []);
 
         $entradas_array = [];
-        $total = 0;
+        $total_entrada = 0;
 
-       
 
         foreach ($entradas as $key => $value) {
             if($value['produto_id'] == $produto_id)
             {
-                $user_id = $value['user_id'];
-                $nome = $provider_user->buscarUsuario($user_id);
-                $produto_id = $value['produto_id'];
-                $data = $value['created_at'];  
-                $observacao = $value['observacao'];
-                $multiplo_id = $value['multiplo_id'];
-                $quantidade = $value['quantidade'];
-                $ajuste_id = $value['ajuste_id'];
-                $pedido_id = $value['pedido_id'];
+                if(!$value['deleted_at'])
+                {
+                    $user_id = $value['user_id'];
+                    $nome = $provider_user->buscarUsuario($user_id);
+                    $produto_id = $value['produto_id'];
+                    $data = $value['created_at'];    
+                    $observacao = $value['observacao'];
+                    $multiplo_id = $value['multiplo_id'];
+                    $quantidade = $value['quantidade'];
+                    $ajuste_id = $value['ajuste_id'];
+                    $pedido_id = $value['pedido_id'];
 
-                $total += $quantidade;
+                    $total_entrada += $quantidade;
 
-                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0,  'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
+                    $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
+                }
+                
             }
         }
 
-        
-        return ['entradas_array' => $entradas_array, 'total'  => $total];
+        return ['entradas_array' => $entradas_array, 'total'  => $total_entrada];
     }
 
-    function listarEntradaSaidas($provider_user)
+    function listarEntradaSaidas($provider_user, $tipo)
     {
         $entradas = session()->get('entradas_saidas' ,[]);
 
@@ -68,17 +70,23 @@ class SessionEntradasService implements EntradasServiceInterface
 
         foreach ($entradas as $key => $value) {
          
-            $user_id = $value['user_id'];
-            $nome = $provider_user->buscarUsuario($user_id);
-            $produto_id = $value['produto_id'];
-            $quantidade = $value['quantidade'];
-            $data = $value['created_at'];   
-            $observacao = $value['observacao'];
-            $multiplo_id = $value['multiplo_id'];
-            $ajuste_id = $value['ajuste_id'];
-            $pedido_id = $value['pedido_id'];
+            $deleted_at = $value['deleted_at'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id];
+            if($deleted_at  == $tipo)
+            {
+                $user_id = $value['user_id'];
+                $nome = $provider_user->buscarUsuario($user_id);
+                $produto_id = $value['produto_id'];
+                $quantidade = $value['quantidade'];
+                $data = $value['created_at'];   
+                $observacao = $value['observacao'];
+                $multiplo_id = $value['multiplo_id'];
+                $ajuste_id = $value['ajuste_id'];
+                $pedido_id = $value['pedido_id'];
+              
+
+                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id, 'deleted_at' => $deleted_at];
+            }
         }
 
 

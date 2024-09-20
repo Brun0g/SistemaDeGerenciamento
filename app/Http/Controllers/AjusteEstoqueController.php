@@ -43,7 +43,7 @@ class AjusteEstoqueController extends Controller
 
     public function show(Request $request, EntradasServiceInterface $provider_entrada, UserServiceInterface $provider_user, ProdutosServiceInterface $provider_produto)
     {
-        $multipla_entrada = $provider_entrada->listarEntradaSaidas($provider_user);
+        $multipla_entrada = $provider_entrada->listarEntradaSaidas($provider_user, null);
         $multiplos = collect($multipla_entrada)->unique('ajuste_id')->sortBy(['data', 'asc']);
         $now = now();
 
@@ -54,7 +54,7 @@ class AjusteEstoqueController extends Controller
 
     public function entradas_view(Request $request, EntradasServiceInterface $provider_entrada, UserServiceInterface $provider_user, ProdutosServiceInterface $provider_produto)
     {
-        $multipla_entrada = $provider_entrada->listarEntradaSaidas($provider_user);
+        $multipla_entrada = $provider_entrada->listarEntradaSaidas($provider_user, null);
         $multipla_entrada = collect($multipla_entrada)->unique('multiplo_id')->sortBy(['data', 'asc']);
         
         $now = now();

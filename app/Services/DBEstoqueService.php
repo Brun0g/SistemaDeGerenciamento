@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 
+
 use App\Services\EstoqueServiceInterface;
 
 class DBEstoqueService implements EstoqueServiceInterface
@@ -103,11 +104,38 @@ class DBEstoqueService implements EstoqueServiceInterface
         $total = 0;
 
         foreach ($estoque as $key => $value) {
-                $quantidade = $value['quantidade'];
 
-                $total += $quantidade;
+            $quantidade = $value['quantidade']; 
+            $total += $quantidade;
         }
 
         return $total;
+    }
+    
+    function pedidoExcluido($pedido_id)
+    {
+        $estoque = Entradas_saidas::where('pedido_id', $pedido_id)->get();
+
+        foreach ($estoque as $key => $value) {
+
+            $estoque[$key]->delete($pedido_id);
+        }
+
+    }
+
+    public function pedidosAprovados($pedido_id)
+    {
+        $estoque = Entradas_saidas::withTrashed()->where('pedido_id', $pedido_id)->get();
+
+        $situacao = false;
+
+        foreach ($estoque as $key => $value) {
+            
+            if( isset($value['deleted_at']) )
+                $situacao = true;
+
+        }
+
+        return $situacao;
     }
 }

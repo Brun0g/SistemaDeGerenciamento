@@ -73,7 +73,7 @@ padding: 10px;
                     @foreach($entradas_saidas['entradas_array'] as $key => $value)
                     @if($value['produto_id'] == $produto_id)
 
-                    @if(isset($value['pedido_id']))
+                    @if(isset($value['pedido_id']) && $value['quantidade'] < 0)
                     <tr>
                         <td>{{  strtoupper($value['user_id'])}}</td>
                         <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
@@ -82,6 +82,18 @@ padding: 10px;
                             <td><button type="submit">Saída realizada Pedido N°: <span style="color: purple; font-weight: 900"> {{$value['pedido_id']}}</span></button></td>
                         </form>
                         <td style="font-weight: 900; color: red">{{  $value['quantidade'] }}</td>
+                        <td>{{  $value['observacao'] }}</td>
+                        <td>{{  $value['data'] }}</td>
+                    </tr>
+                    @elseif( isset($value['pedido_id']) && $value['quantidade'] > 0)
+                    <tr>
+                        <td>{{  strtoupper($value['user_id'])}}</td>
+                        <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
+                            @csrf
+                            @method('GET')
+                            <td><button type="submit">Pedido excluido N°: <span style="color: purple; font-weight: 900"> {{$value['pedido_id']}}</span></button></td>
+                        </form>
+                        <td style="font-weight: 900; color: black;     text-decoration: line-through;" >{{  $value['quantidade'] }}</td>
                         <td>{{  $value['observacao'] }}</td>
                         <td>{{  $value['data'] }}</td>
                     </tr>
@@ -145,28 +157,3 @@ padding: 10px;
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </x-app-layout>
-
-
-{{--    @if($value['ajuste_id'] != null)
-                        <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
-                            @csrf
-                            @method('GET')
-                            <td ><button type="submit">{{$value['tipo']}} N°: <span style="color: purple; font-weight: 900;">{{$value['ajuste_id']}}</span></button></td>
-                        </form>
-                        @elseif($value['multiplo_id'] != null)
-                        <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">
-                            @csrf
-                            @method('GET')
-                            <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['multiplo_id']}}</span></button></td>
-                        </form>
-                        @endif --}}
-
-{{--   @elseif($value['multiplo_id'] != null)
-                        <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">
-                            @csrf
-                            @method('GET')
-                            <td><button type="submit">{{$value['tipo']}} N°:  <span style="color: purple; font-weight: 900;">{{$value['multiplo_id']}}</span></button></td>
-                        </form>
- --}}
-
-

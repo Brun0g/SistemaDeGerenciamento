@@ -57,7 +57,7 @@ class Clientes_controller extends Controller
         return redirect('Clientes');
     }
     
-    public function mainViewClient(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco)
+    public function mainViewClient(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco, EstoqueServiceInterface $provider_estoque)
     {
         $buscarPedidoCliente = [];
         $valorTotalPorPedido = [];
@@ -72,7 +72,7 @@ class Clientes_controller extends Controller
 
         foreach ($tabela_clientes as $cliente_id => $value) {
             $valorTotalPorPedido[$cliente_id] = 0;
-            $buscarPedidoCliente = $provider_pedido->listarPedidos($cliente_id);
+            $buscarPedidoCliente = $provider_pedido->listarPedidos($cliente_id, $provider_estoque);
 
             foreach ($buscarPedidoCliente as $value) {
                 if($cliente_id == $value['cliente_id'])
@@ -93,7 +93,7 @@ class Clientes_controller extends Controller
         $softDelete = false;
         $listarProduto = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, $softDelete);
         $listarCategoria = $provider_categoria->listarCategoria();
-        $listarPedidosAprovados = $provider_pedidos->listarPedidos($cliente_id);
+        $listarPedidosAprovados = $provider_pedidos->listarPedidos($cliente_id, $provider_estoque);
 
         $totalPedido = $buscarValores['totalComDesconto'];
 

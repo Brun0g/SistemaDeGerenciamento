@@ -24,14 +24,9 @@ use \App\Services\EstoqueServiceInterface;
 
 class EntradaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(request $request, $produto_id, EntradasServiceInterface $provider_entradas_saidas, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho, EstoqueServiceInterface $provider_estoque)
     {
-       $entradas = $provider_entradas_saidas->listarEntradaSaidas($provider_user);
+       $entradas = $provider_entradas_saidas->listarEntradaSaidas($provider_user, null);
 
        $produtos = $provider_produto->buscarProduto($produto_id);
        $quantidade_carrinho = $provider_carrinho->buscarQuantidade($produto_id)['quantidade'];

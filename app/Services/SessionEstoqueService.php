@@ -105,20 +105,50 @@ class SessionEstoqueService implements EstoqueServiceInterface
 
     public function buscarEstoque($produto_id)
     {
-        $estoque = session()->get('Produtos', []);
+        $estoque = session()->get('entradas_saidas', []);
 
         $total = 0;
 
         foreach ($estoque as $key => $value) {
-            if($produto_id == $key)
+            if($produto_id == $value['produto_id'])
             {
-                $quantidade = $value['quantidade'];
-
-                $total += $quantidade;
+                if(!$value['deleted_at'])
+                {
+                    $quantidade = $value['quantidade'];
+                    $total += $quantidade;
+                }
             }      
         }
 
         return $total;
+    }
+
+    function pedidoExcluido($pedido_id)
+    {
+        $estoque = session()->get('entradas_saidas', []);
+
+        foreach ($estoque as $key => $value) {
+            if($pedido_id == $value['pedido_id'])
+               $estoque[$key]['deleted_at'] = now();
+        }
+
+        session()->put('entradas_saidas', $estoque);
+    }
+
+    public function pedidosAprovados($pedido_id)
+    {
+        $estoque = session()->get('entradas_saidas', []);
+
+        $situacao = false;
+
+        foreach ($estoque as $key => $value) {
+            if($pedido_id == $value['pedido_id'])
+                if( isset($value['deleted_at']) )
+                    $situacao = true;
+
+        }
+
+        return $situacao;
     }
 
 

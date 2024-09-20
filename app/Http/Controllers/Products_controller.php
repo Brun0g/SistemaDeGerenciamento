@@ -69,9 +69,6 @@ class Products_controller extends Controller
 
         $entradas_saidas = $provider_entradas_saidas->buscarEntradaSaidas($produto_id, $provider_user);
 
-
-        // $sort = array_column($entradas_saidas, 'data');
-        // array_multisort($sort, SORT_ASC, $entradas_saidas);
         $Produtos = $provider_produto->buscarProduto($produto_id);
         $resultado = $provider_estoque->buscarEstoque($produto_id);
 

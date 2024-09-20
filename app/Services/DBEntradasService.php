@@ -4,6 +4,7 @@ namespace App\Services;
 
 
 use App\Models\Entradas_saidas;
+use App\Models\Pedidos;
 
 use App\Services\EntradasServiceInterface;
 use Illuminate\Support\Facades\Auth;
@@ -74,9 +75,12 @@ class DBEntradasService implements EntradasServiceInterface
         return ['entradas_array' => $entradas_array, 'total'  => $total_entrada];
     }
     
-    function listarEntradaSaidas($provider_user)
+    function listarEntradaSaidas($provider_user, $tipo)
     {
         $entradas = Entradas_saidas::all();
+
+        if($tipo)
+            $entradas = Entradas_saidas::withTrashed()->get();
 
         $entradas_array = [];
 
@@ -91,8 +95,9 @@ class DBEntradasService implements EntradasServiceInterface
             $multiplo_id = $value['multiplo_id'];
             $ajuste_id = $value['ajuste_id'];
             $pedido_id = $value['pedido_id'];
+            $deleted_at = $value['deleted_at'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id];
+            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id, 'deleted_at' => $deleted_at];
         }
 
         return $entradas_array;
@@ -145,4 +150,6 @@ class DBEntradasService implements EntradasServiceInterface
 
         return $entradas_array;
     }
+
+
 }

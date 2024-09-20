@@ -11,48 +11,27 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionPedidosService implements PedidosServiceInterface
 {
-    public function excluirPedido($cliente_id, $pedido_id)
-    {
-        $PedidosEncerrados = session()->get('Pedido_encerrado',[]);
-        $PedidosConcluidos = session()->get('Pedido_encerrado_individual',[]);
-
-            foreach ($PedidosConcluidos as $id => $valor) {
-                if($valor['cliente_id'] == $cliente_id)
-                    if($valor['pedido_id'] == $pedido_id)
-                        $PedidosConcluidos[$id]['excluido'] = 1;
-            }
-
-            foreach ($PedidosEncerrados as $key => $value) {
-                if ($cliente_id == $value['cliente_id']) {
-                        if($pedido_id == $value['pedido_id'])
-                            $PedidosEncerrados[$key]['excluido'] = 1;
-                }
-            }
-            
-        session()->put('Pedido_encerrado_individual', $PedidosConcluidos);
-        session()->put('Pedido_encerrado', $PedidosEncerrados);
-    }
-    
-
     public function listarQuantidadePedidos()
     {
-        $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []); 
-        $service_produtos = new SessionProdutosService();
+        $pedidosPorClientes = session()->get('Pedido_encerrado_individual', []);
+        
+        $service_pedidos = new SessionPedidosService();
 
-        foreach ($Pedido_encerrado_individual as $pedidoKey => $value) {
-            $id = $value['cliente_id'];
+        foreach ($pedidosPorClientes as $pedidoKey => $value) {
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-   
+            $pedido_id = $value['pedido_id'];
+            $cliente_id = $service_pedidos->buscarPedido($pedido_id)['cliente_id'];
+            
 
-            $Pedido_encerrado_individual[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'total' => $valor]; 
+            $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade]; 
         } 
 
-        return $Pedido_encerrado_individual; 
+        return $pedidosPorClientes; 
     }
 
-    public function listarPedidos($cliente_id)
+    public function listarPedidos($cliente_id, $provider_estoque)
     {
         $listaPedidos = [];
         $pedidos = session()->get('Pedido_encerrado',[]);
@@ -63,17 +42,24 @@ class SessionPedidosService implements PedidosServiceInterface
             if($cliente_id == $value['cliente_id'])
             {
                 $pedido_id = $value['pedido_id'];
-                $total = $value['total'];
-                $excluido = $value['excluido'];
-                $porcentagem = $value['porcentagem'];
-                $total = $value['total'];
+                $situacao = $provider_estoque->pedidosAprovados($pedido_id);
+                if($situacao == false)
+                {
+                    $total = $value['total'];
+                    $excluido = $value['excluido'];
+                    $porcentagem = $value['porcentagem'];
+                    $total = $value['total'];
 
-                $listaPedidos[$key] = ['cliente_id' => $cliente_id, 'pedido_id' => $pedido_id, 'total' => $total, 'porcentagem' => $porcentagem, 'total' => $total, 'excluido' => $excluido];    
+                $listaPedidos[$key] = ['cliente_id' => $cliente_id, 'pedido_id' => $pedido_id, 'total' => $total, 'porcentagem' => $porcentagem, 'total' => $total, 'excluido' => $excluido]; 
+                }
+                   
             }
         }
      
         return $listaPedidos;
     }
+
+   
 
     public function buscarPedido($pedido_id)
     {
@@ -81,17 +67,21 @@ class SessionPedidosService implements PedidosServiceInterface
         $pedidos = session()->get('Pedido_encerrado')[$pedido_id]; 
 
         foreach ($pedidos as $pedido) {
-            $id_cliente = $pedidos['cliente_id'];
+           
+            $cliente_id = $pedidos['cliente_id'];
             $endereco_id = $pedidos['endereco_id'];
             $total = $pedidos['total'];
             $totalSemDesconto = $pedidos['totalSemDesconto'];
             $porcentagem = $pedidos['porcentagem'];
         
-            $pedidoEncontrado = ['cliente_id' => $id_cliente, 'endereco_id' => $endereco_id, 'total' => $total, 'total' => $total, 'porcentagem' => $porcentagem, 'totalSemDesconto' => $totalSemDesconto];
+            $pedidoEncontrado = ['cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $total,'porcentagem' => $porcentagem, 'totalSemDesconto' => $totalSemDesconto];
+          
         }
 
         return $pedidoEncontrado;
     }
+
+
 
     public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
     {
@@ -134,18 +124,30 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedido_id;
     }
 
-    function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
+    function salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
     {
         $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
         $Pedido_encerrado = session()->get('Pedido_encerrado', []);
 
         $count = sizeof($Pedido_encerrado);
     
-        $Pedido_encerrado_individual[] = ['pedido_id' => $pedido_id,'cliente_id' => $cliente_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total];
+        $Pedido_encerrado_individual[] = ['pedido_id' => $pedido_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total];
 
 
         session()->put('Pedido_encerrado_individual', $Pedido_encerrado_individual);
 
         return $count;
+    }
+
+    public function reativarPedido($pedido_id)
+    {
+        $entradas_saidas = session()->get('entradas_saidas' , []);
+
+        foreach ($entradas_saidas as $key => $value) {
+            if($pedido_id == $value['pedido_id'])
+                $entradas_saidas[$key]['deleted_at'] = null;
+        }
+
+        session()->put('entradas_saidas' , $entradas_saidas);
     }
 }

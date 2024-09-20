@@ -9,6 +9,7 @@ use \App\Services\DBProdutosService;
 use \App\Services\DBClientesService;
 use App\Models\PedidosIndividuais;
 use App\Models\Pedidos;
+use App\Models\Entradas_saidas;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,35 +17,21 @@ use Illuminate\Database\Eloquent\Collection;
 
 class DBPedidosService implements PedidosServiceInterface
 {
-    public function excluirPedido($cliente_id, $pedido_id)
-    {
-        $pedidos = PedidosIndividuais::where('cliente_id', $cliente_id)->get();
-        $pedidos_por_cliente = Pedidos::where('id', $pedido_id)->get();
-            
-        foreach ($pedidos as $pedido => $value) {
-            if($value['pedido_id'] == $pedido_id)
-                $pedidos[$pedido]->delete($pedido_id);          
-        }
-
-        foreach ($pedidos_por_cliente as $key => $value) {
-            $pedidos_por_cliente[$key]->delete($pedido_id);
-        }
-    }
-    
     public function listarQuantidadePedidos()
     {
-        $pedidosPorClientes = PedidosIndividuais::all(); 
+        $pedidosPorClientes = PedidosIndividuais::all();
         
-        $service_produtos = new DBProdutosService();
-    
+        $service_pedidos = new DBPedidosService();
+
         foreach ($pedidosPorClientes as $pedidoKey => $value) {
-            $id = $value['cliente_id'];
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
+            $pedido_id = $value['pedido_id'];
+            $cliente_id = $service_pedidos->buscarPedido($pedido_id)['cliente_id'];
             
 
-            $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $id, 'produto_id' => $produto_id, 'quantidade' => $quantidade]; 
+            $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade]; 
         } 
         
         return $pedidosPorClientes; 
@@ -64,43 +51,48 @@ class DBPedidosService implements PedidosServiceInterface
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            $cliente_id = $value['cliente_id'];
             $preco_unidade = $value['preco_unidade'];
             $porcentagem = $value['porcentagem'];
             $produto = $service_produtos->buscarProduto($produto_id);
 
             $total += $valor;
            
-            $lista[] = ['pedido_id' => $pedido_id, 'cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'totalComDesconto' => $total, 'porcentagem' => $porcentagem];
+            $lista[] = ['pedido_id' => $pedido_id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'totalComDesconto' => $total, 'porcentagem' => $porcentagem];
         }
 
         return $lista;          
     }
 
-    public function listarPedidos($cliente_id)
+    public function listarPedidos($cliente_id, $provider_estoque)
     {
-        $datas = [];
+        $array = [];
         $pedidos = Pedidos::where('cliente_id', $cliente_id)->get(); 
 
         foreach ($pedidos as $key => $value) {
-            $pedido_id = $pedidos[$key]->id;
-            $id_cliente = $pedidos[$key]->cliente_id;
-            $endereco = $pedidos[$key]->endereco_id;
-            $total = $pedidos[$key]->total;
-            $porcentagem = $pedidos[$key]->porcentagem;
-            $total = $pedidos[$key]->total;
 
-            $datas[$pedido_id] = ['cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'total' => $total];   
+            $pedido_id = $pedidos[$key]->id;
+            $situacao = $provider_estoque->pedidosAprovados($pedido_id);
+
+            if($situacao == false)
+            {
+                $id_cliente = $pedidos[$key]->cliente_id;
+                $endereco = $pedidos[$key]->endereco_id;
+                $total = $pedidos[$key]->total;
+                $porcentagem = $pedidos[$key]->porcentagem;
+                $total = $pedidos[$key]->total;
+
+                $array[$pedido_id] = ['cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem]; 
+            }
         }
 
-        return $datas;
+        return $array;
     }
 
     public function buscarPedido($pedido_id)
     {
         $pedidoEncontrado = [];
-        $pedido = Pedidos::find($pedido_id);
-        $totalComDesconto = 0;
+        $pedido = Pedidos::where('id', $pedido_id)->get()[0];
+ 
 
         foreach ($pedido as $key => $value) {
             $id_cliente = $pedido->cliente_id;
@@ -133,12 +125,11 @@ class DBPedidosService implements PedidosServiceInterface
 
     }
 
-    function salvarItemPedido($pedido_id, $cliente_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
+    function salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
     {
         $pedido = new PedidosIndividuais;
 
         $pedido->pedido_id = $pedido_id;
-        $pedido->cliente_id = $cliente_id;
         $pedido->produto_id = $produto_id;
         $pedido->quantidade = $quantidade;
         $pedido->porcentagem = $porcentagem_unidade;
@@ -149,7 +140,15 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido->save();
 
         return $pedido->id;
+    }
 
-        dd('passei aqui');
+    public function reativarPedido($pedido_id)
+    {
+        $pedidos = Entradas_saidas::withTrashed()->where('pedido_id', $pedido_id)->get();
+
+        foreach ($pedidos as $key => $value) {
+            $pedidos[$key]->deleted_at = null;
+            $pedidos[$key]->save();
+        }
     }
 }

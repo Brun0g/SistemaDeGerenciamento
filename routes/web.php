@@ -78,6 +78,8 @@ Route::PATCH('/EditMultiple', [Products_controller::class, 'EditMultiple'])->mid
 Route::POST('/aprovarPedido/{id_pedido}/{id_cliente}',[Order_controller::class,'finishOrder'])->middleware(['auth']);
 Route::DELETE('/ExcluirPedidoCliente/{id_cliente}/{id_product}',[Order_controller::class,'deleteOrderFinish'])->middleware(['auth']);
 Route::GET('/pedidofinalizado/{id_pedido}', [Order_controller::class, 'showFinishOrder'])->middleware(['auth']);
+Route::GET('/pedidos_excluidos', [Order_controller::class, 'orders_deleted'])->middleware(['auth'])->name('pedidos_excluidos');
+Route::POST('/realocar_pedido/{id_pedido}', [Order_controller::class, 'orders_active'])->middleware(['auth']);
 
 //CARRINHO
 Route::POST('/finalizarPedido/{id}', [Carrinho_controller::class, 'finishCart'])->middleware(['auth']);

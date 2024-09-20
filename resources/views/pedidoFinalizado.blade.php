@@ -75,13 +75,13 @@
             
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="py-12">
-                    
+           
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div  class="p-6 bg-white border-b border-gray-200">
                             <div style="display: flex; justify-content: left">
-                                <h4 style="">N° PEDIDO: <span style=" font-weight: 900;color: blue">{{$pedido_id}}</span></h4>
+                                <h4>N° PEDIDO: <span style=" font-weight: 900;color: blue">{{$pedido_id}}</span></h4>
                             </div>
-                            <table id="table">
+                                                        <table id="table">
                                 <thead class="thead">
                                     <tr>
                                         <th style="border-right: 1px solid black;"class="row-inform-item">Produto</th>
@@ -136,8 +136,11 @@
                                         <td style="border: black solid 1px; color:green; border-top: hidden;">R$ {{  number_format(abs($total), 2, ",", ".") }}</td>
                                     </tr>
                                 </table>
-                                
-                                <div style="font-weight: 900;">Endereço de entrega:<span style="font-weight: 200;"> {{$endereco}}</span></div>
+                              
+                                <div style="font-weight: 900;">Endereço de entrega:<span style="font-weight: 200;"> {{strtoupper($endereco)}}</span></div>
+                                <div style="font-weight: 900;">Destinatário:<span style="font-weight: 200;"> {{$nome}}</span></div>
+
+
                             </div>
                         </div>
                     </div>

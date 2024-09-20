@@ -5,6 +5,7 @@
 @foreach ($listarPedidosAprovados as $pedido_id => $value )
 
 @if ($value['cliente_id'] == $id )
+
 <tr style="background: white;">
     <td style="color:white; width: 8%; background: black; font-weight: 900; border: 1px solid">{{  $pedido_id }}</td>
     <td style="color:green;">R$ {{ number_format($value['total'], 2, ",", ".")  }}</td>
