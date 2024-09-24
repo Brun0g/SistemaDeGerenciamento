@@ -28,6 +28,31 @@ class SessionEntradasService implements EntradasServiceInterface
         session()->put('entradas_saidas', $saidas);
     }
 
+    function deletarSaida($pedido_id)
+    {
+        $estoque = session()->get('entradas_saidas', []);
+
+        foreach ($estoque as $key => $value) {
+            if($pedido_id == $value['pedido_id'])
+                $estoque[$key]['deleted_at'] = now();
+        }
+
+        session()->put('entradas_saidas', $estoque);
+    }
+
+    function realocarSaida($pedido_id)
+    {
+        $saida = session()->get('entradas_saidas', []);
+
+        foreach ($saida as $key => $value) {
+            if($pedido_id == $value['pedido_id'])
+                $saida[$key]['deleted_at'] = null;
+           
+        }
+
+        session()->put('entradas_saidas', $saida);
+    }
+
     function buscarEntradaSaidas($produto_id, $provider_user)
     {
         $entradas = session()->get('entradas_saidas', []);
@@ -88,8 +113,6 @@ class SessionEntradasService implements EntradasServiceInterface
                 $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id, 'deleted_at' => $deleted_at];
             }
         }
-
-
 
         return $entradas_array;
     }

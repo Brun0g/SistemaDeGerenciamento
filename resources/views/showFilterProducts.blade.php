@@ -81,7 +81,7 @@ padding: 10px;
                             @method('GET')
                             <td><button type="submit">Saída realizada Pedido N°: <span style="color: purple; font-weight: 900"> {{$value['pedido_id']}}</span></button></td>
                         </form>
-                        <td style="font-weight: 900; color: red">{{  $value['quantidade'] }}</td>
+                        <td style=" color: red">{{  $value['quantidade'] }}</td>
                         <td>{{  $value['observacao'] }}</td>
                         <td>{{  $value['data'] }}</td>
                     </tr>

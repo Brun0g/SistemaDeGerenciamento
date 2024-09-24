@@ -85,16 +85,10 @@ class DBEstoqueService implements EstoqueServiceInterface
 
     public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas_saidas, $pedido_id,  $ajuste_id, $multiplo_id)
     {
-        $produto = Produto::find($produto_id);
-
-        $produto->quantidade += $quantidade;
-
         if($entrada_ou_saida == 'entrada')
             $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
         else
             $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
-
-        $produto->save();
     }
 
     public function buscarEstoque($produto_id)
@@ -112,17 +106,6 @@ class DBEstoqueService implements EstoqueServiceInterface
         return $total;
     }
     
-    function pedidoExcluido($pedido_id)
-    {
-        $estoque = Entradas_saidas::where('pedido_id', $pedido_id)->get();
-
-        foreach ($estoque as $key => $value) {
-
-            $estoque[$key]->delete($pedido_id);
-        }
-
-    }
-
     public function pedidosAprovados($pedido_id)
     {
         $estoque = Entradas_saidas::withTrashed()->where('pedido_id', $pedido_id)->get();

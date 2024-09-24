@@ -23,7 +23,6 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->categoria_id = $categoria;
         $produto->valor = $valor;
         $produto->imagem = $imagem;
-        $produto->quantidade = $quantidade;
       
         $produto->save();
 

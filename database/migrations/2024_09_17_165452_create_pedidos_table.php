@@ -20,6 +20,7 @@ class CreatePedidosTable extends Migration
             $table->double('total', 8 , 2);
             $table->double('totalSemDesconto', 8 , 2);
             $table->integer('porcentagem');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

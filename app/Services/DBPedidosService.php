@@ -17,6 +17,54 @@ use Illuminate\Database\Eloquent\Collection;
 
 class DBPedidosService implements PedidosServiceInterface
 {
+    public function excluirPedido($pedido_id, $provider_entradas_saidas)
+    {
+        $pedido_geral = Pedidos::all()->where('id', $pedido_id);
+
+        $provider_pedidos = new DBPedidosService();
+            
+        foreach ($pedido_geral as $key => $value) {
+            $pedido_geral[$key]->delete($pedido_id);
+        }
+
+        $provider_pedidos->excluirPedidoIndividual($pedido_id);
+        $provider_entradas_saidas->deletarSaida($pedido_id);
+    }
+
+    public function excluirPedidoIndividual($pedido_id)
+    {
+        $pedidos_individual = PedidosIndividuais::all()->where('pedido_id', $pedido_id);
+
+        foreach ($pedidos_individual as $key => $value) {
+            $pedidos_individual[$key]->delete($pedido_id);
+        }
+    }
+
+    public function realocarPedido($pedido_id, $provider_entradas_saidas)
+    {
+        $pedido_geral = Pedidos::withTrashed()->where('id', $pedido_id)->get();
+
+        $provider_pedidos = new DBPedidosService();
+
+        foreach ($pedido_geral as $key => $value) {
+            $pedido_geral[$key]->deleted_at = null;
+            $pedido_geral[$key]->save();
+        }
+
+        $provider_pedidos->realocarPedidoIndividual($pedido_id);
+        $provider_entradas_saidas->realocarSaida($pedido_id);
+    }
+
+    public function realocarPedidoIndividual($pedido_id)
+    {
+        $pedidos_individual = PedidosIndividuais::withTrashed()->where('pedido_id', $pedido_id)->get();
+
+        foreach ($pedidos_individual as $key => $value) {
+            $pedidos_individual[$key]->deleted_at = null;
+            $pedidos_individual[$key]->save();
+        }
+    }
+
     public function listarQuantidadePedidos()
     {
         $pedidosPorClientes = PedidosIndividuais::all();
@@ -39,7 +87,7 @@ class DBPedidosService implements PedidosServiceInterface
 
     public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
     {
-        $pedidos = PedidosIndividuais::where('pedido_id', $pedido_id)->get();
+        $pedidos = PedidosIndividuais::withTrashed()->where('pedido_id', $pedido_id)->get();
 
         $service_produtos = new DBProdutosService();
 
@@ -80,6 +128,7 @@ class DBPedidosService implements PedidosServiceInterface
                 $total = $pedidos[$key]->total;
                 $porcentagem = $pedidos[$key]->porcentagem;
                 $total = $pedidos[$key]->total;
+                $deleted_at = $pedidos[$key]->deleted_at;
 
                 $array[$pedido_id] = ['cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem]; 
             }
@@ -91,9 +140,8 @@ class DBPedidosService implements PedidosServiceInterface
     public function buscarPedido($pedido_id)
     {
         $pedidoEncontrado = [];
-        $pedido = Pedidos::where('id', $pedido_id)->get()[0];
+        $pedido = Pedidos::withTrashed()->where('id', $pedido_id)->get()[0];
  
-
         foreach ($pedido as $key => $value) {
             $id_cliente = $pedido->cliente_id;
             $endereco_id = $pedido->endereco_id;
@@ -144,11 +192,19 @@ class DBPedidosService implements PedidosServiceInterface
 
     public function reativarPedido($pedido_id)
     {
-        $pedidos = Entradas_saidas::withTrashed()->where('pedido_id', $pedido_id)->get();
+        $pedidos = PedidosIndividuais::withTrashed()->where('pedido_id', $pedido_id)->get();
+        
+        $service = new DBEstoqueService;
 
         foreach ($pedidos as $key => $value) {
-            $pedidos[$key]->deleted_at = null;
-            $pedidos[$key]->save();
+            $produto_id = $value['produto_id'];
+            $estoque_atual = $service->buscarEstoque($produto_id);
+            $quantidade_pedido = $value['quantidade'];
+            
+            if($estoque_atual < $quantidade_pedido)
+                return false;
         }
+
+        return true;
     }
 }

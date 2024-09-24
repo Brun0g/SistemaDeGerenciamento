@@ -18,7 +18,6 @@ class CreateProdutosTable extends Migration
             $table->string('produto');
             $table->foreignId('categoria_id')->constrained('categorias');
             $table->double('valor', 8 , 2);
-            $table->integer('quantidade');
             $table->string('imagem');
             $table->softDeletes();
             $table->timestamps();

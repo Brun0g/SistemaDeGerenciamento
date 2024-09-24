@@ -104,6 +104,15 @@
                                 {{ __('Pedidos excluidos') }}
                             </x-dropdown-link>
                         </form>
+                        <form method="POST" action="{{ route('pedidos_clientes') }}">
+                            @csrf
+                            @method('GET')
+                            <x-dropdown-link :href="route('pedidos_clientes')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Pedidos por clientes') }}
+                            </x-dropdown-link>
+                        </form>
                     </x-slot>
                 </x-dropdown>
             </div>

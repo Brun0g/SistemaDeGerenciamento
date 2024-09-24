@@ -28,7 +28,7 @@ class Order_controller extends Controller
 
     public function deleteOrderFinish(Request $request, $cliente_id, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque){
 
-        $provider_estoque->pedidoExcluido($pedido_id);
+        $provider_pedidos->excluirPedido($pedido_id, $provider_entradas_saidas, null);
 
         return redirect('Cliente/' . $cliente_id);
     }
@@ -72,20 +72,45 @@ class Order_controller extends Controller
         return view('pedidos_excluidos' , ['excluidos' => $excluidos, 'data_atual' => $data_atual, 'totalComDesconto' => $array ]);
     }
 
-    public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos)
+    public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)
     {
         
-        $provider_pedidos->reativarPedido($pedido_id);
+        $tem_estoque = $provider_pedidos->reativarPedido($pedido_id);
+
+      
         
         $url = url()->previous();
 
+        if(!$tem_estoque)
+            session()->flash('error_estoque', 'Não há estoque para realocar o pedido!');
+        else
+        {
+            $provider_pedidos->realocarPedido($pedido_id, $provider_entradas_saidas);
+            session()->flash('status', 'Pedido realocado com sucesso!'); 
+        }
+            
         return redirect($url);
     }
 
+    public function orders_client(Request $request, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente)
+    {
+        $excluidos = $provider_entradas_saidas->listarEntradaSaidas($provider_user, true);
+        $excluidos = collect($excluidos)->unique('pedido_id')->where('deleted_at', '!=', null)->sortBy(['data', 'asc']);
+
+        $array = [];
 
 
+        foreach ($excluidos as $key => $value) {
+            $pedido_id = $value['pedido_id'];
+            $totalComDesconto = $provider_pedidos->buscarPedido($pedido_id);
+            $array[] = $totalComDesconto['total'];
 
+        }
+       
+        $now = now();
+
+        $data_atual = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
+
+        return view('pedidos_clientes' , ['excluidos' => $excluidos, 'data_atual' => $data_atual, 'totalComDesconto' => $array ]);
+    }
 }
-
-
-

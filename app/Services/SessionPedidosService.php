@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Services\PedidosServiceInterface;
 use \App\Services\SessionProdutosService;
+use \App\Services\SessionEstoqueService;
 use App\Models\Pedido;
 use App\Models\Pedidos_finalizados;
 
@@ -11,6 +12,64 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionPedidosService implements PedidosServiceInterface
 {
+    public function excluirPedido($pedido_id, $provider_entradas_saidas)
+    {
+        $pedido_geral = session()->get('Pedido_encerrado',[]);
+
+        $provider_pedidos = new SessionPedidosService();
+            
+        foreach ($pedido_geral as $key => $value) {
+            if($pedido_id == $key)
+                $pedido_geral[$key]['deleted_at'] = now();
+        }
+
+        session()->put('Pedido_encerrado', $pedido_geral);
+
+        $provider_pedidos->excluirPedidoIndividual($pedido_id);
+        $provider_entradas_saidas->deletarSaida($pedido_id);
+    }
+
+    public function excluirPedidoIndividual($pedido_id)
+    {
+        $pedidos_individual = session()->get('Pedido_encerrado_individual', []);
+
+        foreach ($pedidos_individual as $key => $value) {
+            if($pedido_id == $value['pedido_id'])
+                $pedidos_individual[$key]['deleted_at'] = now();
+        }
+
+        session()->put('Pedido_encerrado_individual', $pedidos_individual);
+    }
+
+    public function realocarPedido($pedido_id, $provider_entradas_saidas)
+    {
+        $pedido_geral = session()->get('Pedido_encerrado',[]);
+
+        $provider_pedidos = new SessionPedidosService();
+
+        foreach ($pedido_geral as $key => $value) {
+            if($pedido_id == $key)
+                $pedido_geral[$key]['deleted_at'] = null;
+        }
+
+        session()->put('Pedido_encerrado', $pedido_geral);
+
+        $provider_pedidos->realocarPedidoIndividual($pedido_id);
+        $provider_entradas_saidas->realocarSaida($pedido_id);
+    }
+
+    public function realocarPedidoIndividual($pedido_id)
+    {
+        $pedidos_individual = session()->get('Pedido_encerrado_individual', []);
+
+        foreach ($pedidos_individual as $key => $value) {
+            if($pedido_id == $value['pedido_id'])
+                $pedidos_individual[$key]['deleted_at'] = null;
+        }
+
+        session()->put('Pedido_encerrado_individual', $pedidos_individual);
+    }
+
     public function listarQuantidadePedidos()
     {
         $pedidosPorClientes = session()->get('Pedido_encerrado_individual', []);
@@ -59,8 +118,6 @@ class SessionPedidosService implements PedidosServiceInterface
         return $listaPedidos;
     }
 
-   
-
     public function buscarPedido($pedido_id)
     {
         $pedidoEncontrado = [];
@@ -80,8 +137,6 @@ class SessionPedidosService implements PedidosServiceInterface
 
         return $pedidoEncontrado;
     }
-
-
 
     public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
     {
@@ -141,13 +196,22 @@ class SessionPedidosService implements PedidosServiceInterface
 
     public function reativarPedido($pedido_id)
     {
-        $entradas_saidas = session()->get('entradas_saidas' , []);
+        $pedidos = session()->get('Pedido_encerrado_individual', []);
+        
+        $service = new SessionEstoqueService;
 
-        foreach ($entradas_saidas as $key => $value) {
+        foreach ($pedidos as $key => $value) {
             if($pedido_id == $value['pedido_id'])
-                $entradas_saidas[$key]['deleted_at'] = null;
+            {
+                $produto_id = $value['produto_id'];
+                $estoque_atual = $service->buscarEstoque($produto_id);
+                $quantidade_pedido = $value['quantidade'];
+            
+                if($estoque_atual < $quantidade_pedido)
+                    return false;
+            }
         }
 
-        session()->put('entradas_saidas' , $entradas_saidas);
+        return true;
     }
 }

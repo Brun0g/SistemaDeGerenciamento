@@ -79,6 +79,7 @@ Route::POST('/aprovarPedido/{id_pedido}/{id_cliente}',[Order_controller::class,'
 Route::DELETE('/ExcluirPedidoCliente/{id_cliente}/{id_product}',[Order_controller::class,'deleteOrderFinish'])->middleware(['auth']);
 Route::GET('/pedidofinalizado/{id_pedido}', [Order_controller::class, 'showFinishOrder'])->middleware(['auth']);
 Route::GET('/pedidos_excluidos', [Order_controller::class, 'orders_deleted'])->middleware(['auth'])->name('pedidos_excluidos');
+Route::GET('/pedidos_clientes', [Order_controller::class, 'orders_client'])->middleware(['auth'])->name('pedidos_clientes');
 Route::POST('/realocar_pedido/{id_pedido}', [Order_controller::class, 'orders_active'])->middleware(['auth']);
 
 //CARRINHO

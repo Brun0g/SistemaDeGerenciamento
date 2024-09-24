@@ -51,22 +51,7 @@ padding: 10px;
 }
 </style>
 <div class="py-12">
-     @if (session('status'))
-                <div style="display: flex; justify-content: center;">
-                    <div class="alert alert-success" style="display: flex; justify-content:center">
-                        {{ session('status') }}
-                    </div>
-                </div>
-                @endif
-                
-                @if (session('error_estoque'))
-                <div style="display: flex; justify-content: center;">
-                    <div class="alert alert-danger" style="text-align: center; width: 25%; margin-right: 10px; font-weight: 600;">
-                        
-                        {{ session('error_estoque') }}
-                    </div>
-                </div>
-                @endif
+    
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="caption-style" style="display: flex; flex-direction: column;">

@@ -17,10 +17,7 @@ use \App\Services\CarrinhoServiceInterface;
 use \App\Services\PromocoesServiceInterface;
 use \App\Services\EntradasServiceInterface;
 use \App\Services\EstoqueServiceInterface;
-
 use \App\Services\UserServiceInterface;
-
-
 
 
 class Clientes_controller extends Controller
@@ -63,8 +60,6 @@ class Clientes_controller extends Controller
         $valorTotalPorPedido = [];
         $tabela_clientes = $provider_cliente->listarClientes();
         $listar_enderecos = $provider_endereco->listarEnderecos();
-
-        // dd($request->search_string);
 
         if($request->search_string != null)
             $tabela_clientes = $provider_cliente->searchCliente($request->search_string);

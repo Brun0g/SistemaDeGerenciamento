@@ -12,7 +12,7 @@ class SessionProdutosService implements ProdutosServiceInterface
 	{
         $estoque = session()->get('Produtos', []);
 
-        $estoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'quantidade' => (int)$quantidade,  'imagem' => $imagem, 'deleted_at' => null];
+        $estoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'imagem' => $imagem, 'deleted_at' => null];
 
         session()->put('Produtos', $estoque);
 
@@ -102,14 +102,13 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $produto_id = $key;
                 $image_url_produto = $value['imagem'];
                 $deleted_at = $value['deleted_at'];
-                $quantidade_estoque = $value['quantidade'];
 
                 $image_url_produto = asset("storage/" . $image_url_produto);
                
                 if($value['imagem'] == false)
                     $image_url_produto = false;
 
-                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at, 'quantidade_estoque' => $quantidade_estoque];
+                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at];
             }
         }
 

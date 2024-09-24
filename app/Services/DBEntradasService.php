@@ -45,6 +45,26 @@ class DBEntradasService implements EntradasServiceInterface
         return $saida->id;
     }
 
+    function deletarSaida($pedido_id)
+    {
+        $estoque = Entradas_saidas::where('pedido_id', $pedido_id)->get();
+
+        foreach ($estoque as $key => $value) {
+
+            $estoque[$key]->delete($pedido_id);
+        }
+    }
+
+    function realocarSaida($pedido_id)
+    {
+        $saida = Entradas_saidas::withTrashed()->where('pedido_id', $pedido_id)->get();
+
+        foreach ($saida as $key => $value) {
+            $saida[$key]->deleted_at = null;
+            $saida[$key]->save();
+        }
+    }
+
     function buscarEntradaSaidas($produto_id, $provider_user)
     {
         $entradas = Entradas_saidas::where('produto_id', $produto_id)->get();
@@ -150,6 +170,4 @@ class DBEntradasService implements EntradasServiceInterface
 
         return $entradas_array;
     }
-
-
 }
