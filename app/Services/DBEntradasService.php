@@ -15,13 +15,16 @@ class DBEntradasService implements EntradasServiceInterface
     {
         $entrada = new Entradas_saidas();
 
-        $entrada->user_id = Auth::id();
+        $entrada->create_by = Auth::id();
+        $entrada->delete_by = null;
+        $entrada->relocate_by = null;
         $entrada->produto_id = $produto_id;
         $entrada->quantidade = $quantidade;
         $entrada->observacao = $observacao;
         $entrada->ajuste_id = $ajuste_id;
         $entrada->multiplo_id = $multiplo_id;
         $entrada->pedido_id = $pedido_id;
+        
 
         $entrada->save();
 
@@ -32,13 +35,16 @@ class DBEntradasService implements EntradasServiceInterface
     {
         $saida = new Entradas_saidas();
 
-        $saida->user_id = Auth::id();
+        $saida->create_by = Auth::id();
+        $saida->delete_by = null;
+        $saida->relocate_by = null;
         $saida->produto_id = $produto_id;
         $saida->quantidade = $quantidade;
         $saida->observacao = $observacao;
         $saida->ajuste_id = $ajuste_id;
         $saida->multiplo_id = $multiplo_id;
         $saida->pedido_id = $pedido_id;
+        
 
         $saida->save();
 
@@ -51,6 +57,8 @@ class DBEntradasService implements EntradasServiceInterface
 
         foreach ($estoque as $key => $value) {
 
+            $estoque[$key]->delete_by = Auth::id();
+            $estoque[$key]->save();
             $estoque[$key]->delete($pedido_id);
         }
     }
@@ -60,6 +68,7 @@ class DBEntradasService implements EntradasServiceInterface
         $saida = Entradas_saidas::withTrashed()->where('pedido_id', $pedido_id)->get();
 
         foreach ($saida as $key => $value) {
+            $saida[$key]->relocate_by = Auth::id();
             $saida[$key]->deleted_at = null;
             $saida[$key]->save();
         }
@@ -76,8 +85,8 @@ class DBEntradasService implements EntradasServiceInterface
         foreach ($entradas as $key => $value) {
             if($value['produto_id'] == $produto_id)
             {
-                $user_id = $value['user_id'];
-                $nome = $provider_user->buscarUsuario($user_id);
+                $create_by = $value['create_by'];
+                $nome = $provider_user->buscarUsuario($create_by);
                 $produto_id = $value['produto_id'];
                 $data = $value['created_at'];    
                 $observacao = $value['observacao'];
@@ -88,7 +97,7 @@ class DBEntradasService implements EntradasServiceInterface
 
                 $total_entrada += $quantidade;
 
-                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
+                $entradas_array[] = ['create_by' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
             }
         }
 
@@ -106,8 +115,8 @@ class DBEntradasService implements EntradasServiceInterface
 
         foreach ($entradas as $key => $value) {
            
-            $user_id = $value['user_id'];
-            $nome = $provider_user->buscarUsuario($user_id);
+            $create_by = $value['create_by'];
+            $nome = $provider_user->buscarUsuario($create_by);
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $data = $value['created_at']; 
@@ -117,7 +126,7 @@ class DBEntradasService implements EntradasServiceInterface
             $pedido_id = $value['pedido_id'];
             $deleted_at = $value['deleted_at'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id, 'deleted_at' => $deleted_at];
+            $entradas_array[] = ['create_by' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id, 'deleted_at' => $deleted_at];
         }
 
         return $entradas_array;
@@ -131,8 +140,8 @@ class DBEntradasService implements EntradasServiceInterface
 
         foreach ($entradas as $key => $value) {
            
-            $user_id = $value['user_id'];
-            $nome = $provider_user->buscarUsuario($user_id);
+            $create_by = $value['create_by'];
+            $nome = $provider_user->buscarUsuario($create_by);
             $produto_id = $value['produto_id'];
             $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
             $quantidade = $value['quantidade'];
@@ -141,7 +150,7 @@ class DBEntradasService implements EntradasServiceInterface
             $observacao = $value['observacao'];
             $multiplo_id = $value['multiplo_id'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
+            $entradas_array[] = ['create_by' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
         }
 
         return $entradas_array;
@@ -155,8 +164,8 @@ class DBEntradasService implements EntradasServiceInterface
 
         foreach ($entradas as $key => $value) {
            
-            $user_id = $value['user_id'];
-            $nome = $provider_user->buscarUsuario($user_id);
+            $create_by = $value['create_by'];
+            $nome = $provider_user->buscarUsuario($create_by);
             $produto_id = $value['produto_id'];
             $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
             $quantidade = $value['quantidade'];
@@ -165,7 +174,7 @@ class DBEntradasService implements EntradasServiceInterface
             $observacao = $value['observacao'];
             $multiplo_id = $value['multiplo_id'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo,  'multiplo_id' => $multiplo_id];
+            $entradas_array[] = ['create_by' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo,  'multiplo_id' => $multiplo_id];
         }
 
         return $entradas_array;

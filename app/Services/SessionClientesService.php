@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Services\ClientesServiceInterface;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 use App\Models\Endereco;
 
@@ -12,7 +14,7 @@ class SessionClientesService implements ClientesServiceInterface
 	{
 		$clientes = session()->get('Clientes', []);
         
-		$clientes[] = ['name' => $name, 'email' => $email,'idade' => $idade, 'cidade' => $cidade, 'cep' => $cep, 'rua' => $rua, 'numero' => $numero, 'estado' => $estado, 'contato' => $contato];
+		$clientes[] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'update_by' => null, 'name' => $name, 'email' => $email, 'idade' => $idade, 'cidade' => $cidade, 'cep' => $cep, 'rua' => $rua, 'numero' => $numero, 'estado' => $estado, 'contato' => $contato, 'deleted_at' => null];
 	
 		session()->put("Clientes", $clientes);
 
@@ -31,16 +33,17 @@ class SessionClientesService implements ClientesServiceInterface
 	{
 		if(session()->has('Clientes'))
         {
-            $EditClientID = session()->get('Clientes');
+            $clientes = session()->get('Clientes');
 
-            if(array_key_exists($cliente_id, $EditClientID))
+            if(array_key_exists($cliente_id, $clientes))
             {
-                $EditClientID[$cliente_id]['name'] = $name;
-                $EditClientID[$cliente_id]['email'] = $email;
-                $EditClientID[$cliente_id]['idade'] = $idade;
-                $EditClientID[$cliente_id]['contato'] = $contato;
+                $clientes[$cliente_id]['update_by'] = Auth::id();
+                $clientes[$cliente_id]['name'] = $name;
+                $clientes[$cliente_id]['email'] = $email;
+                $clientes[$cliente_id]['idade'] = $idade;
+                $clientes[$cliente_id]['contato'] = $contato;
                     
-                session()->put('Clientes', $EditClientID);
+                session()->put('Clientes', $clientes);
             }
         }
 	}
@@ -76,7 +79,8 @@ class SessionClientesService implements ClientesServiceInterface
 
             if(array_key_exists($cliente_id, $clientes))
             {
-                unset($clientes[$cliente_id]);
+                $clientes[$cliente_id]['delete_by'] = Auth::id();
+                $clientes[$cliente_id]['deleted_at'] = now();
                 session()->put('Clientes', $clientes);
             }
         }

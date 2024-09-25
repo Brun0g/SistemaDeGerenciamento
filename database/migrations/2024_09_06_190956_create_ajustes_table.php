@@ -15,7 +15,7 @@ class CreateAjustesTable extends Migration
     {
         Schema::create('ajustes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('create_by')->constrained('users');
             $table->timestamps();
             
         });

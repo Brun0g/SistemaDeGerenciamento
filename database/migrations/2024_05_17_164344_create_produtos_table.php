@@ -15,6 +15,10 @@ class CreateProdutosTable extends Migration
     {
         Schema::create('produtos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('create_by')->constrained('users');
+            $table->foreignId('delete_by')->nullable()->constrained('users');
+            $table->foreignId('relocate_by')->nullable()->constrained('users');
+            $table->foreignId('update_by')->nullable()->constrained('users');
             $table->string('produto');
             $table->foreignId('categoria_id')->constrained('categorias');
             $table->double('valor', 8 , 2);

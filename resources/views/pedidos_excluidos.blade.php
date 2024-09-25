@@ -76,7 +76,8 @@ padding: 10px;
             <table id="table">
                 <thead class="thead">
                     <tr>
-                        <th class="row-inform-item">Usuário</th>
+                        <th class="row-inform-item">Pedido criado</th>
+                        <th class="row-inform-item">Pedido deletado</th>
                         <th class="row-inform-item">Tipo</th>
                         <th class="row-inform-item">Total</th>
                         <th class="row-inform-item">Excluido</th>
@@ -85,24 +86,25 @@ padding: 10px;
                     </tr>
                 </thead>
                 <tbody>
-                    @if(sizeof($excluidos) > 0)
+                @if(sizeof($excluidos) > 0)
                     @foreach($excluidos as $key => $value)
                     
-                    @if(isset($value['deleted_at']))
+        
                     <tr>
-                        <td>{{ strtoupper($value['user_id'])}}</td>
-                        
+                        <td>{{ strtoupper($value['create_by'])}}</td>
+                        <td>{{ strtoupper($value['delete_by'])}}</td>
                         <td>
-                            <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
+                            <form action="/pedidofinalizado/{{$key}}" method="GET">
                                 @csrf
-                                @method('GET')
-                                <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Pedido N°: <span style="color: black; font-weight: 900;">{{$value['pedido_id']}}</span></button>
+                 
+                                <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Pedido N°: <span style="color: black; font-weight: 900;">{{$key}}</span></button>
                             </form>
                         </td>
-                        <td style="color: green"> R$ {{  number_format($totalComDesconto[$key], 2, ",", ".")}}</td>
+                        <td style="color: green"> R$ {{  number_format($value['total'], 2, ",", ".")}}</td>
 
 
                         <td>{{  $value['data'] }}</td>
+
                         @if($data_atual['dia_do_ano'] > $value['dia_do_ano'] && $data_atual['mes'] == $value['mes'])
                         <td>{{$data_atual['dia_do_ano'] - $value['dia_do_ano']}} dia atrás</td>
                         @elseif($data_atual['mes'] - $value['mes'] == 1)
@@ -112,15 +114,17 @@ padding: 10px;
                         @else
                         <td>Hoje</td>
                         @endif
-                        <td><form action="/realocar_pedido/{{$value['pedido_id']}}" method="POST">
+
+                        <td><form action="/realocar_pedido/{{$key}}" method="POST">
                                 @csrf
                
                                 <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Realocar</span></button>
                             </form></td>
                     </tr>
                     
-                    @endif
+                  
                     @endforeach
+
                     @else
                     <td colspan="6">Sem dados de registro!</td>
                     @endif

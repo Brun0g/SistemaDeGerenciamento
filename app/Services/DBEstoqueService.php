@@ -21,7 +21,7 @@ class DBEstoqueService implements EstoqueServiceInterface
     {
         $estoque = new Ajuste();
 
-        $estoque->user_id = Auth::id();
+        $estoque->create_by = Auth::id();
 
         $estoque->save();
 
@@ -32,7 +32,7 @@ class DBEstoqueService implements EstoqueServiceInterface
     {
         $estoque = new MultiplaEntradas();
 
-        $estoque->user_id = Auth::id();
+        $estoque->create_by = Auth::id();
 
         $estoque->save();
 
@@ -64,13 +64,13 @@ class DBEstoqueService implements EstoqueServiceInterface
         {
             $ajuste_id = $value['ajuste_id'];
             $produto_id = $value['produto_id'];
-            $user_id = $service->buscarAjuste($ajuste_id);
-            $nome_usuario = $provider_user->buscarUsuario($user_id);
+            $create_by = $service->buscarAjuste($ajuste_id);
+            $nome_usuario = $provider_user->buscarUsuario($create_by);
             $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
             $quantidade = $value['quantidade'];
             $created_at = $value['created_at'];
 
-            $array[] = ['user_id' => $nome_usuario, 'ajuste_id' => $ajuste_id, 'produto_id' => $nome_produto, 'quantidade' => $quantidade, 'created_at' => $created_at];
+            $array[] = ['create_by' => $nome_usuario, 'ajuste_id' => $ajuste_id, 'produto_id' => $nome_produto, 'quantidade' => $quantidade, 'created_at' => $created_at];
         }
 
         return $array;
@@ -80,7 +80,7 @@ class DBEstoqueService implements EstoqueServiceInterface
     {
         $estoque = Ajuste::where('id', $ajuste_id)->get();
 
-        return $estoque[0]->user_id;
+        return $estoque[0]->create_by;
     }
 
     public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas_saidas, $pedido_id,  $ajuste_id, $multiplo_id)

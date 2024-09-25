@@ -153,7 +153,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         $valor_total = $buscarValores['totalSemDesconto'];
         $valor_final = $buscarValores['valor_final'];
         
-        $pedido_id = $provider_pedidos->salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total);
+        $pedido_id = $provider_pedidos->salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total, null, null);
 
         foreach ($pedidos_carrinho as $key => $value) {
             $produto_id = $value['produto_id'];
@@ -167,7 +167,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                 $preco_unidade = $provider_produto->buscarProduto($produto_id)['valor'];
 
-                $provider_pedidos->salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade);
+                $provider_pedidos->salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, null, null);
 
                 $provider_estoque->atualizarEstoque($produto_id, -$quantidade, 'saida', null, $provider_entradas_saidas, $pedido_id, null, null);
 

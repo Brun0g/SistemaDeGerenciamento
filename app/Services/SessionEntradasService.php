@@ -12,7 +12,7 @@ class SessionEntradasService implements EntradasServiceInterface
     {
         $entradas = session()->get('entradas_saidas', []);
 
-        $entradas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'deleted_at' => null];
+        $entradas[] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'observacao' => $observacao, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'created_at' => now(), 'deleted_at' => null];
 
     
         session()->put('entradas_saidas', $entradas);
@@ -22,7 +22,7 @@ class SessionEntradasService implements EntradasServiceInterface
     {
         $saidas = session()->get('entradas_saidas', []);
 
-        $saidas[] = ['user_id' => Auth::id(), 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao,  'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'deleted_at' => null];
+        $saidas[] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao,  'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'created_at' => now(), 'deleted_at' => null];
 
     
         session()->put('entradas_saidas', $saidas);
@@ -33,8 +33,10 @@ class SessionEntradasService implements EntradasServiceInterface
         $estoque = session()->get('entradas_saidas', []);
 
         foreach ($estoque as $key => $value) {
-            if($pedido_id == $value['pedido_id'])
+            if($pedido_id == $value['pedido_id']){
+                $estoque[$key]['delete_by'] = Auth::id();
                 $estoque[$key]['deleted_at'] = now();
+            }
         }
 
         session()->put('entradas_saidas', $estoque);
@@ -46,7 +48,10 @@ class SessionEntradasService implements EntradasServiceInterface
 
         foreach ($saida as $key => $value) {
             if($pedido_id == $value['pedido_id'])
+            {
+                $saida[$key]['relocate_by'] = Auth::id();
                 $saida[$key]['deleted_at'] = null;
+            }
            
         }
 
@@ -60,14 +65,13 @@ class SessionEntradasService implements EntradasServiceInterface
         $entradas_array = [];
         $total_entrada = 0;
 
-
         foreach ($entradas as $key => $value) {
             if($value['produto_id'] == $produto_id)
             {
                 if(!$value['deleted_at'])
                 {
-                    $user_id = $value['user_id'];
-                    $nome = $provider_user->buscarUsuario($user_id);
+                    $create_by = $value['create_by'];
+                    $nome = $provider_user->buscarUsuario($create_by);
                     $produto_id = $value['produto_id'];
                     $data = $value['created_at'];    
                     $observacao = $value['observacao'];
@@ -78,7 +82,7 @@ class SessionEntradasService implements EntradasServiceInterface
 
                     $total_entrada += $quantidade;
 
-                    $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
+                    $entradas_array[] = ['create_by' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
                 }
                 
             }
@@ -99,8 +103,8 @@ class SessionEntradasService implements EntradasServiceInterface
 
             if($deleted_at  == $tipo)
             {
-                $user_id = $value['user_id'];
-                $nome = $provider_user->buscarUsuario($user_id);
+                $create_by = $value['create_by'];
+                $nome = $provider_user->buscarUsuario($create_by);
                 $produto_id = $value['produto_id'];
                 $quantidade = $value['quantidade'];
                 $data = $value['created_at'];   
@@ -110,7 +114,7 @@ class SessionEntradasService implements EntradasServiceInterface
                 $pedido_id = $value['pedido_id'];
               
 
-                $entradas_array[] = ['user_id' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id, 'deleted_at' => $deleted_at];
+                $entradas_array[] = ['create_by' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id, 'deleted_at' => $deleted_at];
             }
         }
 
@@ -126,8 +130,8 @@ class SessionEntradasService implements EntradasServiceInterface
         foreach ($entradas as $key => $value) {
             if($ajuste_id == $value['ajuste_id'])
             {
-                $user_id = $value['user_id'];
-                $nome = $provider_user->buscarUsuario($user_id);
+                $create_by = $value['create_by'];
+                $nome = $provider_user->buscarUsuario($create_by);
                 $produto_id = $value['produto_id'];
                 $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
                 $quantidade = $value['quantidade'];
@@ -136,7 +140,7 @@ class SessionEntradasService implements EntradasServiceInterface
                 $observacao = $value['observacao'];
                 $multiplo_id = $value['multiplo_id'];
 
-            $entradas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
+            $entradas_array[] = ['create_by' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
             }
         }
 
@@ -152,8 +156,8 @@ class SessionEntradasService implements EntradasServiceInterface
         foreach ($entradas as $key => $value) {
             if($multiplo_id == $value['multiplo_id'])
             {
-                $user_id = $value['user_id'];
-                $nome = $provider_user->buscarUsuario($user_id);
+                $create_by = $value['create_by'];
+                $nome = $provider_user->buscarUsuario($create_by);
                 $produto_id = $value['produto_id'];
                 $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
                 $quantidade = $value['quantidade'];
@@ -162,7 +166,7 @@ class SessionEntradasService implements EntradasServiceInterface
                 $observacao = $value['observacao'];
                 $multiplo_id = $value['multiplo_id'];
 
-                $entradas_array[] = ['user_id' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'multiplo_id' => $multiplo_id];
+                $entradas_array[] = ['create_by' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'multiplo_id' => $multiplo_id];
             }
         }
 

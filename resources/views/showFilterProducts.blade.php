@@ -57,6 +57,7 @@ padding: 10px;
                 ENTRADAS E SAÍDAS
                 <div>{{strtoupper($Produtos['produto'])}}</div>
             </div>
+            
             <table id="table">
                 <thead class="thead">
                     <tr>
@@ -75,7 +76,7 @@ padding: 10px;
 
                     @if(isset($value['pedido_id']) && $value['quantidade'] < 0)
                     <tr>
-                        <td>{{  strtoupper($value['user_id'])}}</td>
+                        <td>{{  strtoupper($value['create_by'])}}</td>
                         <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
                             @csrf
                             @method('GET')
@@ -87,7 +88,7 @@ padding: 10px;
                     </tr>
                     @elseif( isset($value['pedido_id']) && $value['quantidade'] > 0)
                     <tr>
-                        <td>{{  strtoupper($value['user_id'])}}</td>
+                        <td>{{  strtoupper($value['create_by'])}}</td>
                         <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
                             @csrf
                             @method('GET')
@@ -99,7 +100,7 @@ padding: 10px;
                     </tr>
                     @elseif($value['quantidade'] > 0)
                     <tr>
-                        <td>{{  strtoupper($value['user_id'])}}</td>
+                        <td>{{  strtoupper($value['create_by'])}}</td>
                         @if($value['multiplo_id'] != null)
                         <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">
                             @csrf
@@ -121,7 +122,7 @@ padding: 10px;
                     </tr>
                     @elseif($value['quantidade'] < 0)
                     <tr>
-                        <td>{{  strtoupper($value['user_id'])}}</td>
+                        <td>{{  strtoupper($value['create_by'])}}</td>
                         @if($value['ajuste_id'] != null)
                         <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">
                             @csrf

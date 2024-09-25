@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Services\ProdutosServiceInterface;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
+
 
 
 class SessionProdutosService implements ProdutosServiceInterface
@@ -12,7 +14,7 @@ class SessionProdutosService implements ProdutosServiceInterface
 	{
         $estoque = session()->get('Produtos', []);
 
-        $estoque[] = ['produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'imagem' => $imagem, 'deleted_at' => null];
+        $estoque[] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'update_by' => null, 'produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'imagem' => $imagem, 'deleted_at' => null];
 
         session()->put('Produtos', $estoque);
 
@@ -29,6 +31,7 @@ class SessionProdutosService implements ProdutosServiceInterface
         foreach ($produtos as $key => $value) {
             if($produto_id == $key)
             {
+                $produtos[$key]['update_by'] = Auth::id();
                 $produtos[$key]['produto'] = $nome;
                 $produtos[$key]['valor'] = $valor;
 
@@ -48,7 +51,10 @@ class SessionProdutosService implements ProdutosServiceInterface
 
             foreach ($produtos as $key => $value) {
                     if($key == $produto_id)
-                        $produtos[$key]['deleted_at'] = date("Y-m-d H:i:s");
+                    {
+                        $produtos[$key]['delete_by'] = Auth::id();    
+                        $produtos[$key]['deleted_at'] = now();
+                    }
                     
             }
 
@@ -82,7 +88,7 @@ class SessionProdutosService implements ProdutosServiceInterface
                 if($image_url_produto != false)
                     $image_url_produto = asset("storage/" . $image_url_produto);
 
-                 $listarProdutos[$produto_id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo, 'quantidade_estoque' => $quantidade_estoque];
+                $listarProdutos[$produto_id] = ['produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo, 'quantidade_estoque' => $quantidade_estoque];
             }
         }
 

@@ -15,7 +15,7 @@ class SessionEstoqueService implements EstoqueServiceInterface
     {
         $estoque = session()->get('Ajustes', []);
 
-        $estoque[] = ['user_id' => Auth::id()];
+        $estoque[] = ['create_by' => Auth::id()];
 
         session()->put('Ajustes', $estoque);
 
@@ -30,17 +30,17 @@ class SessionEstoqueService implements EstoqueServiceInterface
 
         foreach ($ajuste as $key => $value) {
             if($ajuste_id == $key)
-                $user_id = $value['user_id'];
+                $create_by = $value['create_by'];
         }
 
-        return $user_id;
+        return $create_by;
     }
     
     public function adicionarMultiplos()
     {
         $estoque = session()->get('Multiplos', []);
 
-        $estoque[] = ['user_id' => Auth::id()];
+        $estoque[] = ['create_by' => Auth::id()];
 
         session()->put('Multiplos', $estoque);
 
@@ -53,7 +53,7 @@ class SessionEstoqueService implements EstoqueServiceInterface
     {
         $estoque = session()->get('AjustesIndividuais', []);
 
-        $estoque[] = ['user_id' => Auth::id(), 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'created_at' => now()];
+        $estoque[] = ['create_by' => Auth::id(), 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'created_at' => now()];
 
         session()->put('AjustesIndividuais', $estoque);
     }
@@ -68,15 +68,15 @@ class SessionEstoqueService implements EstoqueServiceInterface
             
             if($ajuste_id == $value['ajuste_id'])
             {
-                $user_id = $value['user_id'];
+                $create_by = $value['create_by'];
                 $ajuste_id = $value['ajuste_id'];
                 $produto_id = $value['produto_id'];
-                $nome_usuario = $provider_user->buscarUsuario($user_id);
+                $nome_usuario = $provider_user->buscarUsuario($create_by);
                 $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
                 $quantidade = $value['quantidade'];
                 $created_at = $value['created_at'];
 
-                $array[] = ['user_id' => $nome_usuario, 'ajuste_id' => $ajuste_id, 'produto_id' => $nome_produto, 'quantidade' => $quantidade, 'created_at' => $created_at];
+                $array[] = ['create_by' => $nome_usuario, 'ajuste_id' => $ajuste_id, 'produto_id' => $nome_produto, 'quantidade' => $quantidade, 'created_at' => $created_at];
             }
         }
 

@@ -4,5 +4,5 @@ namespace App\Services;
 
 interface UserServiceInterface
 {
-	function buscarUsuario($user_id);
+	function buscarUsuario($create_by);
 }

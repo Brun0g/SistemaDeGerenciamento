@@ -15,10 +15,16 @@ class CreatePromocoesTable extends Migration
     {
         Schema::create('promocoes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('create_by')->constrained('users');
+            $table->foreignId('delete_by')->nullable()->constrained('users');
+            $table->foreignId('relocate_by')->nullable()->constrained('users');
+            $table->foreignId('update_by')->nullable()->constrained('users');
+            $table->foreignId('active_by')->nullable()->constrained('users');
             $table->foreignId('produto_id')->constrained('produtos')->unique();
             $table->integer('porcentagem');
             $table->integer('quantidade');
             $table->integer('ativo');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

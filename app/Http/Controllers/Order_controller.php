@@ -53,23 +53,16 @@ class Order_controller extends Controller
     public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente)
     {
         
-        $excluidos = $provider_entradas_saidas->listarEntradaSaidas($provider_user, true);
-        $excluidos = collect($excluidos)->unique('pedido_id')->where('deleted_at', '!=', null)->sortBy(['data', 'asc']);
-
-        $array = [];
-    
-        foreach ($excluidos as $key => $value) {
-            $pedido_id = $value['pedido_id'];
-            $totalComDesconto = $provider_pedidos->buscarPedido($pedido_id);
-            $array[] = $totalComDesconto['total'];
-
-        }
+        $excluidos = $provider_pedidos->listarPedidosExcluidos($provider_user);
+      
        
         $now = now();
 
-        $data_atual = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $excluidos, 'data_atual' => $data_atual, 'totalComDesconto' => $array ]);
+        $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
+
+     
+        return view('pedidos_excluidos' , ['excluidos' => $excluidos, 'data_atual' => $data]);
     }
 
     public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)
@@ -78,7 +71,7 @@ class Order_controller extends Controller
         $tem_estoque = $provider_pedidos->reativarPedido($pedido_id);
 
       
-        
+
         $url = url()->previous();
 
         if(!$tem_estoque)

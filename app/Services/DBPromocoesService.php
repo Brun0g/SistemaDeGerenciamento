@@ -5,7 +5,7 @@ namespace App\Services;
 
 use App\Models\Promocoes;
 use Illuminate\Support\Collection;
-
+use Illuminate\Support\Facades\Auth;
 
 
 use App\Services\PromocoesServiceInterface;
@@ -16,9 +16,15 @@ class DBPromocoesService implements PromocoesServiceInterface
 	{
         $promocoes = new Promocoes();
 
+        
+        $promocoes->create_by = Auth::id();
+        $promocoes->delete_by = null;
+        $promocoes->relocate_by = null;
+        $promocoes->update_by = null;
+        $promocoes->active_by = null;
         $promocoes->produto_id = $produto_id;
-        $promocoes->porcentagem = $porcentagem;
         $promocoes->quantidade = $quantidade;
+        $promocoes->porcentagem = $porcentagem;
         $promocoes->ativo = 0;
 
         $promocoes->save();
@@ -29,12 +35,18 @@ class DBPromocoesService implements PromocoesServiceInterface
         $promocoes = Promocoes::find($promocoes_id);
 
         $promocoes->ativo = $situacao;
+        $promocoes->active_by = Auth::id();
+
         $promocoes->save();
     }
 
     public function deletarPromocao($promocoes_id)
     {
         $promocoes = Promocoes::find($promocoes_id);
+
+        $promocoes->delete_by = Auth::id();
+        
+        $promocoes->save();
 
         $promocoes->delete($promocoes_id);
     }
@@ -43,6 +55,7 @@ class DBPromocoesService implements PromocoesServiceInterface
     {
         $promocoes = Promocoes::find($promocoes_id);
 
+        $promocoes->update_by = Auth::id();
         $promocoes->quantidade =  $quantidade;
         $promocoes->porcentagem = $porcentagem;
 

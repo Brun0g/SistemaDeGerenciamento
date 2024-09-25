@@ -9,9 +9,38 @@ use App\Models\Pedido;
 use App\Models\Pedidos_finalizados;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class SessionPedidosService implements PedidosServiceInterface
 {
+    public function salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total)
+    {
+        $Pedido_encerrado = session()->get('Pedido_encerrado', []);
+        $index = count($Pedido_encerrado);
+        $pedido_id = $index + 1;
+        
+        $Pedido_encerrado[$pedido_id] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'pedido_id' => $pedido_id, 'cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $valor_final, 'porcentagem' => $porcentagem, 'totalSemDesconto' => $valor_total, 'excluido' => 0];
+
+        session()->put('Pedido_encerrado', $Pedido_encerrado);
+
+        return $pedido_id;
+    }
+
+    function salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
+    {
+        $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
+        $Pedido_encerrado = session()->get('Pedido_encerrado', []);
+
+        $count = sizeof($Pedido_encerrado);
+    
+        $Pedido_encerrado_individual[] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'pedido_id' => $pedido_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total];
+
+
+        session()->put('Pedido_encerrado_individual', $Pedido_encerrado_individual);
+
+        return $count;
+    }
+
     public function excluirPedido($pedido_id, $provider_entradas_saidas)
     {
         $pedido_geral = session()->get('Pedido_encerrado',[]);
@@ -20,7 +49,10 @@ class SessionPedidosService implements PedidosServiceInterface
             
         foreach ($pedido_geral as $key => $value) {
             if($pedido_id == $key)
+            {
+                $pedido_geral[$key]['delete_by'] = Auth::id();
                 $pedido_geral[$key]['deleted_at'] = now();
+            }
         }
 
         session()->put('Pedido_encerrado', $pedido_geral);
@@ -34,8 +66,10 @@ class SessionPedidosService implements PedidosServiceInterface
         $pedidos_individual = session()->get('Pedido_encerrado_individual', []);
 
         foreach ($pedidos_individual as $key => $value) {
-            if($pedido_id == $value['pedido_id'])
+            if($pedido_id == $value['pedido_id']){
+                $pedidos_individual[$key]['delete_by'] = Auth::id();
                 $pedidos_individual[$key]['deleted_at'] = now();
+            }
         }
 
         session()->put('Pedido_encerrado_individual', $pedidos_individual);
@@ -48,8 +82,10 @@ class SessionPedidosService implements PedidosServiceInterface
         $provider_pedidos = new SessionPedidosService();
 
         foreach ($pedido_geral as $key => $value) {
-            if($pedido_id == $key)
+            if($pedido_id == $key){
+                $pedido_geral[$key]['relocate_by'] = Auth::id();
                 $pedido_geral[$key]['deleted_at'] = null;
+            }
         }
 
         session()->put('Pedido_encerrado', $pedido_geral);
@@ -64,7 +100,10 @@ class SessionPedidosService implements PedidosServiceInterface
 
         foreach ($pedidos_individual as $key => $value) {
             if($pedido_id == $value['pedido_id'])
+            {
+                $pedidos_individual[$key]['relocate_by'] = Auth::id();
                 $pedidos_individual[$key]['deleted_at'] = null;
+            }
         }
 
         session()->put('Pedido_encerrado_individual', $pedidos_individual);
@@ -118,6 +157,42 @@ class SessionPedidosService implements PedidosServiceInterface
         return $listaPedidos;
     }
 
+    public function listarPedidosExcluidos($provider_user)
+    {
+        $array = [];
+
+        $pedidos = session()->get('Pedido_encerrado',[]);
+
+
+        foreach ($pedidos as $key => $value) {
+
+            if( isset($value['deleted_at']))
+            {
+                $pedido_id = $key;
+                $create_by = $value['create_by'];
+                $create_by = $provider_user->buscarUsuario($create_by);
+
+                $delete_by = $value['delete_by'];
+                $delete_by = $provider_user->buscarUsuario($delete_by);
+
+                $relocate_by = $value['relocate_by'];
+                $relocate_by = $provider_user->buscarUsuario($relocate_by);
+                $id_cliente = $value['cliente_id'];
+                $endereco = $value['endereco_id'];
+                $total = $value['total'];
+                $porcentagem = $value['porcentagem'];
+                $total = $value['total'];
+                $data = $value['deleted_at']; 
+
+
+                $array[$pedido_id] = ['cliente_id' => $id_cliente, 'create_by' => $create_by, 'delete_by' => $delete_by, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'data' => $data, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month]; 
+            }
+        
+        }
+
+        return $array;
+    }
+
     public function buscarPedido($pedido_id)
     {
         $pedidoEncontrado = [];
@@ -166,33 +241,7 @@ class SessionPedidosService implements PedidosServiceInterface
         return $lista; 
     }
 
-    public function salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total)
-    {
-        $Pedido_encerrado = session()->get('Pedido_encerrado', []);
-        $index = count($Pedido_encerrado);
-        $pedido_id = $index + 1;
-        
-        $Pedido_encerrado[$pedido_id] = ['pedido_id' => $pedido_id, 'cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $valor_final, 'porcentagem' => $porcentagem, 'totalSemDesconto' => $valor_total, 'excluido' => 0];
 
-        session()->put('Pedido_encerrado', $Pedido_encerrado);
-
-        return $pedido_id;
-    }
-
-    function salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
-    {
-        $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
-        $Pedido_encerrado = session()->get('Pedido_encerrado', []);
-
-        $count = sizeof($Pedido_encerrado);
-    
-        $Pedido_encerrado_individual[] = ['pedido_id' => $pedido_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total];
-
-
-        session()->put('Pedido_encerrado_individual', $Pedido_encerrado_individual);
-
-        return $count;
-    }
 
     public function reativarPedido($pedido_id)
     {

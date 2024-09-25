@@ -15,6 +15,10 @@ class CreateClientesTable extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('create_by')->constrained('users');
+            $table->foreignId('delete_by')->nullable()->constrained('users');
+            $table->foreignId('relocate_by')->nullable()->constrained('users');
+            $table->foreignId('update_by')->nullable()->constrained('users');
             $table->string('name');
             $table->string('email');
             $table->integer('idade');
@@ -24,6 +28,7 @@ class CreateClientesTable extends Migration
             $table->integer('numero');
             $table->string('estado');
             $table->string('contato');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

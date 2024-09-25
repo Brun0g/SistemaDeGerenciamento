@@ -4,7 +4,8 @@ namespace App\Services;
 
 
 use App\Models\promocoes;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 
 use App\Services\PromocoesServiceInterface;
@@ -15,7 +16,7 @@ class SessionPromocoesService implements PromocoesServiceInterface
 	{
         $promocoes = session()->get('promocoes', []);
 
-        $promocoes[] = ['produto_id' => (int)$produto_id, 'porcentagem' => (int)$porcentagem, 'quantidade'=> (int)$quantidade, 'ativo' => 0];
+        $promocoes[] = ['create_by' => Auth::id(), 'delete_by' => null, 'update_by' => null, 'relocate_by' => null, 'active_by' => null, 'produto_id' => (int)$produto_id, 'porcentagem' => (int)$porcentagem, 'quantidade'=> (int)$quantidade, 'ativo' => 0];
 
         session()->put('promocoes', $promocoes);
 	}
@@ -26,7 +27,10 @@ class SessionPromocoesService implements PromocoesServiceInterface
 
         foreach ($promocoes as $key => $value) {
             if($promocoes_id == $key)
+            {
+                $promocoes[$key]['active_by'] =  Auth::id();   
                 $promocoes[$key]['ativo'] =  (int)$situacao;   
+            }
         }
 
         session()->put('promocoes', $promocoes);
@@ -39,7 +43,10 @@ class SessionPromocoesService implements PromocoesServiceInterface
 
         foreach ($promocoes as $key => $value) {
             if($promocoes_id == $key)
-                unset($promocoes[$key]);
+            {
+                $promocoes[$key]['delete_by'] = Auth::id();
+                $promocoes[$key]['deleted_at'] = now();
+            }
         }
 
         session()->put('promocoes', $promocoes);
@@ -54,7 +61,7 @@ class SessionPromocoesService implements PromocoesServiceInterface
             {
                 $promocoes[$key]['quantidade'] =  (int)$quantidade;
                 $promocoes[$key]['porcentagem'] = (int)$porcentagem;
-
+                $promocoes[$key]['update_by'] = Auth::id();
             }
         }
 
@@ -68,6 +75,8 @@ class SessionPromocoesService implements PromocoesServiceInterface
 
         foreach ($promocoes as $key => $value) 
         {
+            if( !isset($value['deleted_at']) )
+            {
             $produto_id = $value['produto_id'];
             $buscar = $provider_produto->buscarProduto($produto_id);
             $porcentagem = $value['porcentagem'];
@@ -77,7 +86,9 @@ class SessionPromocoesService implements PromocoesServiceInterface
             $preco_original = $buscar['valor'];
             $preco_desconto = $buscar['valor'] - ($buscar['valor'] / 100 * $porcentagem);
            
-            $promocoeslist[$key] = ['produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'quantidade' => $quantidade, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'ativo' => $ativo];       
+            return ['produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'quantidade' => $quantidade, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'ativo' => $ativo]; 
+            }
+                  
         }
 
 

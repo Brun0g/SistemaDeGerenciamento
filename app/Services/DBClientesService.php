@@ -6,12 +6,18 @@ use App\Models\Cliente;
 use App\Models\Endereco;
 
 use App\Services\ClientesServiceInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DBClientesService implements ClientesServiceInterface
 {
 	function adicionarCliente($name,$email,$idade,$cidade, $cep, $rua, $numero, $estado, $contato)
 	{
 		$clientes = new Cliente;
+
+        $clientes->create_by = Auth::id();
+        $clientes->delete_by = null;
+        $clientes->relocate_by = null;
+        $clientes->update_by = null;
 
         $clientes->name = $name;
        	$clientes->email = $email;
@@ -46,6 +52,9 @@ class DBClientesService implements ClientesServiceInterface
 	{
 		$cliente = Cliente::find($cliente_id);
 
+        $cliente->delete_by = Auth::id();
+        $cliente->save();
+
 		$cliente->delete($cliente_id);
 	}
 
@@ -53,7 +62,9 @@ class DBClientesService implements ClientesServiceInterface
 	{
 		$cliente = Cliente::find($cliente_id);
 
-		$cliente->name = $name;
+        $cliente->update_by = Auth::id();
+		
+        $cliente->name = $name;
        	$cliente->email = $email;
         $cliente->idade = $idade;
         $cliente->contato = $contato;

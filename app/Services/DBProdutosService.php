@@ -19,6 +19,10 @@ class DBProdutosService implements ProdutosServiceInterface
 	{
         $produto = new Produto();
 
+        $produto->create_by = Auth::id();
+        $produto->delete_by = null;
+        $produto->relocate_by = null;
+        $produto->update_by = null;
         $produto->produto = $nome;
         $produto->categoria_id = $categoria;
         $produto->valor = $valor;
@@ -35,7 +39,8 @@ class DBProdutosService implements ProdutosServiceInterface
 
         $produto->produto = $nome;
         $produto->valor = $valor;
-
+        $produto->update_by = Auth::id();
+        
         if(isset($imagem))
             $produto->imagem = $imagem;
    
@@ -45,6 +50,9 @@ class DBProdutosService implements ProdutosServiceInterface
     public function excluirProduto($produto_id)
     {
         $produto = Produto::find($produto_id);
+
+        $produto->delete_by = Auth::id();
+        $produto->save();
 
         $produto->delete($produto_id);
     }

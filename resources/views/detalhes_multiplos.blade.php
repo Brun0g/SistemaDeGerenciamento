@@ -95,7 +95,7 @@
                                     @if(isset($multiplos))
                                     @foreach ($multiplos as $key => $value )
                                     <tr>
-                                        <td style=" width: 10%; border: 1px solid black;">{{strtoupper($value['user_id'])}}</td>
+                                        <td style=" width: 10%; border: 1px solid black;">{{strtoupper($value['create_by'])}}</td>
                                         <td  style="width: 5%; border: 1px solid black;">{{strtoupper($value['produto'])}}</td>
                                         @if($value['tipo'] == 'ENTRADA')
                                         <td  style="color: green; font-weight: 900; width: 5%; border: 1px solid black;">{{$value['quantidade']}}</td>

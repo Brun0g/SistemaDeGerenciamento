@@ -74,7 +74,7 @@ padding: 10px;
                     
                     @if(isset($value['ajuste_id']))
                     <tr>
-                        <td>{{ strtoupper($value['user_id'])}}</td>
+                        <td>{{ strtoupper($value['create_by'])}}</td>
                         
                         <td>
                             <form action="/detalhes_ajuste/{{$value['ajuste_id']}}" method="POST">

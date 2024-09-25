@@ -75,7 +75,7 @@ padding: 10px;
                     
                     @if(isset($value['deleted_at']))
                     <tr>
-                        <td>{{ strtoupper($value['user_id'])}}</td>
+                        <td>{{ strtoupper($value['create_by'])}}</td>
                         
                         <td>
                             <form action="/pedidofinalizado/{{$value['pedido_id']}}" method="POST">
