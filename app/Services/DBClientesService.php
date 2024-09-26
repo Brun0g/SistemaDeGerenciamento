@@ -16,7 +16,7 @@ class DBClientesService implements ClientesServiceInterface
 
         $clientes->create_by = Auth::id();
         $clientes->delete_by = null;
-        $clientes->relocate_by = null;
+        $clientes->restored_by = null;
         $clientes->update_by = null;
 
         $clientes->name = $name;

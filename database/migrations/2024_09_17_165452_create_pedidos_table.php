@@ -17,7 +17,7 @@ class CreatePedidosTable extends Migration
             $table->id();
             $table->foreignId('create_by')->constrained('users');
             $table->foreignId('delete_by')->nullable()->constrained('users');
-            $table->foreignId('relocate_by')->nullable()->constrained('users');
+            $table->foreignId('restored_by')->nullable()->constrained('users');
             $table->foreignId('cliente_id')->constrained('clientes');
             $table->foreignId('endereco_id')->constrained('enderecos');
             $table->double('total', 8 , 2);
@@ -25,6 +25,7 @@ class CreatePedidosTable extends Migration
             $table->integer('porcentagem');
             $table->softDeletes();
             $table->timestamps();
+            $table->timestamp('restored_at')->nullable();
         });
     }
 

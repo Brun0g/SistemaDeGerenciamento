@@ -14,7 +14,7 @@ class SessionClientesService implements ClientesServiceInterface
 	{
 		$clientes = session()->get('Clientes', []);
         
-		$clientes[] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'update_by' => null, 'name' => $name, 'email' => $email, 'idade' => $idade, 'cidade' => $cidade, 'cep' => $cep, 'rua' => $rua, 'numero' => $numero, 'estado' => $estado, 'contato' => $contato, 'deleted_at' => null];
+		$clientes[] = ['create_by' => Auth::id(), 'delete_by' => null, 'restored_by' => null, 'update_by' => null, 'name' => $name, 'email' => $email, 'idade' => $idade, 'cidade' => $cidade, 'cep' => $cep, 'rua' => $rua, 'numero' => $numero, 'estado' => $estado, 'contato' => $contato, 'deleted_at' => null];
 	
 		session()->put("Clientes", $clientes);
 

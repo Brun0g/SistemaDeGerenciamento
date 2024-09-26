@@ -48,7 +48,6 @@ class PromocoesController extends Controller
         if($validator->fails())
             return redirect('promocoes')->withErrors($validator);
 
-
         $provider_promocoes->adicionarPromocao($produto_id, $quantidade, $porcentagem);
 
 
@@ -70,7 +69,6 @@ class PromocoesController extends Controller
 
         $provider_promocoes->editarPromocao($promocoes_id, $quantidade, $porcentagem);
 
- 
         return redirect('promocoes');
     }
 

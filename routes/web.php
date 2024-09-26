@@ -65,6 +65,7 @@ Route::DELETE('/DeletarEndereco/{id}',[Address_controller::class,'deleteAddress'
 Route::POST('/CadastrarProduto', [Products_controller::class, 'newProduct'])->middleware(['auth'])->middleware(['cors']);
 Route::POST('/adicionarMultiplos', [Products_controller::class, 'newMultiple'])->middleware(['auth'])->middleware(['cors']);
 Route::GET('/Produtos',[Products_controller::class,'ProductsStorageView'])->middleware(['auth'])->name('Produtos');
+Route::GET('/ProdutosExcluidos',[Products_controller::class,'ProductsStorageViewDelete'])->middleware(['auth'])->name('ProdutosExcluidos');
 Route::GET('/Produto/{id}',[Products_controller::class,'showProduct'])->middleware(['auth']);
 Route::GET('/EditarProduto/{id}',[Products_controller::class,'viewFilterProducts'])->middleware(['auth']);
 Route::GET('/multiplosProdutos',[Products_controller::class,'multipleProductView'])->middleware(['auth'])->name('multiplosProdutos');
@@ -73,6 +74,7 @@ Route::DELETE('/excluirImagem/{id}',[Products_controller::class,'deleteImage'])-
 Route::DELETE('/DeletarProduto/{id}',[Products_controller::class,'deleteProduct'])->middleware(['auth']);
 Route::PATCH('/EditarProduto/{id}',[Products_controller::class,'editProduct'])->middleware(['auth']);
 Route::PATCH('/EditMultiple', [Products_controller::class, 'EditMultiple'])->middleware(['auth'])->middleware(['cors']);
+Route::PATCH('/RestaurarProduto/{id}', [Products_controller::class, 'restoredProduct'])->middleware(['auth'])->middleware(['cors']);
 
 // PEDIDO
 Route::POST('/aprovarPedido/{id_pedido}/{id_cliente}',[Order_controller::class,'finishOrder'])->middleware(['auth']);
@@ -80,7 +82,7 @@ Route::DELETE('/ExcluirPedidoCliente/{id_cliente}/{id_product}',[Order_controlle
 Route::GET('/pedidofinalizado/{id_pedido}', [Order_controller::class, 'showFinishOrder'])->middleware(['auth']);
 Route::GET('/pedidos_excluidos', [Order_controller::class, 'orders_deleted'])->middleware(['auth'])->name('pedidos_excluidos');
 Route::GET('/pedidos_clientes', [Order_controller::class, 'orders_client'])->middleware(['auth'])->name('pedidos_clientes');
-Route::POST('/realocar_pedido/{id_pedido}', [Order_controller::class, 'orders_active'])->middleware(['auth']);
+Route::POST('/Restaurar_pedido/{id_pedido}', [Order_controller::class, 'orders_active'])->middleware(['auth']);
 
 //CARRINHO
 Route::POST('/finalizarPedido/{id}', [Carrinho_controller::class, 'finishCart'])->middleware(['auth']);

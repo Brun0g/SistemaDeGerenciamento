@@ -17,7 +17,7 @@ class CreatePedidosIndividuaisTable extends Migration
             $table->id();
             $table->foreignId('create_by')->constrained('users');
             $table->foreignId('delete_by')->nullable()->constrained('users');
-            $table->foreignId('relocate_by')->nullable()->constrained('users');
+            $table->foreignId('restored_by')->nullable()->constrained('users');
             $table->foreignId('pedido_id')->constrained('pedidos');
             $table->foreignId('produto_id')->constrained('produtos');
             $table->integer('quantidade');
@@ -27,6 +27,7 @@ class CreatePedidosIndividuaisTable extends Migration
             $table->double('totalSemDesconto', 8 , 2);
             $table->softDeletes();
             $table->timestamps();
+            $table->timestamp('restored_at')->nullable();
         });
     }
 

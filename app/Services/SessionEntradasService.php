@@ -12,7 +12,7 @@ class SessionEntradasService implements EntradasServiceInterface
     {
         $entradas = session()->get('entradas_saidas', []);
 
-        $entradas[] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'observacao' => $observacao, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'created_at' => now(), 'deleted_at' => null];
+        $entradas[] = ['create_by' => Auth::id(), 'delete_by' => null, 'restored_by' => null, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'observacao' => $observacao, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'created_at' => now(), 'deleted_at' => null];
 
     
         session()->put('entradas_saidas', $entradas);
@@ -22,7 +22,7 @@ class SessionEntradasService implements EntradasServiceInterface
     {
         $saidas = session()->get('entradas_saidas', []);
 
-        $saidas[] = ['create_by' => Auth::id(), 'delete_by' => null, 'relocate_by' => null, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao,  'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'created_at' => now(), 'deleted_at' => null];
+        $saidas[] = ['create_by' => Auth::id(), 'delete_by' => null, 'restored_by' => null, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao,  'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'created_at' => now(), 'deleted_at' => null];
 
     
         session()->put('entradas_saidas', $saidas);
@@ -42,14 +42,14 @@ class SessionEntradasService implements EntradasServiceInterface
         session()->put('entradas_saidas', $estoque);
     }
 
-    function realocarSaida($pedido_id)
+    function RestaurarSaida($pedido_id)
     {
         $saida = session()->get('entradas_saidas', []);
 
         foreach ($saida as $key => $value) {
             if($pedido_id == $value['pedido_id'])
             {
-                $saida[$key]['relocate_by'] = Auth::id();
+                $saida[$key]['restored_by'] = Auth::id();
                 $saida[$key]['deleted_at'] = null;
             }
            

@@ -17,7 +17,7 @@ class CreateProdutosTable extends Migration
             $table->id();
             $table->foreignId('create_by')->constrained('users');
             $table->foreignId('delete_by')->nullable()->constrained('users');
-            $table->foreignId('relocate_by')->nullable()->constrained('users');
+            $table->foreignId('restored_by')->nullable()->constrained('users');
             $table->foreignId('update_by')->nullable()->constrained('users');
             $table->string('produto');
             $table->foreignId('categoria_id')->constrained('categorias');
@@ -25,6 +25,7 @@ class CreateProdutosTable extends Migration
             $table->string('imagem');
             $table->softDeletes();
             $table->timestamps();
+            $table->timestamp('restored_at')->nullable();
         });
     }
 

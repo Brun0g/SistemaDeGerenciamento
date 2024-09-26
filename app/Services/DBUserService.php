@@ -8,13 +8,12 @@ use App\Services\UserServiceInterface;
 
 class DBUserService implements UserServiceInterface
 {
-    public function buscarUsuario($create_by)
+    public function buscarUsuario($user)
     {
-        if(!$create_by)
+        if(!$user)
             return null;
-
-
-        $user = User::find($create_by);
+        
+        $user = User::find($user);
         $nome = $user->name;
      
         return $nome;

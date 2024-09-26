@@ -136,6 +136,9 @@
               </tr>
             </thead>
             <tbody>
+
+
+
               
               @if(sizeof($listarPedidos) > 0)
               
@@ -171,7 +174,7 @@
             </div>
           </div>
         </div>
-        
+   
         <div style="display: flex; justify-content: center">
           <h3>Pedidos concluídos</h3>
         </div>
@@ -179,6 +182,8 @@
           <thead class="thead">
             <tr>
               <th class="row-inform-item">ID PEDIDO</th>
+              <th class="row-inform-item">Criado por</th>
+              <th class="row-inform-item">Restaurado por</th>
               <th class="row-inform-item">Total</th>
               <th class="row-inform-item">Ação</th>
               <th class="row-inform-item">Ação</th>

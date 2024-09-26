@@ -97,10 +97,10 @@ padding: 10px;
                         @else
                         <td>Hoje</td>
                         @endif
-                        <td><form action="/realocar_pedido/{{$value['pedido_id']}}" method="POST">
+                        <td><form action="/Restaurar_pedido/{{$value['pedido_id']}}" method="POST">
                                 @csrf
                
-                                <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Realocar</span></button>
+                                <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Restaurar</span></button>
                             </form></td>
                     </tr>
                     

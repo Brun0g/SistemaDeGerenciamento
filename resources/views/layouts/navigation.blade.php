@@ -40,6 +40,15 @@
                                 {{ __('Visualizar produtos') }}
                             </x-dropdown-link>
                         </form>
+                        <form method="GET" action="{{ route('ProdutosExcluidos') }}">
+                            @csrf
+                          
+                            <x-dropdown-link :href="route('ProdutosExcluidos')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Visualizar produtos excluidos') }}
+                            </x-dropdown-link>
+                        </form>
                         <form method="POST" action="{{ route('multiplosProdutos') }}">
                             @csrf
                             @method('GET')
@@ -104,7 +113,7 @@
                                 {{ __('Pedidos excluidos') }}
                             </x-dropdown-link>
                         </form>
-                        <form method="POST" action="{{ route('pedidos_clientes') }}">
+                       {{--  <form method="POST" action="{{ route('pedidos_clientes') }}">
                             @csrf
                             @method('GET')
                             <x-dropdown-link :href="route('pedidos_clientes')"
@@ -112,7 +121,7 @@
                                                 this.closest('form').submit();">
                                 {{ __('Pedidos por clientes') }}
                             </x-dropdown-link>
-                        </form>
+                        </form> --}}
                     </x-slot>
                 </x-dropdown>
             </div>

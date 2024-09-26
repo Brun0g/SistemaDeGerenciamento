@@ -105,20 +105,4 @@ class DBEstoqueService implements EstoqueServiceInterface
 
         return $total;
     }
-    
-    public function pedidosAprovados($pedido_id)
-    {
-        $estoque = Entradas_saidas::withTrashed()->where('pedido_id', $pedido_id)->get();
-
-        $situacao = false;
-
-        foreach ($estoque as $key => $value) {
-            
-            if( isset($value['deleted_at']) )
-                $situacao = true;
-
-        }
-
-        return $situacao;
-    }
 }

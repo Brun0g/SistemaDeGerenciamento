@@ -122,20 +122,4 @@ class SessionEstoqueService implements EstoqueServiceInterface
 
         session()->put('entradas_saidas', $estoque);
     }
-
-    public function pedidosAprovados($pedido_id)
-    {
-        $estoque = session()->get('entradas_saidas', []);
-
-        $situacao = false;
-
-        foreach ($estoque as $key => $value) {
-            if($pedido_id == $value['pedido_id'])
-                if( isset($value['deleted_at']) )
-                    $situacao = true;
-
-        }
-
-        return $situacao;
-    }
 }

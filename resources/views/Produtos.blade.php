@@ -74,7 +74,8 @@ font-size: 14px;
 }
 .sub-container-form {
 margin-top: 3px;
-display: flex;
+
+flex-wrap: wrap;
 justify-content: space-around;
 }
 .sub-container-item-sem-desconto {
@@ -137,6 +138,10 @@ transform: scale(1.05);
 background-color: #e0a800;
 transform: scale(1.05);
 }
+.afa {
+    margin: 0;
+    padding: 0;
+}
 </style>
 <div style="display: flex; justify-content: center; margin-top: 20px;">
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo produto</button>
@@ -144,6 +149,7 @@ transform: scale(1.05);
 
 <div class="container-geral">
     <div class="sub-container">
+       
         @if(isset($Produtos))
         @foreach ($Produtos as $key => $value)
         
@@ -165,7 +171,57 @@ transform: scale(1.05);
                 <p>{{strtoupper($value['produto'])}}</p>
             </div>
             <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
-            <p class="sub-preco-desconto"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade_estoque']}}</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sub-preco-desconto">Criado por</th>
+                        <th class="sub-preco-desconto">Data</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  strtoupper($value['create_by'])}}</td>
+                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  $value['created_at']}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            @if( isset($value['update_by']))
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sub-preco-desconto">Editado por</th>
+                        <th class="sub-preco-desconto">Data</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  strtoupper($value['update_by'])}}</td>
+                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  $value['updated_at']}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            @endif
+            @if( isset($value['restored_by']))
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sub-preco-desconto">Restaurado por</th>
+                        <th class="sub-preco-desconto">Data</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  strtoupper($value['restored_by'])}}</td>
+                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  $value['restored_at']}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            @endif
+            <p class="sub-preco-desconto" style="margin-top: 15px;"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade_estoque']}}</p>
             @if(count($Produtos[$key]['promocao']) != [])
             <div class="sub-preco-desconto">Desconto por quantidade</div>
             <div style="display: flex; justify-content: center;">
@@ -187,35 +243,48 @@ transform: scale(1.05);
                 </table>
             </div>
             @endif
-            <div class="sub-container-form">
-                <p>
-                    <form  action="/DeletarProduto/{{$key}}" method="POST" >
-                        @csrf
-                        @method('delete')
-                        <button class="btn-edit btn-deletar"  type="submit">Deletar</button>
-                    </form>
-                </p>
-                <p>
-                    <form  action="/Produto/{{$key}}" method="GET" >
-                        @csrf
-                        <button class="btn-edit"  type="submit">Visualizar</button>
-                    </form>
-                </p>
-            </div>
-            <div class="sub-container-form">
-                <p>
-                    <form  action="/EditarProduto/{{$key}}" method="GET" >
-                        @csrf
-                        <button class="btn-edit btn-editar"  type="submit">Editar</button>
-                    </form>
-                </p>
-                <p>
-                    <form  action="/entradas_saidas/{{$key}}" method="GET" >
-                        @csrf
-                        <button class="btn-edit btn-sucesso"  type="submit">Entrada/Saída</button>
-                    </form>
-                </p>
-            </div>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="afa" style="font-size: 12px;">
+                            <p  class="afa">
+                                <form  action="/DeletarProduto/{{$key}}" method="POST" >
+                                    @csrf
+                                    @method('delete')
+                                    <button class="btn-edit btn-deletar"  type="submit">Deletar</button>
+                                </form>
+                            </p>
+                        </td>
+                        <td class="afa" style="font-size: 12px;">
+                            <p  class="afa">
+                                <form  action="/Produto/{{$key}}" method="GET" >
+                                    @csrf
+                                    <button class="btn-edit"  type="submit">Visualizar</button>
+                                </form>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="afa" style="font-size: 12px;"> 
+                            <p  class="afa">
+                                <form  action="/EditarProduto/{{$key}}" method="GET" >
+                                    @csrf
+                                    <button class="btn-edit btn-editar"  type="submit">Editar</button>
+                                </form>
+                            </p>
+                        </td>
+                        <td class="afa" style="font-size: 12px;"> 
+                            <p  class="afa">
+                                <form  action="/entradas_saidas/{{$key}}" method="GET" >
+                                    @csrf
+                                    <button class="btn-edit btn-sucesso"  type="submit">Entrada/Saída</button>
+                                </form>
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         @endforeach
         @else

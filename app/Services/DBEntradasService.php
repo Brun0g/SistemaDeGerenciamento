@@ -16,8 +16,6 @@ class DBEntradasService implements EntradasServiceInterface
         $entrada = new Entradas_saidas();
 
         $entrada->create_by = Auth::id();
-        $entrada->delete_by = null;
-        $entrada->relocate_by = null;
         $entrada->produto_id = $produto_id;
         $entrada->quantidade = $quantidade;
         $entrada->observacao = $observacao;
@@ -36,8 +34,6 @@ class DBEntradasService implements EntradasServiceInterface
         $saida = new Entradas_saidas();
 
         $saida->create_by = Auth::id();
-        $saida->delete_by = null;
-        $saida->relocate_by = null;
         $saida->produto_id = $produto_id;
         $saida->quantidade = $quantidade;
         $saida->observacao = $observacao;
@@ -56,20 +52,15 @@ class DBEntradasService implements EntradasServiceInterface
         $estoque = Entradas_saidas::where('pedido_id', $pedido_id)->get();
 
         foreach ($estoque as $key => $value) {
-
-            $estoque[$key]->delete_by = Auth::id();
-            $estoque[$key]->save();
             $estoque[$key]->delete($pedido_id);
         }
     }
 
-    function realocarSaida($pedido_id)
+    function RestaurarSaida($pedido_id)
     {
         $saida = Entradas_saidas::withTrashed()->where('pedido_id', $pedido_id)->get();
 
         foreach ($saida as $key => $value) {
-            $saida[$key]->relocate_by = Auth::id();
-            $saida[$key]->deleted_at = null;
             $saida[$key]->save();
         }
     }

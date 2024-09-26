@@ -16,7 +16,7 @@ class SessionPromocoesService implements PromocoesServiceInterface
 	{
         $promocoes = session()->get('promocoes', []);
 
-        $promocoes[] = ['create_by' => Auth::id(), 'delete_by' => null, 'update_by' => null, 'relocate_by' => null, 'active_by' => null, 'produto_id' => (int)$produto_id, 'porcentagem' => (int)$porcentagem, 'quantidade'=> (int)$quantidade, 'ativo' => 0];
+        $promocoes[] = ['create_by' => Auth::id(), 'delete_by' => null, 'update_by' => null, 'restored_by' => null, 'active_by' => null, 'produto_id' => (int)$produto_id, 'porcentagem' => (int)$porcentagem, 'quantidade'=> (int)$quantidade, 'ativo' => 0];
 
         session()->put('promocoes', $promocoes);
 	}
@@ -90,8 +90,6 @@ class SessionPromocoesService implements PromocoesServiceInterface
             }
                   
         }
-
-
 
         return $promocoeslist;
     }

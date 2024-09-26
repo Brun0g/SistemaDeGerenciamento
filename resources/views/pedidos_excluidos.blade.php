@@ -81,16 +81,16 @@ padding: 10px;
                         <th class="row-inform-item">Tipo</th>
                         <th class="row-inform-item">Total</th>
                         <th class="row-inform-item">Excluido</th>
-                        <th class="row-inform-item">Data</th>
                         <th class="row-inform-item">Ação</th>
                     </tr>
                 </thead>
                 <tbody>
+
                 @if(sizeof($excluidos) > 0)
                     @foreach($excluidos as $key => $value)
                     
         
-                    <tr>
+                    <tr style="border-top: 1px solid black">
                         <td>{{ strtoupper($value['create_by'])}}</td>
                         <td>{{ strtoupper($value['delete_by'])}}</td>
                         <td>
@@ -103,7 +103,7 @@ padding: 10px;
                         <td style="color: green"> R$ {{  number_format($value['total'], 2, ",", ".")}}</td>
 
 
-                        <td>{{  $value['data'] }}</td>
+                        
 
                         @if($data_atual['dia_do_ano'] > $value['dia_do_ano'] && $data_atual['mes'] == $value['mes'])
                         <td>{{$data_atual['dia_do_ano'] - $value['dia_do_ano']}} dia atrás</td>
@@ -115,11 +115,15 @@ padding: 10px;
                         <td>Hoje</td>
                         @endif
 
-                        <td><form action="/realocar_pedido/{{$key}}" method="POST">
+                        <td><form action="/Restaurar_pedido/{{$key}}" method="POST">
                                 @csrf
                
-                                <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Realocar</span></button>
+                                <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Restaurar</span></button>
                             </form></td>
+                    </tr>
+                    <tr>
+                        <td>{{  $value['created_at'] }}</td>
+                        <td>{{  $value['data'] }}</td>
                     </tr>
                     
                   

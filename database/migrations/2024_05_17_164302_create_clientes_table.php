@@ -17,7 +17,7 @@ class CreateClientesTable extends Migration
             $table->id();
             $table->foreignId('create_by')->constrained('users');
             $table->foreignId('delete_by')->nullable()->constrained('users');
-            $table->foreignId('relocate_by')->nullable()->constrained('users');
+            $table->foreignId('restored_by')->nullable()->constrained('users');
             $table->foreignId('update_by')->nullable()->constrained('users');
             $table->string('name');
             $table->string('email');

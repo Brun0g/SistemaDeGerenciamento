@@ -19,7 +19,7 @@ class DBPromocoesService implements PromocoesServiceInterface
         
         $promocoes->create_by = Auth::id();
         $promocoes->delete_by = null;
-        $promocoes->relocate_by = null;
+        $promocoes->restored_by = null;
         $promocoes->update_by = null;
         $promocoes->active_by = null;
         $promocoes->produto_id = $produto_id;

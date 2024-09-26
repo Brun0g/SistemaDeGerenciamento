@@ -16,8 +16,6 @@ class CreateEntradasSaidasTable extends Migration
         Schema::create('entradas_saidas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('create_by')->constrained('users');
-            $table->foreignId('delete_by')->nullable()->constrained('users');
-            $table->foreignId('relocate_by')->nullable()->constrained('users');
             $table->foreignId('produto_id')->constrained('produtos');
             $table->integer('quantidade');
             $table->string('observacao')->nullable();

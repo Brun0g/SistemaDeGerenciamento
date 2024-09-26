@@ -55,9 +55,7 @@ class Order_controller extends Controller
         
         $excluidos = $provider_pedidos->listarPedidosExcluidos($provider_user);
       
-       
         $now = now();
-
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
@@ -70,15 +68,13 @@ class Order_controller extends Controller
         
         $tem_estoque = $provider_pedidos->reativarPedido($pedido_id);
 
-      
-
         $url = url()->previous();
 
         if(!$tem_estoque)
-            session()->flash('error_estoque', 'Não há estoque para realocar o pedido!');
+            session()->flash('error_estoque', 'Não há estoque para Restaurar o pedido!');
         else
         {
-            $provider_pedidos->realocarPedido($pedido_id, $provider_entradas_saidas);
+            $provider_pedidos->RestaurarPedido($pedido_id, $provider_entradas_saidas);
             session()->flash('status', 'Pedido realocado com sucesso!'); 
         }
             
@@ -91,7 +87,6 @@ class Order_controller extends Controller
         $excluidos = collect($excluidos)->unique('pedido_id')->where('deleted_at', '!=', null)->sortBy(['data', 'asc']);
 
         $array = [];
-
 
         foreach ($excluidos as $key => $value) {
             $pedido_id = $value['pedido_id'];

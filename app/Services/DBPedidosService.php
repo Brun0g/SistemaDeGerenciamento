@@ -23,12 +23,13 @@ class DBPedidosService implements PedidosServiceInterface
 
         $pedido->create_by = Auth::id();
         $pedido->delete_by = null;
-        $pedido->relocate_by = null;
+        $pedido->restored_by = null;
         $pedido->cliente_id = $cliente_id;
         $pedido->endereco_id = $endereco_id;
         $pedido->total = $valor_final;
         $pedido->porcentagem = $porcentagem;
         $pedido->totalSemDesconto = $valor_total;
+        $pedido->restored_at = null;
 
         $pedido->save();
 
@@ -44,7 +45,7 @@ class DBPedidosService implements PedidosServiceInterface
 
         $pedido->create_by = Auth::id();
         $pedido->delete_by = null;
-        $pedido->relocate_by = null;
+        $pedido->restored_by = null;
 
         $pedido->pedido_id = $pedido_id;
         $pedido->produto_id = $produto_id;
@@ -53,6 +54,7 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido->preco_unidade = $preco_unidade;
         $pedido->total = $valor_final;
         $pedido->totalSemDesconto = $valor_total;
+        $pedido->restored_at = null;
 
         $pedido->save();
 
@@ -90,7 +92,7 @@ class DBPedidosService implements PedidosServiceInterface
         }
     }
 
-    public function realocarPedido($pedido_id, $provider_entradas_saidas)
+    public function RestaurarPedido($pedido_id, $provider_entradas_saidas)
     {
         $pedido_geral = Pedidos::withTrashed()->where('id', $pedido_id)->get();
 
@@ -100,22 +102,25 @@ class DBPedidosService implements PedidosServiceInterface
 
         foreach ($pedido_geral as $key => $value) {
 
-            $pedido_geral[$key]->relocate_by = Auth::id();
+            $pedido_geral[$key]->restored_by = Auth::id();
+            $pedido_geral[$key]->restored_at = now();
+
             $pedido_geral[$key]->deleted_at = null;
             $pedido_geral[$key]->save();
         }
 
-        $provider_pedidos->realocarPedidoIndividual($pedido_id);
-        $provider_entradas_saidas->realocarSaida($pedido_id);
+        $provider_pedidos->RestaurarPedidoIndividual($pedido_id);
+        $provider_entradas_saidas->RestaurarSaida($pedido_id);
     }
 
-    public function realocarPedidoIndividual($pedido_id)
+    public function RestaurarPedidoIndividual($pedido_id)
     {
         $pedidos_individual = PedidosIndividuais::withTrashed()->where('pedido_id', $pedido_id)->get();
 
         foreach ($pedidos_individual as $key => $value) {
 
-            $pedidos_individual[$key]->relocate_by = Auth::id();
+            $pedidos_individual[$key]->restored_by = Auth::id();
+            $pedidos_individual[$key]->restored_at = now();
             $pedidos_individual[$key]->deleted_at = null;
             $pedidos_individual[$key]->save();
         }
@@ -167,7 +172,7 @@ class DBPedidosService implements PedidosServiceInterface
         return $lista;          
     }
 
-    public function listarPedidos($cliente_id, $provider_estoque)
+    public function listarPedidos($cliente_id, $provider_estoque, $provider_user)
     {
         $array = [];
 
@@ -176,18 +181,25 @@ class DBPedidosService implements PedidosServiceInterface
         foreach ($pedidos as $key => $value) {
 
             $pedido_id = $pedidos[$key]->id;
-            $situacao = $provider_estoque->pedidosAprovados($pedido_id);
 
-            if($situacao == false)
-            {
-                $id_cliente = $pedidos[$key]->cliente_id;
-                $endereco = $pedidos[$key]->endereco_id;
-                $total = $pedidos[$key]->total;
-                $porcentagem = $pedidos[$key]->porcentagem;
-                $total = $pedidos[$key]->total;
+            $nome_delete = $pedidos[$key]->delete_by;
+            $nome_restored = $pedidos[$key]->restored_by;
+            $nome_create = $pedidos[$key]->create_by;
 
-                $array[$pedido_id] = ['cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem]; 
-            }
+            $nome_delete = $provider_user->buscarUsuario($nome_delete);
+            $nome_restored = $provider_user->buscarUsuario($nome_restored);
+            $nome_create = $provider_user->buscarUsuario($nome_create);
+            
+            $id_cliente = $pedidos[$key]->cliente_id;
+            $endereco = $pedidos[$key]->endereco_id;
+            $total = $pedidos[$key]->total;
+            $porcentagem = $pedidos[$key]->porcentagem;
+            $data = $pedidos[$key]->deleted_at; 
+            $created_at = $pedidos[$key]->created_at; 
+            $restored_at = $pedidos[$key]->restored_at; 
+
+            $array[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'created_at' => $created_at, 'restored_at' => $restored_at]; 
+            
         }
 
         return $array;
@@ -210,21 +222,19 @@ class DBPedidosService implements PedidosServiceInterface
             $nome_delete = $pedidos[$key]->delete_by;
             $nome_delete = $provider_user->buscarUsuario($nome_delete);
 
-            $nome_relocate = $pedidos[$key]->relocate_by;
-            $nome_relocate = $provider_user->buscarUsuario($nome_relocate);
+            $nome_restored = $pedidos[$key]->restored_by;
+            $nome_restored = $provider_user->buscarUsuario($nome_restored);
 
             $id_cliente = $pedidos[$key]->cliente_id;
             $endereco = $pedidos[$key]->endereco_id;
             $total = $pedidos[$key]->total;
             $porcentagem = $pedidos[$key]->porcentagem;
             $data = $pedidos[$key]->deleted_at; 
+            $created_at = $pedidos[$key]->created_at; 
 
-
-            $array[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'relocate_by' => $nome_relocate, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'data' => $data, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month]; 
+            $array[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'data' => $data, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'created_at' => $created_at]; 
             
         }
-
-     
 
         return $array;
     }

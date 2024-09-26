@@ -17,7 +17,7 @@ class CreatePromocoesTable extends Migration
             $table->id();
             $table->foreignId('create_by')->constrained('users');
             $table->foreignId('delete_by')->nullable()->constrained('users');
-            $table->foreignId('relocate_by')->nullable()->constrained('users');
+            $table->foreignId('restored_by')->nullable()->constrained('users');
             $table->foreignId('update_by')->nullable()->constrained('users');
             $table->foreignId('active_by')->nullable()->constrained('users');
             $table->foreignId('produto_id')->constrained('produtos')->unique();

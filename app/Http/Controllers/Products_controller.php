@@ -32,6 +32,26 @@ class Products_controller extends Controller
         return view('/Produtos', ['categorias' => $listarCategorias,'Produtos' => $Produtos]);
     }
 
+    public function ProductsStorageViewDelete(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
+    {
+        $softDelete = true;
+        
+        $Produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, $softDelete);
+        
+        $listarCategorias = $provider_categoria->listarCategoria();
+
+        return view('/ProdutosExcluidos', ['categorias' => $listarCategorias,'Produtos' => $Produtos]);
+    }
+
+    public function restoredProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
+    {
+        $provider_produto->restaurarProduto($produto_id);
+
+        $url = url()->previous();
+
+        return redirect($url);
+    }
+
     public function newProduct(Request $request, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, EntradasServiceInterface $provider_entradas_saidas)
     {
         $listarCategorias = $provider_categoria->listarCategoria();
@@ -64,9 +84,6 @@ class Products_controller extends Controller
 
     public function showProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, CarrinhoServiceInterface $provider_carrinho, EstoqueServiceInterface $provider_estoque)
     {
-    
-
-
         $entradas_saidas = $provider_entradas_saidas->buscarEntradaSaidas($produto_id, $provider_user);
 
         $Produtos = $provider_produto->buscarProduto($produto_id);
