@@ -4,8 +4,8 @@
 @if(sizeof($listarPedidosAprovados) > 0)
 @foreach ($listarPedidosAprovados as $pedido_id => $value)
 
-@if ($value['cliente_id'] == $id )
-@if ($value['excluido'] == 0)
+@if ( $value['cliente_id'] == $id )
+@if ( $value['delete_at'] == null )
 <tr class="bg-white">
     <td style="color:white; background: black; font-weight: 900; ">{{  $pedido_id }}</td>
     <td>{{strtoupper($value['create_by'])}}</td>

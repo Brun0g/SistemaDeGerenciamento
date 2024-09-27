@@ -9,4 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Produto extends Model
 {
     use HasFactory, softDeletes;
+
+     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'restored_at' => 'datetime:Y-m-d',
+    ];
 }

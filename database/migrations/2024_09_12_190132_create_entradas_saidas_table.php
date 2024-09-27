@@ -3,11 +3,20 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Carbon;
+
 
 class CreateEntradasSaidasTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
+     */
+
+
+    /**
+     * Reverse the migrations.
      *
      * @return void
      */
@@ -27,11 +36,9 @@ class CreateEntradasSaidasTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
+
+    
+    
     public function down()
     {
         Schema::dropIfExists('entradas_saidas');

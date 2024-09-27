@@ -71,7 +71,7 @@ class SessionEstoqueService implements EstoqueServiceInterface
                 $create_by = $value['create_by'];
                 $ajuste_id = $value['ajuste_id'];
                 $produto_id = $value['produto_id'];
-                $nome_usuario = $provider_user->buscarUsuario($create_by);
+                $nome_usuario = $provider_user->buscarNome($create_by);
                 $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
                 $quantidade = $value['quantidade'];
                 $created_at = $value['created_at'];

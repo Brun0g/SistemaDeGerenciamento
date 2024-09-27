@@ -23,9 +23,9 @@ class CreateProdutosTable extends Migration
             $table->foreignId('categoria_id')->constrained('categorias');
             $table->double('valor', 8 , 2);
             $table->string('imagem');
+            $table->timestamp('restored_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
-            $table->timestamp('restored_at')->nullable();
         });
     }
 

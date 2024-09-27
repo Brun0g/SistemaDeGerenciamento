@@ -65,7 +65,7 @@ class DBEstoqueService implements EstoqueServiceInterface
             $ajuste_id = $value['ajuste_id'];
             $produto_id = $value['produto_id'];
             $create_by = $service->buscarAjuste($ajuste_id);
-            $nome_usuario = $provider_user->buscarUsuario($create_by);
+            $nome_usuario = $provider_user->buscarNome($create_by);
             $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
             $quantidade = $value['quantidade'];
             $created_at = $value['created_at'];

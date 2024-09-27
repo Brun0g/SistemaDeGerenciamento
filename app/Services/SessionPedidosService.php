@@ -144,25 +144,29 @@ class SessionPedidosService implements PedidosServiceInterface
                 $pedido_id = $value['pedido_id'];
                 
                 $nome_create = $value['create_by'];
-                $nome_create = $provider_user->buscarUsuario($nome_create);
+                $nome_create = $provider_user->buscarNome($nome_create);
 
                 $nome_delete = $value['delete_by'];
-                $nome_delete = $provider_user->buscarUsuario($nome_delete);
+                $nome_delete = $provider_user->buscarNome($nome_delete);
 
                 $nome_restored = $value['restored_by'];
-                $nome_restored = $provider_user->buscarUsuario($nome_restored);
+                $nome_restored = $provider_user->buscarNome($nome_restored);
 
                 $id_cliente = $value['cliente_id'];
                 $endereco = $value['endereco_id'];
                 $total = $value['total'];
                 $porcentagem = $value['porcentagem'];
-                // $data = $value['deleted_at']; 
+                // $data = $value['deleted_at'];
                 $created_at = $value['created_at']; 
                 $deleted_at = $value['deleted_at']; 
                 $restored_at = $value['restored_at'];
-                $excluido = $value['excluido']; 
+                $excluido = $value['excluido'];
+                $listaPedidos[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'excluido' => $excluido,
 
-                $listaPedidos[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'created_at' => $created_at, 'delete_at' => $deleted_at, 'restored_at' => $restored_at, 'excluido' => $excluido];  
+                'created_at' => date_format($created_at,"d/m/Y H:i:s"),
+                'delete_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
+                'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
+            ];  
                 
             }
         }
@@ -184,26 +188,29 @@ class SessionPedidosService implements PedidosServiceInterface
                 $pedido_id = $key;
         
                 $nome_create = $value['create_by'];
-                $nome_create = $provider_user->buscarUsuario($nome_create);
+                $nome_create = $provider_user->buscarNome($nome_create);
 
                 $nome_delete = $value['delete_by'];
-                $nome_delete = $provider_user->buscarUsuario($nome_delete);
+                $nome_delete = $provider_user->buscarNome($nome_delete);
 
                 $nome_restored = $value['restored_by'];
-                $nome_restored = $provider_user->buscarUsuario($nome_restored);
+                $nome_restored = $provider_user->buscarNome($nome_restored);
 
                 $id_cliente = $value['cliente_id'];
                 $endereco = $value['endereco_id'];
                 $total = $value['total'];
                 $porcentagem = $value['porcentagem'];
-                $data = $value['deleted_at']; 
+                $deleted_at = $value['deleted_at']; 
                 $created_at = $value['created_at']; 
 
-                $array[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'data' => $data, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'created_at' => $created_at]; 
+                $array[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'ano' => $deleted_at->year, 'dia_do_ano' => $deleted_at->dayOfYear, 'dia_da_semana' => $deleted_at->dayOfWeek, 'hora' => $deleted_at->hour, 'minuto' => $deleted_at->minute, 'segundo' => $deleted_at->second, 'mes' => $deleted_at->month,
+                  
+                    'created_at' => date_format($created_at,"d/m/Y H:i:s"),
+                    'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
+                    'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
+                ]; 
             }  
         }
-
-     
 
         return $array;
     }
@@ -255,8 +262,6 @@ class SessionPedidosService implements PedidosServiceInterface
 
         return $lista; 
     }
-
-
 
     public function reativarPedido($pedido_id)
     {

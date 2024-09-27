@@ -8,7 +8,7 @@ use App\Services\UserServiceInterface;
 
 class DBUserService implements UserServiceInterface
 {
-    public function buscarUsuario($user)
+    public function buscarNome($user)
     {
         if(!$user)
             return null;

@@ -25,9 +25,9 @@ class CreatePedidosIndividuaisTable extends Migration
             $table->integer('preco_unidade');
             $table->double('total', 8 , 2);
             $table->double('totalSemDesconto', 8 , 2);
+            $table->timestamp('restored_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
-            $table->timestamp('restored_at')->nullable();
         });
     }
 

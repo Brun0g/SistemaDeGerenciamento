@@ -51,11 +51,50 @@ padding: 10px;
 }
 </style>
 <div class="py-12">
+    @if(isset($produtos))
+
+     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th  style="color: black">Criado por</th>
+                        <th  style="color: black">Editado por</th>
+                        <th  style="color: black">Restaurado por</th>  
+                    </tr>
+
+                </thead>
+                <tbody>
+                    <tr class="bg-white">
+
+                        <td style="color: black;">{{ strtoupper( $produtos['create_by'] ) }}</td>
+                        <td style="color: black;">{{ isset($produtos['update_by']) ? strtoupper( $produtos['update_by'] ) : ''  }}</td>
+                        <td style="color: black;">{{ isset($produtos['restored_by']) ? strtoupper( $produtos['restored_by'] ) : ''  }}</td>
+                    </tr>
+
+                    <tr class="bg-white">
+
+                        <td style="color: black;">{{ $produtos['created_at'] }}</td>
+                        <td style="color: black;">{{ isset($produtos['updated_at']) ? strtoupper( $produtos['updated_at']) : ''  }}</td>
+                        <td style="color: black;">{{ isset($produtos['restored_at']) ? strtoupper( $produtos['restored_at']) : ''  }}</td>
+                        
+                    </tr>
+                </tbody>
+            </table>
+
+    
+            </div>
+        </div>
+    </div>
+    @endif
+    
+
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="caption-style" style="display: flex; flex-direction: column;">
                 ENTRADAS E SAÍDAS
-                <div>{{strtoupper($Produtos['produto'])}}</div>
+                <div>{{strtoupper($produtos['produto'])}}</div>
             </div>
             
             <table id="table">

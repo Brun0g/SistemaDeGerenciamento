@@ -172,55 +172,7 @@ transform: scale(1.05);
             </div>
             <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th class="sub-preco-desconto">Criado por</th>
-                        <th class="sub-preco-desconto">Data</th>
-                    </tr>
-
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  strtoupper($value['create_by'])}}</td>
-                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  $value['created_at']}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            @if( isset($value['update_by']))
-            <table>
-                <thead>
-                    <tr>
-                        <th class="sub-preco-desconto">Editado por</th>
-                        <th class="sub-preco-desconto">Data</th>
-                    </tr>
-
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  strtoupper($value['update_by'])}}</td>
-                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  $value['updated_at']}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            @endif
-            @if( isset($value['restored_by']))
-            <table>
-                <thead>
-                    <tr>
-                        <th class="sub-preco-desconto">Restaurado por</th>
-                        <th class="sub-preco-desconto">Data</th>
-                    </tr>
-
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  strtoupper($value['restored_by'])}}</td>
-                        <td class="sub-preco-desconto" style="font-size: 12px;">{{  $value['restored_at']}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            @endif
+            
             <p class="sub-preco-desconto" style="margin-top: 15px;"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade_estoque']}}</p>
             @if(count($Produtos[$key]['promocao']) != [])
             <div class="sub-preco-desconto">Desconto por quantidade</div>
@@ -260,7 +212,7 @@ transform: scale(1.05);
                             <p  class="afa">
                                 <form  action="/Produto/{{$key}}" method="GET" >
                                     @csrf
-                                    <button class="btn-edit"  type="submit">Visualizar</button>
+                                    <button class="btn-edit"  type="submit">Histórico</button>
                                 </form>
                             </p>
                         </td>

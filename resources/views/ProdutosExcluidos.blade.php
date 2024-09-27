@@ -141,10 +141,11 @@ transform: scale(1.05);
 
 <div class="container-geral">
     <div class="sub-container">
+  
         @if(isset($Produtos))
         @foreach ($Produtos as $key => $value)
 
-        @if( isset($value['deleted_at']) )
+        @if( $value['deleted_at'] != null )
         <div class="sub-container-item">
             <div style="font-weight: 900">
                 
@@ -164,7 +165,7 @@ transform: scale(1.05);
             </div>
             <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
 
-            <table>
+           {{--  <table>
                 <thead>
                     <tr>
                         <th class="sub-preco-desconto">Criado por</th>
@@ -195,7 +196,7 @@ transform: scale(1.05);
                     </tr>
                 </tbody>
             </table>
-            @endif
+            @endif --}}
 
             <table>
                 <thead>

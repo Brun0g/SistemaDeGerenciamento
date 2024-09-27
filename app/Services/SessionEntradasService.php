@@ -71,7 +71,7 @@ class SessionEntradasService implements EntradasServiceInterface
                 if(!$value['deleted_at'])
                 {
                     $create_by = $value['create_by'];
-                    $nome = $provider_user->buscarUsuario($create_by);
+                    $nome = $provider_user->buscarNome($create_by);
                     $produto_id = $value['produto_id'];
                     $data = $value['created_at'];    
                     $observacao = $value['observacao'];
@@ -82,9 +82,8 @@ class SessionEntradasService implements EntradasServiceInterface
 
                     $total_entrada += $quantidade;
 
-                    $entradas_array[] = ['create_by' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'status' => 0, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
+                    $entradas_array[] = ['create_by' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => date_format($data,"d/m/Y H:i:s"), 'observacao' => $observacao, 'status' => 0, 'multiplo_id' => $multiplo_id, 'ajuste_id' => $ajuste_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'pedido_id' => $pedido_id];
                 }
-                
             }
         }
 
@@ -104,7 +103,7 @@ class SessionEntradasService implements EntradasServiceInterface
             if($deleted_at  == $tipo)
             {
                 $create_by = $value['create_by'];
-                $nome = $provider_user->buscarUsuario($create_by);
+                $nome = $provider_user->buscarNome($create_by);
                 $produto_id = $value['produto_id'];
                 $quantidade = $value['quantidade'];
                 $data = $value['created_at'];   
@@ -131,7 +130,7 @@ class SessionEntradasService implements EntradasServiceInterface
             if($ajuste_id == $value['ajuste_id'])
             {
                 $create_by = $value['create_by'];
-                $nome = $provider_user->buscarUsuario($create_by);
+                $nome = $provider_user->buscarNome($create_by);
                 $produto_id = $value['produto_id'];
                 $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
                 $quantidade = $value['quantidade'];
@@ -157,7 +156,7 @@ class SessionEntradasService implements EntradasServiceInterface
             if($multiplo_id == $value['multiplo_id'])
             {
                 $create_by = $value['create_by'];
-                $nome = $provider_user->buscarUsuario($create_by);
+                $nome = $provider_user->buscarNome($create_by);
                 $produto_id = $value['produto_id'];
                 $nome_produto = $provider_produto->buscarProduto($produto_id)['produto'];
                 $quantidade = $value['quantidade'];

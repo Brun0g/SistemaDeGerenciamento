@@ -123,7 +123,7 @@ padding: 10px;
                     </tr>
                     <tr>
                         <td>{{  $value['created_at'] }}</td>
-                        <td>{{  $value['data'] }}</td>
+                        <td>{{  $value['deleted_at'] }}</td>
                     </tr>
                     
                   

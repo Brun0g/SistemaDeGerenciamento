@@ -14,7 +14,7 @@ class SessionProdutosService implements ProdutosServiceInterface
 	{
         $estoque = session()->get('Produtos', []);
 
-        $estoque[] = ['create_by' => Auth::id(), 'created_at' => now(), 'restored_by' => null, 'update_by' => null, 'updated_at' => null, 'produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'imagem' => $imagem, 'delete_by' => null, 'deleted_at' => null];
+        $estoque[] = ['create_by' => Auth::id(), 'created_at' => now(), 'restored_by' => null, 'update_by' => null, 'updated_at' => null, 'produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'imagem' => $imagem, 'delete_by' => null, 'deleted_at' => null, 'restored_at' => null];
 
         session()->put('Produtos', $estoque);
 
@@ -69,6 +69,7 @@ class SessionProdutosService implements ProdutosServiceInterface
             if($produto_id == $key)
             {
                 $produtos[$key]['restored_by'] = Auth::id();
+                $produtos[$key]['restored_at'] = now();
                 $produtos[$key]['deleted_at'] = null;
             }
         }
@@ -98,15 +99,19 @@ class SessionProdutosService implements ProdutosServiceInterface
 
                 $create_by = $value['create_by'];
                 $created_at = $value['created_at'];
-                $nome_usuario = $service_user->buscarUsuario($create_by);
+                $nome_usuario = $service_user->buscarNome($create_by);
 
                 $updated_at = $value['updated_at'];
                 $update_by = $value['update_by'];
-                $nome_usuario_update = $service_user->buscarUsuario($update_by);
+
+                if( isset($update_by) )
+                $nome_usuario_update = $service_user->buscarNome($update_by);
 
                 $deleted_at = $value['deleted_at'];
                 $delete_by = $value['delete_by'];
-                $nome_usuario_delete = $service_user->buscarUsuario($delete_by);
+
+                if( isset($delete_by) )
+                    $nome_usuario_delete = $service_user->buscarNome($delete_by);
                 
                 $ativo = $promocao['ativo'];
                 $array[$produto_id] = $promocao['promocao'];
@@ -130,23 +135,58 @@ class SessionProdutosService implements ProdutosServiceInterface
         $produtoEncontrado = [];
         $produtos = session()->get('Produtos', []);
 
-        foreach ($produtos as $key => $value) {
+        $service_user= new DBUserService();
+
+        foreach ($produtos as $key => $value) 
+        {
             if($produto_id == $key)
             {
+                $produto_id = $key;
                 $nome_produto = $value['produto'];
                 $valor_produto = $value['valor'];
-                $produto_id = $key;
                 $image_url_produto = $value['imagem'];
                 $deleted_at = $value['deleted_at'];
 
+                $create_by = $value['create_by'];
+                $created_at = $value['created_at'];
+                $nome_usuario_create = $service_user->buscarNome($create_by);
+
+                $updated_at = $value['updated_at'];
+                $update_by = $value['update_by'];
+
+                if( isset($update_by) )
+                    $nome_usuario_update = $service_user->buscarNome($update_by);
+
+                $deleted_at = $value['deleted_at'];
+                $delete_by = $value['delete_by'];
+
+                if( isset($delete_by))
+                    $nome_usuario_delete = $service_user->buscarNome($delete_by);
+
+                $restored_at = $value['restored_at'];
+                $restored_by = $value['restored_by'];
+
+                if( isset($restored_by))
+                    $nome_usuario_restored = $service_user->buscarNome($restored_by);
+
                 $image_url_produto = asset("storage/" . $image_url_produto);
-               
+
                 if($value['imagem'] == false)
                     $image_url_produto = false;
 
-                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto, 'deleted_at' => $deleted_at];
+                $produtoEncontrado = ['produto' => $nome_produto, 'valor' => $valor_produto, 'produto_id' => $produto_id, 'image_url' => $image_url_produto,
+                    'update_by' => $nome_usuario_update, 
+                    'updated_at' => isset($updated_at) ? date_format($updated_at,"d/m/Y H:i:s") : null,
+                    'create_by' => $nome_usuario_create,
+                    'created_at' => date_format($created_at,"d/m/Y H:i:s"),
+                    'delete_by' => $nome_usuario_delete, 
+                    'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
+                    'restored_by' => $nome_usuario_restored,  
+                    'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
+                ];
             }
         }
+       
 
         return $produtoEncontrado;
     }

@@ -86,10 +86,11 @@ class Products_controller extends Controller
     {
         $entradas_saidas = $provider_entradas_saidas->buscarEntradaSaidas($produto_id, $provider_user);
 
-        $Produtos = $provider_produto->buscarProduto($produto_id);
+        $produtos = $provider_produto->buscarProduto($produto_id);
         $resultado = $provider_estoque->buscarEstoque($produto_id);
+     
 
-        return view('/showFilterProducts', ['resultado' => $resultado, 'Produtos' => $Produtos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas]);
+        return view('/showFilterProducts', ['resultado' => $resultado, 'produtos' => $produtos, 'produto_id' => $produto_id, 'entradas_saidas' => $entradas_saidas]);
     }
 
     public function deleteProduct(Request $request, $produto_id, ProdutosServiceInterface $provider_produto)
