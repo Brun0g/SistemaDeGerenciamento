@@ -87,11 +87,25 @@ class SessionClientesService implements ClientesServiceInterface
             $estado_cliente = $value['estado'];
             $contato_cliente = $value['contato'];
 
+            $deleted_at = $value['deleted_at'];
             $delete_by = $value['delete_by'];
             $nome_delete_by = $provider_user->buscarNome($delete_by);
-            $deleted_at = $value['deleted_at'];
 
-            $listarClientes[$key] = ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_by' => $nome_delete_by, 'deleted_at' => $deleted_at];       
+            $created_at = $value['created_at'];
+            $create_by = $value['create_by'];
+            $nome_create_by = $provider_user->buscarNome($create_by);
+
+            $restored_at = $value['restored_at'];
+            $restored_by = $value['restored_by'];
+            $nome_restored_by = $provider_user->buscarNome($restored_by);
+            
+            
+
+            $listarClientes[$key] = ['create_by' => $nome_create_by, 'restored_by' => $nome_restored_by, 'deleted_by' => $nome_delete_by, 'name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente,
+            'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null, 
+            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
+            'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null
+            ];       
         }
 
         return $listarClientes;
@@ -114,11 +128,11 @@ class SessionClientesService implements ClientesServiceInterface
 
     public function buscarCliente($cliente_id)
     {
+        
         if(session()->has('Clientes'))
         {
             $clientes = session()->get('Clientes');
-            $clienteID = [];
-
+            
             foreach ($clientes as $key => $value) {
 
                 if($cliente_id == $key)
@@ -134,13 +148,12 @@ class SessionClientesService implements ClientesServiceInterface
                     $contato_cliente = $value['contato'];
                     $deleted_at = $value['deleted_at'];
 
-                    $clienteID[$key] = ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => $deleted_at];
+                    return ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => $deleted_at];
                 }
-        
             }
         }
 
-        return $clienteID;   
+        return [];   
     }
 
     function restaurarCliente($cliente_id)

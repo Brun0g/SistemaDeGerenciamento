@@ -76,8 +76,8 @@ padding: 10px;
                     <tr class="bg-white">
 
                         <td style="color: black;">{{ $produtos['created_at'] }}</td>
-                        <td style="color: black;">{{ isset($produtos['updated_at']) ? strtoupper( $produtos['updated_at']) : ''  }}</td>
-                        <td style="color: black;">{{ isset($produtos['restored_at']) ? strtoupper( $produtos['restored_at']) : ''  }}</td>
+                        <td style="color: black;">{{ isset($produtos['update_by']) ? $produtos['updated_at'] : ''  }}</td>
+                        <td style="color: black;">{{ isset($produtos['restored_at']) ? $produtos['restored_at'] : ''  }}</td>
                         
                     </tr>
                 </tbody>

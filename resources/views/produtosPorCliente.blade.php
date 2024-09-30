@@ -2,7 +2,7 @@
 <x-slot name="header">
 <div style="display: flex; justify-content:space-between; ">
   <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-  {{ __('Pedido de ' . strtoupper($clienteID[$id]['name']) ) }}
+  {{ __('Pedido de ' . strtoupper($clienteID['name']) ) }}
   </h2>
   @if($deletedAt == null)
   <div style=" display: flex; justify-content: right; width: 60%;" >
@@ -87,17 +87,17 @@
             </tr>
           </thead>
           <tbody>
-            @if(isset($clienteID[$id]))
+            @if(isset($clienteID))
             <tr>
               <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $id }}</td>
-              <td>{{  $clienteID[$id]['name'] }}</td>
-              <td>{{  $clienteID[$id]['email'] }}</td>
-              <td>{{  $clienteID[$id]['idade'] }}</td>
-              <td>{{  $clienteID[$id]['cidade'] }}</td>
-              <td>{{  $clienteID[$id]['cep'] }}</td>
-              <td>{{  $clienteID[$id]['rua'] }}</td>
-              <td>{{  $clienteID[$id]['estado'] }}</td>
-              <td>{{  $clienteID[$id]['contato'] }}</td>
+              <td>{{  $clienteID['name'] }}</td>
+              <td>{{  $clienteID['email'] }}</td>
+              <td>{{  $clienteID['idade'] }}</td>
+              <td>{{  $clienteID['cidade'] }}</td>
+              <td>{{  $clienteID['cep'] }}</td>
+              <td>{{  $clienteID['rua'] }}</td>
+              <td>{{  $clienteID['estado'] }}</td>
+              <td>{{  $clienteID['contato'] }}</td>
             </tr>
             @else
             Sem dados de registro!
@@ -121,7 +121,7 @@
             {{ session('error_estoque') }}
           </div>
           @endif
-          @if( $clienteID[$id]['deleted_at'] == null )
+          @if( $clienteID['deleted_at'] == null )
           <div style="display: flex; justify-content: center; margin-bottom: 20px">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalLongoExemplo" id="CadastrarProduto_x">Adicionar pedido</button>
           </div>
@@ -143,7 +143,7 @@
               </tr>
             </thead>
             <tbody>
-              @endif
+           
             
 
 
@@ -178,7 +178,7 @@
               </tr>
               @endif
             </table>
-            @if( $clienteID[$id]['deleted_at'] == null )
+            @if( $clienteID['deleted_at'] == null )
             <div class="container-center" style="display: flex; justify-content: center; margin-top: 15px;">
               <form method="GET" action="/carrinho/{{$id}}">
                 @csrf
@@ -188,6 +188,8 @@
             @endif
           </div>
         </div>
+
+           @endif
    
         <div style="display: flex; justify-content: center;">
           <h3>Pedidos concluídos</h3>

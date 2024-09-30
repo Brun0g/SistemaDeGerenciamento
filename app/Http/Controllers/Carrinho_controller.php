@@ -143,52 +143,67 @@ class Carrinho_controller extends Controller
         return view('carrinho', ['pedidosSession' => $pedidosNaSession, 'id' => $cliente_id, 'visualizarCliente' => $visualizarCliente, 'totalComDesconto' =>  $totalComDesconto, 'enderecos' => $enderecos, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem]);
     }
 
-    public function finishCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
+    public function finishCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque, ClientesServiceInterface $provider_cliente)
     {
         $endereco_id = $request->input('endereco_id');
+
+        $cliente = $provider_cliente->buscarCliente($cliente_id);
+
+        
 
         $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
 
         $url = url()->previous();
         $array = [];
 
-        foreach ($pedidos_no_carrinho as $key => $value) {
-            $acima_do_estoque = $value['fora_de_estoque'];
-            $produto_id = $value['produto_id'];
-            $produto = $value['produto'];
-            $deleted_at = $value['deleted_at'];
-            $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
-
-            if( isset($deleted_at) )
-            {
-                $fora_estoque = true;
-                $array_erros[] = strtoupper($produto) . ' fora de estoque!';
-            }
-             
-            if($acima_do_estoque == true)
-            {
-                $fora_estoque = true;
-            
-                $array_erros[] = strtoupper($produto) . ' quantidade desejada ultrapassa valor do estoque! ' . 'Estoque atual: ' . $quantidade_estoque;
-            }
-        }
-
-
-        if($pedidos_no_carrinho)
+        if($cliente['deleted_at'] == null)
         {
 
-            if( isset($fora_estoque) )
+            foreach ($pedidos_no_carrinho as $key => $value) {
+                $acima_do_estoque = $value['fora_de_estoque'];
+                $produto_id = $value['produto_id'];
+                $produto = $value['produto'];
+                $deleted_at = $value['deleted_at'];
+                $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
+
+                if( isset($deleted_at) )
+                {
+                    $fora_estoque = true;
+                    $array_erros[] = strtoupper($produto) . ' fora de estoque!';
+                }
+                 
+                if($acima_do_estoque == true)
+                {
+                    $fora_estoque = true;
+                
+                    $array_erros[] = strtoupper($produto) . ' quantidade desejada ultrapassa valor do estoque! ' . 'Estoque atual: ' . $quantidade_estoque;
+                }
+            }
+
+
+            if($pedidos_no_carrinho)
+            {
+
+                if( isset($fora_estoque) )
+                    return redirect($url)->with('array_erros', $array_erros);
+
+                session()->flash('status', 'Pedido encaminhado com sucesso!');
+
+                $provider_carrinho->finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promocoes, $provider_entradas_saidas, $provider_user, $provider_estoque);
+            } else {
+
+                $array_erros[] = 'Não há produtos no carrinho!';
+
                 return redirect($url)->with('array_erros', $array_erros);
+            }
 
-            session()->flash('status', 'Pedido encaminhado com sucesso!');
-
-            $provider_carrinho->finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promocoes, $provider_entradas_saidas, $provider_user, $provider_estoque);
         } else {
 
-            $array_erros[] = 'Não há produtos no carrinho!';
+            $array_erros[] = 'O cliente ' . strtoupper($cliente['name']) . ' foi deletado, verificar status do cliente!';
 
             return redirect($url)->with('array_erros', $array_erros);
         }
+
         
        
         return redirect($url);

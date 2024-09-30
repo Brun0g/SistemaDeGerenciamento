@@ -114,6 +114,7 @@ class Clientes_controller extends Controller
     public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
     {
         $cliente = $provider_cliente->buscarCliente($cliente_id);
+
         $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);  
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
         $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
@@ -129,7 +130,7 @@ class Clientes_controller extends Controller
       
         
         
-        return view('produtosPorCliente', ['listarPedidos'=> $listarPedidos, 'categorias' => $listarCategoria, 'clienteID' => $cliente, 'id' => $cliente_id, 'listarPedidosAprovados' => $listarPedidosAprovados, 'totalPedido'=> $totalPedido, 'produtosEstoque' => $listarProduto, 'porcentagem' => $porcentagem, 'deletedAt' => $cliente[$cliente_id]['deleted_at'] ]);
+        return view('produtosPorCliente', ['listarPedidos'=> $listarPedidos, 'categorias' => $listarCategoria, 'clienteID' => $cliente, 'id' => $cliente_id, 'listarPedidosAprovados' => $listarPedidosAprovados, 'totalPedido'=> $totalPedido, 'produtosEstoque' => $listarProduto, 'porcentagem' => $porcentagem, 'deletedAt' => $cliente['deleted_at'] ]);
     }
 
     public function deleteClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)

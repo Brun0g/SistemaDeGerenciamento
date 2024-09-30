@@ -157,8 +157,7 @@ class DBClientesService implements ClientesServiceInterface
 		
         $cliente = Cliente::withTrashed()->where('id', $cliente_id)->get()[0];
 
-
-		foreach ($cliente as $key => $value) {
+		foreach ($cliente as $clientes) {
 
 			$nome_cliente = $cliente->name;
             $email_cliente = $cliente->email;
@@ -171,10 +170,10 @@ class DBClientesService implements ClientesServiceInterface
             $contato_cliente = $cliente->contato;
             $deleted_at = $cliente->deleted_at;
 
-            $cliente[$cliente->id] = ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => $deleted_at];
+            return ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => $deleted_at];
 		}
 
-		return $cliente;
+		return [];
 	}
 
     function restaurarCliente($cliente_id)

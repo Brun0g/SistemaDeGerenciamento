@@ -44,7 +44,7 @@ class Order_controller extends Controller
 
         $cliente_id = $pedidoEncontrado['cliente_id'];
         $nome = $provider_cliente->buscarCliente($cliente_id);
-        $nome = $nome[$cliente_id]['name'];
+        $nome = $nome['name'];
 
         $endereco_id = $pedidoEncontrado['endereco_id'];
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);

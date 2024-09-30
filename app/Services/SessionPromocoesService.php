@@ -29,10 +29,13 @@ class SessionPromocoesService implements PromocoesServiceInterface
             'porcentagem' => (int)$porcentagem, 
             'quantidade'=> (int)$quantidade, 
             'ativo' => 0,
+
             'created_at' => now(), 
-            'deleted_at' => null
-            'updated_at' => null
-            'restored_at' => null
+            'deleted_at' => null,
+            'updated_at' => null,
+            'restored_at' => null,
+            'active_at' => null,
+            'deactivate_at' => null
         ];
 
         session()->put('promocoes', $promocoes);
@@ -111,29 +114,46 @@ class SessionPromocoesService implements PromocoesServiceInterface
 
         foreach ($promocoes as $key => $value) 
         {
-            
             $produto_id = $value['produto_id'];
             $buscar = $provider_produto->buscarProduto($produto_id);
             $porcentagem = $value['porcentagem'];
             $quantidade = $value['quantidade'];
             $ativo = $value['ativo'];
-
+            $deleted_at = $value['deleted_at'];
+            $deleted_by = $value['delete_by'];
             $create_by = $value['create_by'];
             $created_at = $value['created_at'];
-            $deleted_at = $value['deleted_at'];
-            $delete_by = $value['delete_by'];
+            $restored_by = $value['restored_by'];
+            $restored_at = $value['restored_at'];
 
-            $nome_create = $provider_user->buscarNome($create_by);
-            $nome_delete = $provider_user->buscarNome($delete_by);
-            
+            $active_by = $value['active_by'];
+            $active_at = $value['active_at'];
+
+            $deactivate_by = $value['deactivate_by'];
+            $deactivate_at = $value['deactivate_at'];
+
+            $nome_restored_by = $provider_user->buscarNome($restored_by);
+            $nome_delete_by = $provider_user->buscarNome($deleted_by);
+            $nome_create_by = $provider_user->buscarNome($create_by);
+
+            $nome_active_by = $provider_user->buscarNome($active_by);
+            $nome_deactivate_by = $provider_user->buscarNome($deactivate_by);
+
             $preco_original = $buscar['valor'];
             $preco_desconto = $buscar['valor'] - ($buscar['valor'] / 100 * $porcentagem);
            
-            $promocoeslist[] = ['produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'quantidade' => $quantidade, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'ativo' => $ativo, 'delete_by' => strtoupper($nome_delete), 'deleted_at' => $deleted_at, 'create_by' => strtoupper($nome_create), 'created_at' => $created_at]; 
-           
-                  
-        }
+            $promocoeslist[$key] = ['create_by' => strtoupper($nome_create_by),'restored_by' => strtoupper($nome_restored_by), 'active_by' => strtoupper($nome_active_by), 'deactivate_by' => strtoupper($nome_deactivate_by), 'delete_by' => strtoupper($nome_delete_by), 'produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade, 'ativo' => $ativo,
 
+            'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null, 
+            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
+            'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null,
+            'active_at' => isset($active_at) ? date_format($active_at, "d/m/Y H:i:s") : null,
+            'deactivate_at' => isset($deactivate_at) ? date_format($deactivate_at, "d/m/Y H:i:s") : null
+
+
+
+            ];       
+        }
 
         return $promocoeslist;
     }
@@ -196,8 +216,11 @@ class SessionPromocoesService implements PromocoesServiceInterface
         $promocao = session()->get('promocoes', []);
 
         foreach ($promocao as $key => $value) {
-                if($promocao_id == $key)
+                if($promocao_id == $key){
+                    $promocao[$key]['restored_by'] = Auth::id();
+                    $promocao[$key]['restored_at'] = now();
                     $promocao[$key]['deleted_at'] = null;
+                }
         }
 
         session()->put('promocoes', $promocao);
