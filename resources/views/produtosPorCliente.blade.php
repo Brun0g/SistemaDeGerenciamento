@@ -4,9 +4,11 @@
   <h2 class="font-semibold text-xl text-gray-800 leading-tight">
   {{ __('Pedido de ' . strtoupper($clienteID[$id]['name']) ) }}
   </h2>
+  @if($deletedAt == null)
   <div style=" display: flex; justify-content: right; width: 60%;" >
     <a href={{'/carrinho/' . $id }}><i class="fa-solid fa-cart-shopping" style="font-size: 26px;"></i></a>
   </div>
+  @endif
 </div>
 <div>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -104,7 +106,10 @@
         </table>
         
       </div>
+      
       <div class="py-12" >
+
+
         <div class="">
           @if (session('status'))
           <div class="alert alert-success" style="display: flex; justify-content:center">
@@ -116,11 +121,13 @@
             {{ session('error_estoque') }}
           </div>
           @endif
+          @if( $clienteID[$id]['deleted_at'] == null )
           <div style="display: flex; justify-content: center; margin-bottom: 20px">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalLongoExemplo" id="CadastrarProduto_x">Adicionar pedido</button>
           </div>
+          @endif
           
-          
+          @if($deletedAt == null)
           <div style="display: flex; justify-content: center">
             <h3>Carrinho</h3>
           </div>
@@ -136,7 +143,8 @@
               </tr>
             </thead>
             <tbody>
-
+              @endif
+            
 
 
               
@@ -153,9 +161,13 @@
                 @endif
                 @endforeach
                 @else
+                @if($deletedAt == null)
                 <td style="background: white;" colspan="5" >Sem dados de registro!</td>
                 @endif
+                @endif
+
               </tbody>
+               @if($deletedAt == null)
               <tr style = "border-top: black solid 1px;">
                 <td style="border-bottom: hidden; border-left: hidden;"></td>
                 <td style="border-bottom: hidden"></td>
@@ -164,18 +176,20 @@
                 <td style="border-left: black solid 1px; color:white; background: black; font-weight: 900;">R$ {{isset($totalPedido) ? number_format($totalPedido - ($totalPedido / 100 * $porcentagem), 2, ",", ".") : 0}}</td>
                 <td style="border-bottom: hidden; border-right: hidden;"></td>
               </tr>
+              @endif
             </table>
-            
+            @if( $clienteID[$id]['deleted_at'] == null )
             <div class="container-center" style="display: flex; justify-content: center; margin-top: 15px;">
               <form method="GET" action="/carrinho/{{$id}}">
                 @csrf
                 <button class="btn btn-success"  type="submit">Ir até o carrinho</button>
               </form>
             </div>
+            @endif
           </div>
         </div>
    
-        <div style="display: flex; justify-content: center">
+        <div style="display: flex; justify-content: center;">
           <h3>Pedidos concluídos</h3>
         </div>
         <table id="table">
@@ -185,15 +199,19 @@
               <th class="row-inform-item">Criado por</th>
               <th class="row-inform-item">Restaurado por</th>
               <th class="row-inform-item">Total</th>
+             @if($deletedAt == null)
               <th class="row-inform-item">Ação</th>
+             @endif
               <th class="row-inform-item">Ação</th>
+         
             </tr>
           </thead>
+
           <tbody>
             @if(!session()->has('Pedido_encerrado'))
-            <x-dynamic :listarPedidosAprovados="$listarPedidosAprovados" :id="$id"></x-dynamic>
+            <x-dynamic :listarPedidosAprovados="$listarPedidosAprovados" :id="$id" :deletedAt="$deletedAt"></x-dynamic>
             @else
-            <x-dynamic2 :listarPedidosAprovados="$listarPedidosAprovados" :id="$id"></x-dynamic2>
+            <x-dynamic2 :listarPedidosAprovados="$listarPedidosAprovados" :id="$id" :deletedAt="$deletedAt"></x-dynamic2>
             @endif
           </tbody>
         </table>

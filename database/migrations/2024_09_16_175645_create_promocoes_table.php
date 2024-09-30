@@ -17,13 +17,20 @@ class CreatePromocoesTable extends Migration
             $table->id();
             $table->foreignId('create_by')->constrained('users');
             $table->foreignId('delete_by')->nullable()->constrained('users');
-            $table->foreignId('restored_by')->nullable()->constrained('users');
             $table->foreignId('update_by')->nullable()->constrained('users');
+
+            $table->foreignId('restored_by')->nullable()->constrained('users');
             $table->foreignId('active_by')->nullable()->constrained('users');
+            $table->foreignId('deactivate_by')->nullable()->constrained('users');
+
             $table->foreignId('produto_id')->constrained('produtos')->unique();
             $table->integer('porcentagem');
             $table->integer('quantidade');
             $table->integer('ativo');
+
+            $table->timestamp('restored_at')->nullable();
+            $table->timestamp('active_at')->nullable();
+            $table->timestamp('deactivate_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

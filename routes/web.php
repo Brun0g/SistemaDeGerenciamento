@@ -27,7 +27,6 @@ use App\Http\Controllers\AjusteEstoqueController;
 
 Route::get('/', function () {
 
-
     return view('welcome');
 });
 
@@ -48,8 +47,10 @@ Route::POST('/Products_view_client',[Quantity_product_controller::class,'criar']
 // CLIENTE
 Route::POST('/Clientes',[Clientes_controller::class,'mainViewClient'])->middleware(['auth'])->middleware(['cors']);
 Route::POST('/cadastrarCliente',[Clientes_controller::class,'registerClient'])->middleware(['auth']);
+Route::POST('/restaurarCliente/{id}',[Clientes_controller::class,'restoredClient'])->middleware(['auth']);
 Route::GET('/Cliente/{id}',[Clientes_controller::class,'show'])->middleware(['auth'])->middleware(['cors']);
 Route::GET('/Clientes',[Clientes_controller::class,'mainViewClient'])->middleware(['auth'])->name('Clientes')->middleware(['cors']);
+Route::GET('/ClientesExcluidos',[Clientes_controller::class, 'clientViewDelete'])->middleware(['auth'])->name('clientes_excluidos')->middleware(['cors']);
 Route::GET('/Editar/Cliente/{id}',[Clientes_controller::class,'viewClient'])->middleware(['auth']);
 Route::PATCH('/EditarCliente/{id}',[Clientes_controller::class,'editClient'])->middleware(['auth']);
 Route::DELETE('/DeletarCliente/{id}',[Clientes_controller::class,'deleteClient'])->middleware(['auth']);
@@ -104,7 +105,9 @@ Route::GET('/graficos',[Graficos_controller::class,'viewChart'])->middleware(['a
 
 // PROMOÇÕES
 Route::GET('/promocoes',[PromocoesController::class,'index'])->middleware(['auth'])->name('promocoes');
+Route::GET('/promocoesExcluidas',[PromocoesController::class,'index_view_delete'])->middleware(['auth'])->name('promocoes_excluidas');
 Route::POST('/adicionarpromocao',[PromocoesController::class,'store'])->middleware(['auth']);
+Route::POST('/restaurarPromocao/{id}',[PromocoesController::class,'restored'])->middleware(['auth']);
 Route::PATCH('/ativarpromocao/{id}',[PromocoesController::class,'update'])->middleware(['auth']);
 Route::PATCH('/atualizarpromocao/{id}',[PromocoesController::class,'edit'])->middleware(['auth']);
 Route::DELETE('/deletarPromocao/{id}',[PromocoesController::class,'destroy'])->middleware(['auth']);

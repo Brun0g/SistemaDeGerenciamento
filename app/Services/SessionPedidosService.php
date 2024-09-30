@@ -8,6 +8,9 @@ use \App\Services\SessionEstoqueService;
 use App\Models\Pedido;
 use App\Models\Pedidos_finalizados;
 
+use \App\Services\DBUserService;
+
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 
@@ -220,6 +223,8 @@ class SessionPedidosService implements PedidosServiceInterface
         $pedidoEncontrado = [];
         $pedidos = session()->get('Pedido_encerrado')[$pedido_id]; 
 
+        $provider_user = new DBUserService;
+
         foreach ($pedidos as $pedido) {
            
             $cliente_id = $pedidos['cliente_id'];
@@ -227,11 +232,29 @@ class SessionPedidosService implements PedidosServiceInterface
             $total = $pedidos['total'];
             $totalSemDesconto = $pedidos['totalSemDesconto'];
             $porcentagem = $pedidos['porcentagem'];
-        
-            $pedidoEncontrado = ['cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $total,'porcentagem' => $porcentagem, 'totalSemDesconto' => $totalSemDesconto];
+
+            $deleted_at = $pedidos['deleted_at'];
+            $created_at = $pedidos['created_at'];
+            $restored_at = $pedidos['restored_at'];
+
+            $create_by = $pedidos['create_by'];
+            $created_at = $pedidos['created_at'];
+
+            $nome_create_by = $provider_user->buscarNome($create_by);
+
+          
+            $pedidoEncontrado = ['create_by' => $nome_create_by, 'cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $total,'porcentagem' => $porcentagem, 'totalSemDesconto' => $totalSemDesconto,
+
+            'created_at' => date_format($created_at,"d/m/Y H:i:s"),
+            'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
+            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
+
+
+            ];
           
         }
 
+        
         return $pedidoEncontrado;
     }
 
@@ -252,6 +275,8 @@ class SessionPedidosService implements PedidosServiceInterface
                 $valor = $pedido['total'];
                 $produto = $service_produtos->buscarProduto($produto_id)['produto'];
                 $preco_unidade = $pedido['preco_unidade'];
+
+               
 
                 $total += $valor;
 

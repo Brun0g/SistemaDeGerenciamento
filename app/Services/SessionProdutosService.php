@@ -104,14 +104,13 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $updated_at = $value['updated_at'];
                 $update_by = $value['update_by'];
 
-                if( isset($update_by) )
+             
                 $nome_usuario_update = $service_user->buscarNome($update_by);
 
                 $deleted_at = $value['deleted_at'];
                 $delete_by = $value['delete_by'];
 
-                if( isset($delete_by) )
-                    $nome_usuario_delete = $service_user->buscarNome($delete_by);
+                $nome_usuario_delete = $service_user->buscarNome($delete_by);
                 
                 $ativo = $promocao['ativo'];
                 $array[$produto_id] = $promocao['promocao'];
@@ -154,20 +153,17 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $updated_at = $value['updated_at'];
                 $update_by = $value['update_by'];
 
-                if( isset($update_by) )
-                    $nome_usuario_update = $service_user->buscarNome($update_by);
+                $nome_usuario_update = $service_user->buscarNome($update_by);
 
                 $deleted_at = $value['deleted_at'];
                 $delete_by = $value['delete_by'];
 
-                if( isset($delete_by))
-                    $nome_usuario_delete = $service_user->buscarNome($delete_by);
+                $nome_usuario_delete = $service_user->buscarNome($delete_by);
 
                 $restored_at = $value['restored_at'];
                 $restored_by = $value['restored_by'];
 
-                if( isset($restored_by))
-                    $nome_usuario_restored = $service_user->buscarNome($restored_by);
+                $nome_usuario_restored = $service_user->buscarNome($restored_by);
 
                 $image_url_produto = asset("storage/" . $image_url_produto);
 

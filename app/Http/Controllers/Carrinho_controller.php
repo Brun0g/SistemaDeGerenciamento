@@ -131,7 +131,7 @@ class Carrinho_controller extends Controller
     {
         $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
 
-        $visualizarCliente = $provider_cliente->listarClientes();
+        $visualizarCliente = $provider_cliente->listarClientes(true);
         $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
 
         $enderecos = $provider_endereco->listarEnderecos();

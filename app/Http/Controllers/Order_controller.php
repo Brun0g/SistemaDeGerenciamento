@@ -39,6 +39,9 @@ class Order_controller extends Controller
         $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos);
 
 
+
+
+
         $cliente_id = $pedidoEncontrado['cliente_id'];
         $nome = $provider_cliente->buscarCliente($cliente_id);
         $nome = $nome[$cliente_id]['name'];
@@ -47,7 +50,7 @@ class Order_controller extends Controller
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);
 
        
-        return view('pedidoFinalizado' , ['nome' => $nome, 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto']]);
+        return view('pedidoFinalizado' , ['nome' => $nome, 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto'], 'data_pedido' =>$pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
     }
 
     public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente)

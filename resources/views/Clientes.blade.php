@@ -57,26 +57,33 @@ font-size: 13px;
             <thead class="thead">
                 <tr>
                     <th class="row-inform-item" style="width: 3%;">ID</th>
-                    <th class="row-inform-item" style="width: 15%;">Nome</th>
-                    <th class="row-inform-item">Email</th>
-                    <th class="row-inform-item" style="width: 5%;">Idade</th>
-                    <th class="row-inform-item" >Endereço</th>
+                    <th class="row-inform-item" style="width: 10%;">Criado por</th>
+                    <th class="row-inform-item" style="width: 10%;">Restaurado por</th>
+                    <th class="row-inform-item" style="width: 15%;">Cliente</th>
+                    <th class="row-inform-item" style="width: 1%;">Email</th>
+                    <th class="row-inform-item" style="width: 2%;">Idade</th>
+                    <th class="row-inform-item" style="width: 40%;">Endereço</th>
                     <th class="row-inform-item">Contato</th>
-                    <th class="row-inform-item">Total</th>
+                    <th class="row-inform-item" style="width: 70%;">Total</th>
                     <th class="row-inform-item">Ação</th>
                     <th class="row-inform-item">Ação</th>
                     <th class="row-inform-item">Ação</th>
                 </tr>
             </thead>
             <tbody>
+
                 @if(isset($tabela_clientes))
                 @foreach ($tabela_clientes as $key => $value )
+                @if( $value['deleted_at'] == null)
                 <tr style="background: white;">
                     <td style="font-size: 16px;  color:white; background: black; font-weight: 900; border: 1px solid">{{  $key }}</td>
-                    <td style ="border: 1px solid; ">{{  strtoupper($value['name']) }}</td>
-                    <td style ="border: 1px solid;">{{  $value['email'] }}</td>
-                    <td style ="border: 1px solid;">{{  $value['idade'] }}</td>
-                    <td style="width: 30%;  text-align: left; border: 1px solid; border-right: none;">
+                    <td style ="width: 1%; border: 1px solid; ">{{  strtoupper($value['create_by'])}} </br> {{  strtoupper($value['created_at'])}}</td>
+                    <td style ="width: 1%; border: 1px solid; ">{{  strtoupper($value['restored_by'])}} </br> {{  strtoupper($value['restored_at'])}}</td>
+
+                    <td style ="width: 15%; border: 1px solid; ">{{  strtoupper($value['name']) }}</td>
+                    <td style ="width: 15%; border: 1px solid;">{{  $value['email'] }}</td>
+                    <td style ="width: 2%; border: 1px solid;">{{  $value['idade'] }}</td>
+                    <td style="width: 28%;  text-align: left; border: 1px solid; border-right: none;">
                         <ol style="list-style-type: decimal; list-style-position: inside; ">
                             
                             @if($listar_enderecos != [])
@@ -96,26 +103,27 @@ font-size: 13px;
                     
                     <td style ="border: 1px solid;">{{  $value['contato'] }}</td>
                     <td style="border: 1px solid; color:green;"> R$ {{isset($total[$key])  ? $total[$key]  : 0}}</td>
-                    <td style="border: 1px solid;">
+                    <td style="width: 3%; border: 1px solid;">
                         <form  action="/DeletarCliente/{{$key}}" method="POST" >
                             @csrf
                             @method('delete')
                             <button    class="btn btn-danger"  style="padding: 5px;" type="submit">Deletar</button>
                         </form>
                     </td>
-                    <td style="border: 1px solid black;">
+                    <td style="width: 5%; border: 1px solid black;">
                         <form  action="/Cliente/{{$key}}" method="GET" >
                             @csrf
                             <button    class="btn btn-primary"  style="padding: 5px;" type="submit">Visualizar pedidos</button>
                         </form>
                     </td>
-                    <td style="border: 1px solid black;">
+                    <td style="width: 5%; border: 1px solid black;">
                         <form  action="/Editar/Cliente/{{$key}}" method="GET" >
                             @csrf
                             <button    class="btn btn-primary"  style="padding: 5px;" type="submit">Editar cliente</button>
                         </form>
                     </td>
                 </tr>
+                @endif
                 @endforeach
                 @else
                 <td colspan="10">Sem dados de registro!</td>

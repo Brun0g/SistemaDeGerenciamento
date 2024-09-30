@@ -1,11 +1,12 @@
-@props(['listarPedidosAprovados' => $listarPedidosAprovados, 'id' => $id]);
+@props(['listarPedidosAprovados' => $listarPedidosAprovados, 'id' => $id, 'deletedAt' => $deletedAt ] )
+
 
 
 @if(sizeof($listarPedidosAprovados) > 0)
 @foreach ($listarPedidosAprovados as $pedido_id => $value)
 
-@if ( $value['cliente_id'] == $id )
-@if ( $value['delete_at'] == null )
+@if ($value['cliente_id'] == $id )
+@if($value['delete_at'] == null)
 <tr class="bg-white">
     <td style="color:white; background: black; font-weight: 900; ">{{  $pedido_id }}</td>
     <td>{{strtoupper($value['create_by'])}}</td>
@@ -15,6 +16,7 @@
     <td></td>
     @endif
     <td style="color:green;">R$ {{ number_format($value['total'], 2, ",", ".")  }}</td>
+    @if($deletedAt == null)
     <td>
         <form  action="/ExcluirPedidoCliente/{{$value['cliente_id']}}/{{$pedido_id}}" method="POST" >
             @csrf
@@ -22,6 +24,7 @@
             <button    class="btn btn-danger"  type="submit">Excluir</button>
         </form>
     </td>
+    @endif
       <td>
         <form  action="/pedidofinalizado/{{$pedido_id}}" method="GET" >
             @csrf
@@ -39,7 +42,9 @@
         @endif
         <td></td>
         <td></td>
+        @if($deletedAt == null)
         <td></td>
+         @endif
     </tr>
     @endif
     @endif

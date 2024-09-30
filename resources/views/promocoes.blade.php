@@ -71,7 +71,7 @@ width: 99%;
     </div>
     @endif
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
             
             <div style="display: flex; justify-content: center; margin-bottom: 10px;">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar promoção</button>
@@ -80,25 +80,40 @@ width: 99%;
                 <thead class="thead">
                     <tr>
                         <th class="row-inform-item">ID</th>
+                        <th class="row-inform-item">Criado por</th>
+                        <th class="row-inform-item">Restaurado por</th>
+                        <th class="row-inform-item">Ativado por</th>
+                        <th class="row-inform-item">Desativado por</th>
                         <th class="row-inform-item">Situação</th>
-                        <th class="row-inform-item">Nome do Produto</th>
-                        <th class="row-inform-item">Preço original</th>
-                        <th class="row-inform-item">Preço com desconto</th>
-                        <th class="row-inform-item">Diferença</th>
+                        <th class="row-inform-item" style="width: 2%;">Nome do Produto</th>
+                        <th class="row-inform-item" style="width: 5%">Preço original</th>
+                        <th class="row-inform-item" style="width: 5%">Preço com desconto</th>
+                       
                         <th class="row-inform-item">Porcentagem</th>
                         <th class="row-inform-item">Quantidade</th>
-                        <th class="row-inform-item">Ação</th>
-                        <th class="row-inform-item">Ação</th>
+                        <th class="row-inform-item"style="width: 1%">Ação</th>
+                        <th class="row-inform-item"style="width: 1%">Ação</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if(isset($listaPromocoes))
                     @foreach ($listaPromocoes as $key => $value)
+
+                    @if($value['deleted_at'] == null)
                     <tr style="background: white;">
-                        <td style="color:white; background: black; font-weight: 900; border: 1px solid; width: 10%">
+                        <td style="color:white; background: black; font-weight: 900; border: 1px solid; width: 2%">
                         {{  $key }}</td>
+
+                        <td style="font-size: 14px; border: 1px solid; width: 5%">
+                        {{  $value['create_by'] }} </br> {{$value['created_at']}}</td>
+                        <td style="font-size: 14px; border: 1px solid; width: 5%">
+                        {{  $value['restored_by'] }} </br> {{$value['restored_at']}}</td>
+                        <td style="font-size: 14px; border: 1px solid; width: 5%">
+                        {{  $value['active_by'] }} </br> {{$value['active_at']}}</td>
+                        <td style="font-size: 14px; border: 1px solid; width: 5%">
+                        {{  $value['deactivate_by'] }} </br> {{$value['deactivate_at']}}</td>
                         @if($value['ativo'] == 0)
-                        <td style="border: 3px solid; width: 5%">
+                        <td style="border: 1px solid; width: 1%">
                             <form  action="/ativarpromocao/{{$key}}" method="POST">
                                 @csrf
                                 @method('PATCH')
@@ -106,7 +121,7 @@ width: 99%;
                             </form>
                         </td>
                         @else
-                        <td style="border: 1px solid; width: 5%">
+                        <td style="border: 1px solid; width: 1%">
                             <form action="/ativarpromocao/{{$key}}" method="POST">
                                 @csrf
                                 @method('PATCH')
@@ -117,23 +132,25 @@ width: 99%;
                         <form action="/atualizarpromocao/{{$key}}" method="POST">
                             @csrf
                             @method('PATCH')
-                            <td style="border: 1px solid; width: 20%">{{  $value['produto'] }}</td>
-                            <td style="border: 1px solid black; width: 20%; color: green;">R$ {{  number_format($value['preco_original'], 2, ",", ".") }}</td>
-                            <td style="border: 1px solid black; width: 20%; color: green;">R${{  number_format($value['preco_desconto'], 2, ",", ".") }}</td>
-                            <td style="border: 1px solid black; width: 10%; color: red;">R$-{{number_format($value['preco_original'] - $value['preco_desconto'], 2, ",", ".") }}
-                            </td>
-                            <td style="border: 1px solid;">
+                            <td style="border: 1px solid; width: 5%">{{  strtoupper($value['produto']) }}</td>
+                            <td style="border: 1px solid black; width: 5%; color: green;">R$ {{  number_format($value['preco_original'], 2, ",", ".") }}</td>
+                            <td style="border: 1px solid black; width: 5%; color: green;">R${{  number_format($value['preco_desconto'], 2, ",", ".") }}</td>
+                           
+                            <td style="width: 2%; border: 1px solid;">
                                 <input type="number" style="width: 80%; border: hidden; text-align: center;" name="atualizarPorcentagem" value="{{ $value['porcentagem'] }}" min="0" max="100">
                             </td>
-                            <td style="border: 1px solid; width: 20%">
-                                <input type="number" style="width: 100%; border: hidden; text-align: center;" name="atualizarQuantidade" value="{{ $value['quantidade'] }}" min="0" max="9999">
+
+                            <td style="width: 2%; border: 1px solid;">
+                                <input type="number" style="width: 80%; border: hidden; text-align: center;" name="atualizarQuantidade" value="{{ $value['quantidade'] }}" min="0" max="9999">
                             </td>
-                            <td style="border: 1px solid;">
+
+                          
+                            <td style="width: 1%; border: 1px solid;">
                                 <button class="btn btn-primary" type="submit">Atualizar</button>
                             </td>
                         </form>
                         
-                        <td style="border: 1px solid; width: 15%">
+                        <td style="border: 1px solid; width: 1%">
                             <form  action="/deletarPromocao/{{$key}}" method="POST" >
                                 @csrf
                                 @method('delete')
@@ -141,6 +158,7 @@ width: 99%;
                             </form>
                         </td>
                     </tr>
+                    @endif
                     @endforeach
                     @else
                     <td colspan="10">Sem dados de registro!</td>

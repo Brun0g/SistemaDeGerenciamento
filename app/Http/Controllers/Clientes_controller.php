@@ -58,7 +58,7 @@ class Clientes_controller extends Controller
     {
         $buscarPedidoCliente = [];
         $valorTotalPorPedido = [];
-        $tabela_clientes = $provider_cliente->listarClientes();
+        $tabela_clientes = $provider_cliente->listarClientes( false );
         $listar_enderecos = $provider_endereco->listarEnderecos();
 
         if($request->search_string != null)
@@ -78,6 +78,39 @@ class Clientes_controller extends Controller
         return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
     }
 
+    public function clientViewDelete(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco, EstoqueServiceInterface $provider_estoque, UserServiceInterface $provider_user)
+    {
+        $buscarPedidoCliente = [];
+        $valorTotalPorPedido = [];
+        $tabela_clientes = $provider_cliente->listarClientes(true);
+        $listar_enderecos = $provider_endereco->listarEnderecos();
+
+        if($request->search_string != null)
+            $tabela_clientes = $provider_cliente->searchCliente($request->search_string);
+
+
+        foreach ($tabela_clientes as $cliente_id => $value) {
+            $valorTotalPorPedido[$cliente_id] = 0;
+            $buscarPedidoCliente = $provider_pedido->listarPedidos($cliente_id, $provider_estoque, $provider_user);
+
+            foreach ($buscarPedidoCliente as $value) {
+                if($cliente_id == $value['cliente_id'])
+                $valorTotalPorPedido[$cliente_id] += $value['total'];
+            }
+        }
+
+        return view('clientes_excluidos', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
+    }
+
+    public function restoredClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)
+    {
+        $provider_cliente->restaurarCliente($cliente_id);
+
+        $url = url()->previous();
+
+        return redirect($url);
+    }
+
     public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
     {
         $cliente = $provider_cliente->buscarCliente($cliente_id);
@@ -90,9 +123,13 @@ class Clientes_controller extends Controller
         $listarCategoria = $provider_categoria->listarCategoria();
         $listarPedidosAprovados = $provider_pedidos->listarPedidos($cliente_id, $provider_estoque, $provider_user);
 
+
         $totalPedido = $buscarValores['totalComDesconto'];
 
-        return view('produtosPorCliente', ['listarPedidos'=> $listarPedidos, 'categorias' => $listarCategoria, 'clienteID' => $cliente, 'id' => $cliente_id, 'listarPedidosAprovados' => $listarPedidosAprovados, 'totalPedido'=> $totalPedido, 'produtosEstoque' => $listarProduto, 'porcentagem' => $porcentagem]);
+      
+        
+        
+        return view('produtosPorCliente', ['listarPedidos'=> $listarPedidos, 'categorias' => $listarCategoria, 'clienteID' => $cliente, 'id' => $cliente_id, 'listarPedidosAprovados' => $listarPedidosAprovados, 'totalPedido'=> $totalPedido, 'produtosEstoque' => $listarProduto, 'porcentagem' => $porcentagem, 'deletedAt' => $cliente[$cliente_id]['deleted_at'] ]);
     }
 
     public function deleteClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)

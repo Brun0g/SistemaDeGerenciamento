@@ -17,8 +17,10 @@ class CreateClientesTable extends Migration
             $table->id();
             $table->foreignId('create_by')->constrained('users');
             $table->foreignId('delete_by')->nullable()->constrained('users');
-            $table->foreignId('restored_by')->nullable()->constrained('users');
             $table->foreignId('update_by')->nullable()->constrained('users');
+
+            $table->foreignId('restored_by')->nullable()->constrained('users');
+
             $table->string('name');
             $table->string('email');
             $table->integer('idade');
@@ -28,6 +30,8 @@ class CreateClientesTable extends Migration
             $table->integer('numero');
             $table->string('estado');
             $table->string('contato');
+
+            $table->timestamp('restored_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

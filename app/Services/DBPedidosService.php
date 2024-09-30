@@ -7,6 +7,7 @@ use App\Services\PedidosServiceInterface;
 use App\Services\ProdutosServiceInterface;
 use \App\Services\DBProdutosService;
 use \App\Services\DBClientesService;
+use \App\Services\DBUserService;
 use App\Models\PedidosIndividuais;
 use App\Models\Pedidos;
 use App\Models\Entradas_saidas;
@@ -60,9 +61,7 @@ class DBPedidosService implements PedidosServiceInterface
 
         return $pedido->id;
     }
-
-
-
+    
     public function excluirPedido($pedido_id, $provider_entradas_saidas)
     {
         $pedido_geral = Pedidos::all()->where('id', $pedido_id);
@@ -97,8 +96,6 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido_geral = Pedidos::withTrashed()->where('id', $pedido_id)->get();
 
         $provider_pedidos = new DBPedidosService();
-
-
 
         foreach ($pedido_geral as $key => $value) {
 
@@ -245,9 +242,6 @@ class DBPedidosService implements PedidosServiceInterface
             'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
             'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
 
-
-
-
             ]; 
             
         }
@@ -259,6 +253,8 @@ class DBPedidosService implements PedidosServiceInterface
     {
         $pedidoEncontrado = [];
         $pedido = Pedidos::withTrashed()->where('id', $pedido_id)->get()[0];
+
+        $provider_user = new DBUserService;
  
         foreach ($pedido as $key => $value) {
 
@@ -268,8 +264,16 @@ class DBPedidosService implements PedidosServiceInterface
             $total = $pedido->total;
             $totalSemDesconto = $pedido->totalSemDesconto;
             $porcentagem = $pedido->porcentagem;
+            $created_at = $pedido->created_at;
+            $create_by = $pedido->create_by;
 
-            $pedidoEncontrado = ['cliente_id' => $id_cliente, 'endereco_id' => $endereco_id, 'total' => $total, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem];
+            $nome_create_by = $provider_user->buscarNome($create_by);
+
+            $pedidoEncontrado = ['create_by' => $nome_create_by, 'cliente_id' => $id_cliente, 'endereco_id' => $endereco_id, 'total' => $total, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem,
+    
+            'created_at' => date_format($created_at,"d/m/Y H:i:s"),
+            'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
+            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null ];
         }
 
         return $pedidoEncontrado;

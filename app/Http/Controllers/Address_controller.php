@@ -87,7 +87,7 @@ class Address_controller extends Controller
     {
         $enderecos = $provider_endereco->listarEnderecos();
         $cliente_id = $provider_endereco->encontrarClienteID($endereco_id);
-        $lista_clientes = $provider_cliente->listarClientes();
+        $lista_clientes = $provider_cliente->listarClientes(true);
         $cliente = $provider_cliente->buscarCliente($cliente_id);
 
         return view('editarEndereco', ['cliente' => $cliente, 'id' => $cliente_id, 'endereco_id' => $endereco_id, 'enderecos' => $enderecos]);

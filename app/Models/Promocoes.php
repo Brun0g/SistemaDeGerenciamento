@@ -17,5 +17,7 @@ class Promocoes extends Model
      */
     protected $casts = [
         'restored_at' => 'datetime:Y-m-d',
+        'active_at' => 'datetime:Y-m-d',
+        'deactivate_at' => 'datetime:Y-m-d'
     ];
 }
