@@ -74,7 +74,6 @@ class Clientes_controller extends Controller
                 $valorTotalPorPedido[$cliente_id] += $value['total'];
             }
         }
-
         return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
     }
 
@@ -114,22 +113,16 @@ class Clientes_controller extends Controller
     public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
     {
         $cliente = $provider_cliente->buscarCliente($cliente_id);
-
         $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);  
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
         $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
-
-        $softDelete = false;
-        $listarProduto = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, $softDelete);
+        $listarProduto = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
         $listarCategoria = $provider_categoria->listarCategoria();
         $listarPedidosAprovados = $provider_pedidos->listarPedidos($cliente_id, $provider_estoque, $provider_user);
 
 
         $totalPedido = $buscarValores['totalComDesconto'];
 
-      
-        
-        
         return view('produtosPorCliente', ['listarPedidos'=> $listarPedidos, 'categorias' => $listarCategoria, 'clienteID' => $cliente, 'id' => $cliente_id, 'listarPedidosAprovados' => $listarPedidosAprovados, 'totalPedido'=> $totalPedido, 'produtosEstoque' => $listarProduto, 'porcentagem' => $porcentagem, 'deletedAt' => $cliente['deleted_at'] ]);
     }
 

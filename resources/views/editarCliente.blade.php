@@ -27,7 +27,7 @@ top: -15px;
 justify-content: center;
 text-align: center;
 font-size: 16px;
-border: 5px solid;
+border: 2px solid black;
 }
 td {
 text-align: center;
@@ -43,8 +43,57 @@ background: white;
 display: flex;
 justify-content: center;
 }
+.caption-style {
+background-color: royalblue;
+border-top: 3px solid black;
+border-right: 3px solid black;
+border-left: 3px solid black;
+color: white;
+text-align: center;
+font-weight: 900;
+font-size: 18px;
+padding: 10px;
+}
 </style>
 <div class="py-12">
+
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+         <div class="caption-style" style="display: flex; flex-direction: column; ">
+                HISTORICO DO CLIENTE
+        </div>
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th  style="color: black">Criado por</th>
+                        <th  style="color: black">Editado por</th>
+                        <th  style="color: black">Restaurado por</th>  
+                    </tr>
+
+                </thead>
+                <tbody>
+
+                    <tr class="bg-white">
+
+                        <td style="color: black;">{{ strtoupper( $cliente['create_by'] ) }}</td>
+                        <td style="color: black;">{{ isset($cliente['update_by']) ? strtoupper( $cliente['update_by'] ) : ''  }}</td>
+                        <td style="color: black;">{{ isset($cliente['restored_by']) ? strtoupper( $cliente['restored_by'] ) : ''  }}</td>
+                    </tr>
+
+                    <tr class="bg-white">
+
+                        <td style="color: black;">{{ $cliente['created_at'] }}</td>
+                        <td style="color: black;">{{ isset($cliente['update_by']) ? $cliente['updated_at'] : ''  }}</td>
+                        <td style="color: black;">{{ isset($cliente['restored_at']) ? $cliente['restored_at'] : ''  }}</td>
+                        
+                    </tr>
+                </tbody>
+            </table>
+
+    
+            </div>
+        </div>
     @if ($errors->any())
     <div class="alert alert-danger">
         <table>
@@ -56,11 +105,17 @@ justify-content: center;
     </table>
 </div>
 @endif
-<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+<div class="max-w-7xl mx-auto sm:px-6 lg:px-8" style="margin-top: 10px;">
+
     <form method="POST" action="/EditarCliente/{{$id}}" >
         @csrf
         @method('PATCH')
-        <div style="display: flex; justify-content: center; margin-bottom: 20px; margin-top: 20px;">
+
+                <div class="caption-style" style="display: flex; flex-direction: column;">
+                EDITAR DADOS DO CLIENTE
+                <div></div>
+            </div>
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
             
             <table id="table">
                 <thead class="thead">
@@ -75,16 +130,16 @@ justify-content: center;
                 <tbody>
                     <tr class="bg-white">
                         <td>
-                            <input type="text" class="form-control" name="name" value="{{  $cliente[$id]['name'] }}" >
+                            <input type="text" class="form-control" name="name" value="{{  $cliente['name'] }}" >
                         </td>
                         <td>
-                            <input type="email" class="form-control" name="email" value="{{  $cliente[$id]['email'] }}" >
+                            <input type="email" class="form-control" name="email" value="{{  $cliente['email'] }}" >
                         </td>
                         <td>
-                            <input type="text" class="form-control" name="contato" value="{{  $cliente[$id]['contato'] }}" >
+                            <input type="text" class="form-control" name="contato" value="{{  $cliente['contato'] }}" >
                         </td>
                         <td>
-                            <input style="text-align: center;" type="text" class="form-control" name="idade" value="{{  $cliente[$id]['idade'] }}" >
+                            <input style="text-align: center;" type="text" class="form-control" name="idade" value="{{  $cliente['idade'] }}" >
                         </td>
                         <td> <button class="btn btn-success" type="submit">Atualizar</button></td>
                     </tr>
@@ -93,7 +148,8 @@ justify-content: center;
         </form>
     </div>
     
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-8xl mx-auto sm:px-7 lg:px-9">
+
         <div style="display: flex; justify-content: center; margin-bottom: 20px; margin-top: 20px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar Endereço</button>
         </div>

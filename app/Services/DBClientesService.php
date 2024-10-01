@@ -80,7 +80,6 @@ class DBClientesService implements ClientesServiceInterface
 	{
 		$clientes = Cliente::all();
 
-
         if($softDeletes)
             $clientes = Cliente::withTrashed()->get();
 
@@ -100,7 +99,7 @@ class DBClientesService implements ClientesServiceInterface
             $estado_cliente = $cliente->estado;
             $contato_cliente = $cliente->contato;
 
-            $deleted_at = $cliente->deleted_at;
+            $deleted_at = isset($cliente->deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null;
             $delete_by = $cliente->delete_by;
             $nome_delete_by = $provider_user->buscarNome($delete_by);
 
@@ -111,16 +110,29 @@ class DBClientesService implements ClientesServiceInterface
             $restored_at = $cliente->restored_at;
             $restored_by = $cliente->restored_by;
             $nome_restored_by = $provider_user->buscarNome($restored_by);
+
+            $updated_at = $cliente->updated_at;
+            $update_by = $cliente->update_by;
+            $nome_update_by = $provider_user->buscarNome($update_by);
             
-            
-
-            $listarClientes[$cliente->id] = ['create_by' => $nome_create_by, 'restored_by' => $nome_restored_by, 'deleted_by' => $nome_delete_by, 'name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente,
-            'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null, 
-            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
-            'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null
-
-
-
+            $listarClientes[$cliente->id] = [
+                'create_by' => $nome_create_by,
+                'update_by' => $nome_update_by,
+                'restored_by' => $nome_restored_by,
+                'deleted_by' => $nome_delete_by,
+                'name' => $nome_cliente,
+                'email' => $email_cliente,
+                'idade' => $idade_cliente,
+                'cidade' => $cidade_cliente,
+                'cep' => $cep_cliente,
+                'rua' => $rua_cliente,
+                'numero' => $numero_cliente,
+                'estado' => $estado_cliente,
+                'contato' => $contato_cliente,
+                'deleted_at' => $deleted_at,
+                'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
+                'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null,
+                'updated_at' => isset($updated_at) ? date_format($updated_at, "d/m/Y H:i:s") : null
             ];       
         }
 
@@ -157,6 +169,8 @@ class DBClientesService implements ClientesServiceInterface
 		
         $cliente = Cliente::withTrashed()->where('id', $cliente_id)->get()[0];
 
+        $provider_user = new DBUserService;
+
 		foreach ($cliente as $clientes) {
 
 			$nome_cliente = $cliente->name;
@@ -168,9 +182,24 @@ class DBClientesService implements ClientesServiceInterface
             $numero_cliente = $cliente->numero;
             $estado_cliente = $cliente->estado;
             $contato_cliente = $cliente->contato;
-            $deleted_at = $cliente->deleted_at;
 
-            return ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => $deleted_at];
+            $deleted_at = $cliente->deleted_at;
+            $delete_by = $cliente->delete_by;
+            $nome_delete_by = $provider_user->buscarNome($delete_by);
+
+            $created_at = $cliente->created_at;
+            $create_by = $cliente->create_by;
+            $nome_create_by = $provider_user->buscarNome($create_by);
+
+            $restored_at = $cliente->restored_at;
+            $restored_by = $cliente->restored_by;
+            $nome_restored_by = $provider_user->buscarNome($restored_by);
+
+            $updated_at = $cliente->updated_at;
+            $update_by = $cliente->update_by;
+            $nome_update_by = $provider_user->buscarNome($update_by);
+
+            return [ 'create_by' => $nome_create_by, 'update_by' => $nome_update_by, 'restored_by' => $nome_restored_by, 'deleted_by' => $nome_delete_by, 'name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null, 'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null, 'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null, 'updated_at' => isset($updated_at) ? date_format($updated_at, "d/m/Y H:i:s") : null];
 		}
 
 		return [];
@@ -185,6 +214,5 @@ class DBClientesService implements ClientesServiceInterface
         $cliente->deleted_at = null;
       
         $cliente->save();
-
     }
 }

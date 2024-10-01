@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -21,8 +20,6 @@ use \App\Services\UserServiceInterface;
 use \App\Services\EstoqueServiceInterface;
 
 
-
-
 class Carrinho_controller extends Controller
 {
     public function newProductCart(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
@@ -34,7 +31,6 @@ class Carrinho_controller extends Controller
             'categoria' => 'required|string',
         ]);
 
-
         $url = url()->previous();
 
         if($validator->fails())
@@ -42,7 +38,6 @@ class Carrinho_controller extends Controller
             
         $validated = $validator->validated();
 
-    
         foreach ($validated['produto'] as $key => $value) {
 
             $produto_id = $key;
@@ -146,26 +141,19 @@ class Carrinho_controller extends Controller
     public function finishCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque, ClientesServiceInterface $provider_cliente)
     {
         $endereco_id = $request->input('endereco_id');
-
         $cliente = $provider_cliente->buscarCliente($cliente_id);
-
-        
-
         $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
 
         $url = url()->previous();
-        $array = [];
-
+     
         if($cliente['deleted_at'] == null)
         {
-
             foreach ($pedidos_no_carrinho as $key => $value) {
                 $acima_do_estoque = $value['fora_de_estoque'];
-                $produto_id = $value['produto_id'];
                 $produto = $value['produto'];
                 $deleted_at = $value['deleted_at'];
-                $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
-
+                $quantidade_estoque = $value['quantidade_estoque'];
+                
                 if( isset($deleted_at) )
                 {
                     $fora_estoque = true;
@@ -183,13 +171,13 @@ class Carrinho_controller extends Controller
 
             if($pedidos_no_carrinho)
             {
-
                 if( isset($fora_estoque) )
                     return redirect($url)->with('array_erros', $array_erros);
 
                 session()->flash('status', 'Pedido encaminhado com sucesso!');
 
                 $provider_carrinho->finalizarCarrinho($cliente_id, $endereco_id, $provider_carrinho, $provider_produto,  $provider_pedidos, $provider_promocoes, $provider_entradas_saidas, $provider_user, $provider_estoque);
+
             } else {
 
                 $array_erros[] = 'Não há produtos no carrinho!';
@@ -205,7 +193,6 @@ class Carrinho_controller extends Controller
         }
 
         
-       
         return redirect($url);
     }
     

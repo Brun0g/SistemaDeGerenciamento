@@ -57,14 +57,14 @@ font-size: 13px;
             <thead class="thead">
                 <tr>
                     <th class="row-inform-item" style="width: 3%;">ID</th>
-                    <th class="row-inform-item" style="width: 10%;">Criado por</th>
-                    <th class="row-inform-item" style="width: 10%;">Restaurado por</th>
+         {{--            <th class="row-inform-item" style="width: 10%;">Criado por</th>
+                    <th class="row-inform-item" style="width: 10%;">Restaurado por</th> --}}
                     <th class="row-inform-item" style="width: 15%;">Cliente</th>
                     <th class="row-inform-item" style="width: 1%;">Email</th>
                     <th class="row-inform-item" style="width: 2%;">Idade</th>
                     <th class="row-inform-item" style="width: 40%;">Endereço</th>
                     <th class="row-inform-item">Contato</th>
-                    <th class="row-inform-item" style="width: 70%;">Total</th>
+                    <th class="row-inform-item" style="width: 10%;">Total</th>
                     <th class="row-inform-item">Ação</th>
                     <th class="row-inform-item">Ação</th>
                     <th class="row-inform-item">Ação</th>
@@ -77,8 +77,8 @@ font-size: 13px;
                 @if( $value['deleted_at'] == null)
                 <tr style="background: white;">
                     <td style="font-size: 16px;  color:white; background: black; font-weight: 900; border: 1px solid">{{  $key }}</td>
-                    <td style ="width: 1%; border: 1px solid; ">{{  strtoupper($value['create_by'])}} </br> {{  strtoupper($value['created_at'])}}</td>
-                    <td style ="width: 1%; border: 1px solid; ">{{  strtoupper($value['restored_by'])}} </br> {{  strtoupper($value['restored_at'])}}</td>
+         {{--            <td style ="width: 1%; border: 1px solid; ">{{  strtoupper($value['create_by'])}} </br> {{  strtoupper($value['created_at'])}}</td>
+                    <td style ="width: 1%; border: 1px solid; ">{{  strtoupper($value['restored_by'])}} </br> {{  strtoupper($value['restored_at'])}}</td> --}}
 
                     <td style ="width: 15%; border: 1px solid; ">{{  strtoupper($value['name']) }}</td>
                     <td style ="width: 15%; border: 1px solid;">{{  $value['email'] }}</td>

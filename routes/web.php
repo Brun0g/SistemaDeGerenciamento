@@ -45,11 +45,11 @@ Route::GET('/Products_view_client',[Quantity_product_controller::class,'quantity
 Route::POST('/Products_view_client',[Quantity_product_controller::class,'criar'])->middleware(['auth']);
 
 // CLIENTE
-Route::POST('/Clientes',[Clientes_controller::class,'mainViewClient'])->middleware(['auth'])->middleware(['cors']);
+Route::POST('/Clientes',[Clientes_controller::class,'index'])->middleware(['auth'])->middleware(['cors']);
 Route::POST('/cadastrarCliente',[Clientes_controller::class,'registerClient'])->middleware(['auth']);
 Route::POST('/restaurarCliente/{id}',[Clientes_controller::class,'restoredClient'])->middleware(['auth']);
 Route::GET('/Cliente/{id}',[Clientes_controller::class,'show'])->middleware(['auth'])->middleware(['cors']);
-Route::GET('/Clientes',[Clientes_controller::class,'mainViewClient'])->middleware(['auth'])->name('Clientes')->middleware(['cors']);
+Route::GET('/Clientes',[Clientes_controller::class,'index'])->middleware(['auth'])->name('Clientes')->middleware(['cors']);
 Route::GET('/ClientesExcluidos',[Clientes_controller::class, 'clientViewDelete'])->middleware(['auth'])->name('clientes_excluidos')->middleware(['cors']);
 Route::GET('/Editar/Cliente/{id}',[Clientes_controller::class,'viewClient'])->middleware(['auth']);
 Route::PATCH('/EditarCliente/{id}',[Clientes_controller::class,'editClient'])->middleware(['auth']);

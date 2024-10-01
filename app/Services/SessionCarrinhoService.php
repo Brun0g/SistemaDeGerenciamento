@@ -69,6 +69,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
     {
         $pedidos = session()->get('Pedidos', []);
         $carrinho = [];
+        $array_erros = [];
 
         foreach ($pedidos as $key => $value) 
         {
@@ -87,6 +88,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                 $fora_de_estoque = $quantidade_estoque < $quantidade;
 
+    
                 $carrinho[$key] = ['cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'total' => $total, 'total_final' => $total_final, 'produto' => $produto['produto'], 'preco_unidade' => $preco_unidade, 'unidade_desconto' => $unidade_desconto, 'deleted_at' => $deleted_at, 'quantidade_estoque' => $quantidade_estoque, 'fora_de_estoque' => $fora_de_estoque, 'promocao_porcentagem' => $promocao_porcentagem];
             }       
         }

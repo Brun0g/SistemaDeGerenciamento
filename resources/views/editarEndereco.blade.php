@@ -72,10 +72,10 @@ justify-content: center;
 			<div class="form-row">
 				<div class="col">
 					
-					<div><strong>Nome</strong>: {{  $cliente[$id]['name'] }}</div>
-					<div><strong>Email</strong>: {{  $cliente[$id]['email'] }}</div>
-					<div><strong>Idade</strong>: {{  $cliente[$id]['idade'] }}</div>
-					<div><strong>Contato</strong>: {{  $cliente[$id]['contato'] }}</div>
+					<div><strong>Nome</strong>: {{  $cliente['name'] }}</div>
+					<div><strong>Email</strong>: {{  $cliente['email'] }}</div>
+					<div><strong>Idade</strong>: {{  $cliente['idade'] }}</div>
+					<div><strong>Contato</strong>: {{  $cliente['contato'] }}</div>
 				</div>
 			</div>
 			<hr></hr>

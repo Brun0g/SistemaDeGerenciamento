@@ -16,7 +16,7 @@
     <td></td>
     @endif
     <td style="color:green;">R$ {{ number_format($value['total'], 2, ",", ".")  }}</td>
-    @if($deletedAt == null)
+
     <td>
         <form  action="/ExcluirPedidoCliente/{{$value['cliente_id']}}/{{$pedido_id}}" method="POST" >
             @csrf
@@ -24,7 +24,7 @@
             <button    class="btn btn-danger"  type="submit">Excluir</button>
         </form>
     </td>
-    @endif
+  
       <td>
         <form  action="/pedidofinalizado/{{$pedido_id}}" method="GET" >
             @csrf

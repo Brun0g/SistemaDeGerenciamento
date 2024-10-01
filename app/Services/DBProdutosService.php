@@ -165,10 +165,13 @@ class DBProdutosService implements ProdutosServiceInterface
 
             'update_by' => $nome_usuario_update, 
             'updated_at' => isset($updated_at) ? date_format($updated_at,"d/m/Y H:i:s") : null,
+            
             'create_by' => $nome_usuario_create,
             'created_at' => date_format($created_at,"d/m/Y H:i:s"),
+
             'delete_by' => $nome_usuario_delete, 
             'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
+
             'restored_by' => $nome_usuario_restored,  
             'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
 

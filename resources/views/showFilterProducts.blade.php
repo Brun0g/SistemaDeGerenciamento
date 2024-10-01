@@ -86,7 +86,7 @@ padding: 10px;
     
             </div>
         </div>
-    </div>
+   
     @endif
     
 
