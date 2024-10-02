@@ -14,9 +14,9 @@ use \App\Services\EstoqueServiceInterface;
 
 use \App\Services\UserServiceInterface;
 
-class Quantity_product_controller extends Controller
+class VendasController extends Controller
 {
-    public function quantity_product_client(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
+    public function index(Request $request, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {   
         $nomeDoClientPorID = $provider_cliente->listarClientes(true);
         $produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
@@ -52,30 +52,6 @@ class Quantity_product_controller extends Controller
             }
         }
 
-     
-
-        return view('Products_view_client', ['Clientes' => $nomeDoClientPorID,  'produtosPorCliente' => $produtosPorCliente, 'produtos' => $produtos,'clientes_produtos' => $array]);
+        return view('produtos_vendidos', ['Clientes' => $nomeDoClientPorID,  'produtosPorCliente' => $produtosPorCliente, 'produtos' => $produtos,'clientes_produtos' => $array]);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // $startTime = microtime(true);
-
-   // $endTime = microtime(true);
-        // $executionTime = $endTime - $startTime;
-        // $executionTime = 'Tempo de execução: ' . number_format($executionTime, 2, '.', '');
-
-        // dd($array, $executionTime);

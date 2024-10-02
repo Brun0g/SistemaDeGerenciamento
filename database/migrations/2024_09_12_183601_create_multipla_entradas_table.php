@@ -13,7 +13,7 @@ class CreateMultiplaEntradasTable extends Migration
      */
     public function up()
     {
-        Schema::create('multipla_entradas', function (Blueprint $table) {
+        Schema::create('multiplas_entradas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('create_by')->constrained('users');
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateMultiplaEntradasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('multipla_entradas');
+        Schema::dropIfExists('multiplas_entradas');
     }
 }

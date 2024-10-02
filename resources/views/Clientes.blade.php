@@ -1,48 +1,13 @@
 <x-app-layout>
-<x-slot name="header">
-<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-{{ __('Clientes') }}
-</h2>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</x-slot>
-<style type="text/css">
-#te {
-display: flex;
-justify-content: center;
-width: 100% ;
-}
-label {
-font-weight: 900;
-}
-.but {
-margin-top: 0.75rem;
-}
-caption {
-background-color: #e5e7eb;
-}
-table {
-border-collapse: collapse;
-text-align: center;
-border: 1px solid;
-width: 100%;
-}
-thead {
-background-color: #e5e7eb;
-position: sticky;
-top: -15px;
-justify-content: center;
-text-align: center;
-font-size: 16px;
-border: 5px solid;
-}
-td {
-text-align: center;
-font-size: 13px;
-}
-</style>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{ __('Clientes') }}
+        </h2>
+
+   
+    </x-slot>
+  
+
 <div class="py-12">
     <div class="max-w mx-auto sm:px-6 lg:px-8">
         
@@ -57,17 +22,15 @@ font-size: 13px;
             <thead class="thead">
                 <tr>
                     <th class="row-inform-item" style="width: 3%;">ID</th>
-         {{--            <th class="row-inform-item" style="width: 10%;">Criado por</th>
-                    <th class="row-inform-item" style="width: 10%;">Restaurado por</th> --}}
                     <th class="row-inform-item" style="width: 15%;">Cliente</th>
                     <th class="row-inform-item" style="width: 1%;">Email</th>
                     <th class="row-inform-item" style="width: 2%;">Idade</th>
-                    <th class="row-inform-item" style="width: 40%;">Endereço</th>
+                    <th class="row-inform-item" style="width: 30%;">Endereço</th>
                     <th class="row-inform-item">Contato</th>
                     <th class="row-inform-item" style="width: 10%;">Total</th>
-                    <th class="row-inform-item">Ação</th>
-                    <th class="row-inform-item">Ação</th>
-                    <th class="row-inform-item">Ação</th>
+                    <th class="row-inform-item" style="width: 4%;">Ação</th>
+                    <th class="row-inform-item" style="width: 10%;">Ação</th>
+                    <th class="row-inform-item" style="width: 4%;">Ação</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,9 +40,6 @@ font-size: 13px;
                 @if( $value['deleted_at'] == null)
                 <tr style="background: white;">
                     <td style="font-size: 16px;  color:white; background: black; font-weight: 900; border: 1px solid">{{  $key }}</td>
-         {{--            <td style ="width: 1%; border: 1px solid; ">{{  strtoupper($value['create_by'])}} </br> {{  strtoupper($value['created_at'])}}</td>
-                    <td style ="width: 1%; border: 1px solid; ">{{  strtoupper($value['restored_by'])}} </br> {{  strtoupper($value['restored_at'])}}</td> --}}
-
                     <td style ="width: 15%; border: 1px solid; ">{{  strtoupper($value['name']) }}</td>
                     <td style ="width: 15%; border: 1px solid;">{{  $value['email'] }}</td>
                     <td style ="width: 2%; border: 1px solid;">{{  $value['idade'] }}</td>
@@ -103,20 +63,20 @@ font-size: 13px;
                     
                     <td style ="border: 1px solid;">{{  $value['contato'] }}</td>
                     <td style="border: 1px solid; color:green;"> R$ {{isset($total[$key])  ? $total[$key]  : 0}}</td>
-                    <td style="width: 3%; border: 1px solid;">
+                    <td style="width: 2%; border: 1px solid;">
                         <form  action="/DeletarCliente/{{$key}}" method="POST" >
                             @csrf
                             @method('delete')
                             <button    class="btn btn-danger"  style="padding: 5px;" type="submit">Deletar</button>
                         </form>
                     </td>
-                    <td style="width: 5%; border: 1px solid black;">
+                    <td style="width: 7%; border: 1px solid black;">
                         <form  action="/Cliente/{{$key}}" method="GET" >
                             @csrf
                             <button    class="btn btn-primary"  style="padding: 5px;" type="submit">Visualizar pedidos</button>
                         </form>
                     </td>
-                    <td style="width: 5%; border: 1px solid black;">
+                    <td style="width: 7%; border: 1px solid black;">
                         <form  action="/Editar/Cliente/{{$key}}" method="GET" >
                             @csrf
                             <button    class="btn btn-primary"  style="padding: 5px;" type="submit">Editar cliente</button>

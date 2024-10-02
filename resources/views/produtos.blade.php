@@ -1,148 +1,11 @@
 <x-app-layout>
-<x-slot name="header">
-<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-{{ __('Produtos') }}
-</h2>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</x-slot>
-<style type="text/css">
-.container-geral {
-display: flex;
-justify-content: center;
-margin: 0 auto;
-}
-.sub-container {
-display: flex;
-justify-content: center;
-flex-wrap: wrap;
-margin: 0 auto;
-}
-.sub-container-item {
-border: 1px solid #ccc;
-background: #fff;
-border-radius: 10px;
-margin: 32px;
-width: 256px;
-text-align: center;
-align-items: center;
-font-size: 18px;
-transition: all .3s ease-in-out;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-padding: 10px;
-}
-.sub-container-item:hover {
-transform: scale(1.05);
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-.sub-container-id{
-color: black;
-font-weight: bold;
-font-size: 24px;
-padding: 10px;
-}
-.sub-container-name-product {
-color: black;
-font-weight: 600;
-font-size: 24px;
-}
-.sub-container-image {
-padding: 10px;
-width: 256px;
-height: 200px;
-display: flex;
-justify-content: center;
-}
-.sub-container-image-com-desconto {
-width: 250px;
-height: 140px;
-display: flex;
-justify-content: center;
-}
-.sub-preco {
-color: black;
-font-weight: 600;
-font-size: 20px;
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{ __('Produtos') }}
+        </h2>
+    </x-slot>
 
-}
-.sub-preco-desconto {
-font-size: 14px;
-}
-.sub-container-form {
-margin-top: 3px;
 
-flex-wrap: wrap;
-justify-content: space-around;
-}
-.sub-container-item-sem-desconto {
-border: 1px solid #ccc;
-background: #fff;
-border-radius: 10px;
-height: 425px;
-margin: 32px;
-width: 256px;
-text-align: center;
-align-items: center;
-font-size: 18px;
-transition: all .3s ease-in-out;
-}
-.sub-container-item-sem-desconto:hover {
-transform: scale(1.05);
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-img {
-max-width: 100%;
-height: auto;
-object-fit: cover;
-}
-.btn-edit {
-display: inline-block;
-padding: 5px 10px;
-margin-left: 5px;
-font-size: 16px;
-width: 120px;
-text-align: center;
-color: #fff;
-background-color: #007bff; /
-border: none;
-border-radius: 4px;
-text-decoration: none;
-transition: background-color 0.3s, transform 0.3s;
-}
-.btn-sucesso {
-background-color: #28a745;
-}
-.btn-deletar {
-background-color: #dc3545;
-}
-.btn-editar {
-background-color: #ffc107;
-}
-.btn-edit:hover {
-background-color: #0056b3;
-transform: scale(1.05);
-}
-.btn-sucesso:hover{
-background-color: #218838;
-transform: scale(1.05);
-}
-.btn-deletar:hover{
-background-color: #c82333;
-transform: scale(1.05);
-}
-.btn-editar:hover{
-background-color: #e0a800;
-transform: scale(1.05);
-}
-.afa {
-    margin: 0;
-    padding: 0;
-}
-</style>
 <div style="display: flex; justify-content: center; margin-top: 20px;">
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo produto</button>
 </div>
@@ -204,15 +67,15 @@ transform: scale(1.05);
                                 <form  action="/DeletarProduto/{{$key}}" method="POST" >
                                     @csrf
                                     @method('delete')
-                                    <button class="btn-edit btn-deletar"  type="submit">Deletar</button>
+                                    <button class="btn btn-danger"  type="submit">Deletar</button>
                                 </form>
                             </p>
                         </td>
                         <td class="afa" style="font-size: 12px;">
                             <p  class="afa">
-                                <form  action="/Produto/{{$key}}" method="GET" >
+                                <form  action="/detalhe_produto/{{$key}}" method="GET" >
                                     @csrf
-                                    <button class="btn-edit"  type="submit">Histórico</button>
+                                    <button class="btn btn-primary"  type="submit">Histórico</button>
                                 </form>
                             </p>
                         </td>
@@ -222,7 +85,7 @@ transform: scale(1.05);
                             <p  class="afa">
                                 <form  action="/EditarProduto/{{$key}}" method="GET" >
                                     @csrf
-                                    <button class="btn-edit btn-editar"  type="submit">Editar</button>
+                                    <button class="btn btn-warning"  type="submit">Editar</button>
                                 </form>
                             </p>
                         </td>
@@ -230,7 +93,7 @@ transform: scale(1.05);
                             <p  class="afa">
                                 <form  action="/entradas_saidas/{{$key}}" method="GET" >
                                     @csrf
-                                    <button class="btn-edit btn-sucesso"  type="submit">Entrada/Saída</button>
+                                    <button class="btn btn-success"  type="submit">Entrada/Saída</button>
                                 </form>
                             </p>
                         </td>

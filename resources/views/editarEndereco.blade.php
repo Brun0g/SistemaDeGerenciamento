@@ -1,53 +1,11 @@
 <x-app-layout>
-<x-slot name="header">
-<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-{{ __('Atualizar endereço') }}
-</h2>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</x-slot>
-<style type="text/css">
-label {
-font-weight: 900;
-}
-.but {
-margin-top: 0.75rem;
-}
-caption {
-background-color: #e5e7eb;
-}
-table {
-border-collapse: collapse;
-text-align: center;
-border: 1px solid;
-width: 100%;
-}
-thead {
-background-color: #e5e7eb;
-position: sticky;
-top: -15px;
-justify-content: center;
-text-align: center;
-font-size: 16px;
-border: 5px solid;
-}
-td {
-text-align: center;
-}
-.lg {
-width: 50%;
-margin: 0 auto;
-padding: 25px;
-border-radius: 2%;
-background: white;
-}
-.container-center {
-display: flex;
-justify-content: center;
-}
-</style>
+	<x-slot name="header">
+		<h2 class="font-semibold text-xl text-gray-800 leading-tight">
+		{{ __('Atualizar endereço') }}
+		</h2>
+	</x-slot>
+	
+
 <div class="py-12">
 	@if ($errors->any())
 	<div class="alert alert-danger">

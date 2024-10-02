@@ -77,28 +77,28 @@
                                 {{ __('Visualizar produtos') }}
                             </x-dropdown-link>
                         </form>
-                        <form method="GET" action="{{ route('ProdutosExcluidos') }}">
+                        <form method="GET" action="{{ route('produtos_excluidos') }}">
                             @csrf
                           
-                            <x-dropdown-link :href="route('ProdutosExcluidos')"
+                            <x-dropdown-link :href="route('produtos_excluidos')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Visualizar produtos excluidos') }}
                             </x-dropdown-link>
                         </form>
-                        <form method="POST" action="{{ route('multiplosProdutos') }}">
+                        <form method="POST" action="{{ route('multiplas_entradas') }}">
                             @csrf
                             @method('GET')
-                            <x-dropdown-link :href="route('multiplosProdutos')"
+                            <x-dropdown-link :href="route('multiplas_entradas')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Adicionar múltiplas entradas') }}
                             </x-dropdown-link>
                         </form>
-                        <form method="POST" action="{{ route('EditarMultiplosProdutos') }}">
+                        <form method="POST" action="{{ route('ajustar_estoque') }}">
                             @csrf
                             @method('GET')
-                            <x-dropdown-link :href="route('EditarMultiplosProdutos')"
+                            <x-dropdown-link :href="route('ajustar_estoque')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Ajustar estoque de múltiplos produtos') }}
@@ -201,12 +201,10 @@
                     </x-slot>
                 </x-dropdown>
             </div>
-                   
-                 
-                      <x-nav-link :href="route('Categoria')" :active="request()->routeIs('Categoria')">
+                    <x-nav-link :href="route('Categoria')" :active="request()->routeIs('Categoria')">
                         {{ __('Categoria') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('Products_view_client')" :active="request()->routeIs('Products_view_client')">
+                    <x-nav-link :href="route('produtos_vendidos')" :active="request()->routeIs('produtos_vendidos')">
                         {{ __('Clientes e Produtos') }}
                     </x-nav-link>
                     <x-nav-link :href="route('graficos')" :active="request()->routeIs('graficos')">

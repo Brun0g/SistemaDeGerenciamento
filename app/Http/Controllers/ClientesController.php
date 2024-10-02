@@ -20,8 +20,31 @@ use \App\Services\EstoqueServiceInterface;
 use \App\Services\UserServiceInterface;
 
 
-class Clientes_controller extends Controller
+class ClientesController extends Controller
 {
+    public function index(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco, EstoqueServiceInterface $provider_estoque, UserServiceInterface $provider_user)
+    {
+        $buscar_pedido_cliente = [];
+        $valor_total_pedido = [];
+        $tabela_clientes = $provider_cliente->listarClientes( false );
+        $listar_enderecos = $provider_endereco->listarEnderecos();
+
+        if($request->search_string != null)
+            $tabela_clientes = $provider_cliente->searchCliente($request->search_string);
+
+
+        foreach ($tabela_clientes as $cliente_id => $value) {
+            $valor_total_pedido[$cliente_id] = 0;
+            $buscar_pedido_cliente = $provider_pedido->listarPedidos($cliente_id, $provider_estoque, $provider_user);
+
+            foreach ($buscar_pedido_cliente as $value) {
+                if($cliente_id == $value['cliente_id'])
+                $valor_total_pedido[$cliente_id] += $value['total'];
+            }
+        }
+        return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valor_total_pedido]);
+    }
+
     public function registerClient(Request $request, ClientesServiceInterface $provider_cliente)
     {
         $name = $request->input('name');
@@ -53,34 +76,10 @@ class Clientes_controller extends Controller
 
         return redirect('Clientes');
     }
-    
-    public function mainViewClient(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco, EstoqueServiceInterface $provider_estoque, UserServiceInterface $provider_user)
+    public function softDeletesView(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco, EstoqueServiceInterface $provider_estoque, UserServiceInterface $provider_user)
     {
-        $buscarPedidoCliente = [];
-        $valorTotalPorPedido = [];
-        $tabela_clientes = $provider_cliente->listarClientes( false );
-        $listar_enderecos = $provider_endereco->listarEnderecos();
-
-        if($request->search_string != null)
-            $tabela_clientes = $provider_cliente->searchCliente($request->search_string);
-
-
-        foreach ($tabela_clientes as $cliente_id => $value) {
-            $valorTotalPorPedido[$cliente_id] = 0;
-            $buscarPedidoCliente = $provider_pedido->listarPedidos($cliente_id, $provider_estoque, $provider_user);
-
-            foreach ($buscarPedidoCliente as $value) {
-                if($cliente_id == $value['cliente_id'])
-                $valorTotalPorPedido[$cliente_id] += $value['total'];
-            }
-        }
-        return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
-    }
-
-    public function clientViewDelete(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco, EstoqueServiceInterface $provider_estoque, UserServiceInterface $provider_user)
-    {
-        $buscarPedidoCliente = [];
-        $valorTotalPorPedido = [];
+        $buscar_pedido_cliente = [];
+        $valor_total_pedido = [];
         $tabela_clientes = $provider_cliente->listarClientes(true);
         $listar_enderecos = $provider_endereco->listarEnderecos();
 
@@ -89,16 +88,16 @@ class Clientes_controller extends Controller
 
 
         foreach ($tabela_clientes as $cliente_id => $value) {
-            $valorTotalPorPedido[$cliente_id] = 0;
-            $buscarPedidoCliente = $provider_pedido->listarPedidos($cliente_id, $provider_estoque, $provider_user);
+            $valor_total_pedido[$cliente_id] = 0;
+            $buscar_pedido_cliente = $provider_pedido->listarPedidos($cliente_id, $provider_estoque, $provider_user);
 
-            foreach ($buscarPedidoCliente as $value) {
+            foreach ($buscar_pedido_cliente as $value) {
                 if($cliente_id == $value['cliente_id'])
-                $valorTotalPorPedido[$cliente_id] += $value['total'];
+                    $valor_total_pedido[$cliente_id] += $value['total'];
             }
         }
 
-        return view('clientes_excluidos', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valorTotalPorPedido]);
+        return view('clientes_excluidos', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valor_total_pedido]);
     }
 
     public function restoredClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)
@@ -110,20 +109,18 @@ class Clientes_controller extends Controller
         return redirect($url);
     }
 
-    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
+    public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
     {
-        $cliente = $provider_cliente->buscarCliente($cliente_id);
-        $listarPedidos = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);  
+        $buscar_total = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
+
+        $cliente_array = $provider_cliente->buscarCliente($cliente_id);
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
-        $buscarValores = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
-        $listarProduto = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
-        $listarCategoria = $provider_categoria->listarCategoria();
-        $listarPedidosAprovados = $provider_pedidos->listarPedidos($cliente_id, $provider_estoque, $provider_user);
+        $listar_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);  
+        $listar_produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
+        $listar_categorias = $provider_categoria->listarCategoria();
+        $listar_pedidos = $provider_pedidos->listarPedidos($cliente_id, $provider_estoque, $provider_user);
 
-
-        $totalPedido = $buscarValores['totalComDesconto'];
-
-        return view('produtosPorCliente', ['listarPedidos'=> $listarPedidos, 'categorias' => $listarCategoria, 'clienteID' => $cliente, 'id' => $cliente_id, 'listarPedidosAprovados' => $listarPedidosAprovados, 'totalPedido'=> $totalPedido, 'produtosEstoque' => $listarProduto, 'porcentagem' => $porcentagem, 'deletedAt' => $cliente['deleted_at'] ]);
+        return view('listar_pedidos_aprovados', ['listar_produtos' => $listar_produtos, 'listar_carrinho'=> $listar_carrinho, 'listar_categorias' => $listar_categorias, 'listar_pedidos' => $listar_pedidos, 'clienteID' => $cliente_array, 'totalPedido'=> $buscar_total['totalComDesconto'], 'porcentagem' => $porcentagem, 'deletedAt' => $cliente_array['deleted_at'], 'cliente_id' => $cliente_id,]);
     }
 
     public function deleteClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)
@@ -133,12 +130,14 @@ class Clientes_controller extends Controller
         return redirect('Clientes');
     }
 
-    public function editClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)
+    public function update(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)
     {
         $name = $request->input('name');
         $email = $request->input('email');
         $idade = $request->input('idade');
         $contato = $request->input('contato');
+
+        $url = url()->previous();
 
         $validator = Validator::make($request->all(), [
         'name' => 'required|string',
@@ -148,11 +147,11 @@ class Clientes_controller extends Controller
         ]);
 
         if($validator->fails())
-            return redirect('Editar/Cliente/'. $cliente_id)->withErrors($validator);
+            return redirect($url)->withErrors($validator);
     
         $provider_cliente->editarCliente($cliente_id,$name,$email,$idade, $contato);
 
-        return redirect('Editar/Cliente/'. $cliente_id);
+        return redirect($url);
     }
 
     public function viewClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, EnderecoServiceInterface $provider_endereco)

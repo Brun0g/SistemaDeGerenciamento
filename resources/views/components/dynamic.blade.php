@@ -10,11 +10,13 @@
 <tr class="bg-white">
     <td style="color:white; background: black; font-weight: 900; ">{{  $pedido_id }}</td>
     <td>{{strtoupper($value['create_by'])}}</td>
+
     @if(isset($value['restored_by']))
     <td>{{strtoupper($value['restored_by'])}}</td>
     @else
     <td></td>
     @endif
+
     <td style="color:green;">R$ {{ number_format($value['total'], 2, ",", ".")  }}</td>
 
     <td>
@@ -25,7 +27,7 @@
         </form>
     </td>
   
-      <td>
+    <td>
         <form  action="/pedidofinalizado/{{$pedido_id}}" method="GET" >
             @csrf
             <button    class="btn btn-primary"  type="submit">Visualizar pedido</button>
@@ -41,7 +43,7 @@
         <td></td>
         @endif
         <td></td>
-        <td></td>
+        
         @if($deletedAt == null)
         <td></td>
          @endif

@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\Validator;
 use \App\Services\CategoriaServiceInterface;
 
 
-class Categoria_controller extends Controller
+class CategoriaController extends Controller
 {
-    public function categoria_view(Request $request, CategoriaServiceInterface $provider_categoria)
+    public function index(Request $request, CategoriaServiceInterface $provider_categoria)
     {
         $categorias = $provider_categoria->listarCategoria();
 
         return view('categoria', ['categorias' => $categorias]);
     }
     
-    public function newCategory(Request $request, CategoriaServiceInterface $provider_categoria)
+    public function store(Request $request, CategoriaServiceInterface $provider_categoria)
     {
         $categoria = $request->input('categoriaEstoque');
 
@@ -34,7 +34,7 @@ class Categoria_controller extends Controller
 
         return redirect('/Categoria');
     }
-    public function editCategory(Request $request, $categoria_id, CategoriaServiceInterface $provider_categoria)
+    public function update(Request $request, $categoria_id, CategoriaServiceInterface $provider_categoria)
     {
         $categoria = $request->input('categoria');
        
@@ -49,13 +49,13 @@ class Categoria_controller extends Controller
 
         return redirect('Categoria/');
     }
-    public function deleteCategory(Request $request, $categoria_id, CategoriaServiceInterface $provider_categoria)
+    public function delete(Request $request, $categoria_id, CategoriaServiceInterface $provider_categoria)
     {
         $provider_categoria->deletarCategoria($categoria_id);
 
         return redirect('/Categoria');
     }
-    public function showCategory(Request $request, $categoria_id, CategoriaServiceInterface $provider_categoria)
+    public function show(Request $request, $categoria_id, CategoriaServiceInterface $provider_categoria)
     {
          $categoria = $provider_categoria->visualizarCategoria($categoria_id);
 

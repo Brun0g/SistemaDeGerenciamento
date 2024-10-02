@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\Pedido;
 
-class Graficos_controller extends Controller
+class GraficosController extends Controller
 {
-    public function viewChart (Request $request)
+    public function index (Request $request)
     {
 
         $totalClientes = Cliente::all();

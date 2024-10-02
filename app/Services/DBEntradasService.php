@@ -148,7 +148,7 @@ class DBEntradasService implements EntradasServiceInterface
         return $entradas_array;
     }
 
-    function buscarMultiplos($multiplo_id, $provider_user, $provider_produto)
+    function listarMultiplos($multiplo_id, $provider_user, $provider_produto)
     {
         $entradas = Entradas_saidas::where('multiplo_id', $multiplo_id)->get();
 

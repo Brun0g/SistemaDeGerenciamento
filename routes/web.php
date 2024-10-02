@@ -1,14 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Quantity_product_controller;
-use App\Http\Controllers\Clientes_controller;
-use App\Http\Controllers\Products_controller;
-use App\Http\Controllers\Order_controller;
-use App\Http\Controllers\Categoria_controller;
-use App\Http\Controllers\Graficos_controller;
-use App\Http\Controllers\Carrinho_controller;
-use App\Http\Controllers\Address_controller;
+use App\Http\Controllers\VendasController;
+use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\ProdutosController;
+use App\Http\Controllers\PedidosController;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\GraficosController;
+use App\Http\Controllers\CarrinhoController;
+use App\Http\Controllers\EnderecosController;
 use App\Http\Controllers\PromocoesController;
 use App\Http\Controllers\EntradaController;
 
@@ -41,71 +41,70 @@ Route::get('/dashboard', function () {
 
 
 // VISUALIZAÇÃO DE QUANTIDADE DE PRODUTOS POR CLIENTES
-Route::GET('/Products_view_client',[Quantity_product_controller::class,'quantity_product_client'])->middleware(['auth'])->name('Products_view_client');
-Route::POST('/Products_view_client',[Quantity_product_controller::class,'criar'])->middleware(['auth']);
+Route::GET('/produtos_vendidos',[VendasController::class,'index'])->middleware(['auth'])->name('produtos_vendidos');
 
 // CLIENTE
-Route::POST('/Clientes',[Clientes_controller::class,'index'])->middleware(['auth'])->middleware(['cors']);
-Route::POST('/cadastrarCliente',[Clientes_controller::class,'registerClient'])->middleware(['auth']);
-Route::POST('/restaurarCliente/{id}',[Clientes_controller::class,'restoredClient'])->middleware(['auth']);
-Route::GET('/Cliente/{id}',[Clientes_controller::class,'show'])->middleware(['auth'])->middleware(['cors']);
-Route::GET('/Clientes',[Clientes_controller::class,'index'])->middleware(['auth'])->name('Clientes')->middleware(['cors']);
-Route::GET('/ClientesExcluidos',[Clientes_controller::class, 'clientViewDelete'])->middleware(['auth'])->name('clientes_excluidos')->middleware(['cors']);
-Route::GET('/Editar/Cliente/{id}',[Clientes_controller::class,'viewClient'])->middleware(['auth']);
-Route::PATCH('/EditarCliente/{id}',[Clientes_controller::class,'editClient'])->middleware(['auth']);
-Route::DELETE('/DeletarCliente/{id}',[Clientes_controller::class,'deleteClient'])->middleware(['auth']);
+Route::GET('/Clientes',[ClientesController::class,'index'])->middleware(['auth'])->name('Clientes')->middleware(['cors']);
+Route::GET('/Cliente/{id}',[ClientesController::class,'show'])->middleware(['auth'])->middleware(['cors']);
+Route::GET('/ClientesExcluidos',[ClientesController::class, 'softDeletesView'])->middleware(['auth'])->name('clientes_excluidos')->middleware(['cors']);
+Route::GET('/Editar/Cliente/{id}',[ClientesController::class,'viewClient'])->middleware(['auth']);
+Route::POST('/cadastrarCliente',[ClientesController::class,'registerClient'])->middleware(['auth']);
+Route::POST('/restaurarCliente/{id}',[ClientesController::class,'restoredClient'])->middleware(['auth']);
+Route::PATCH('/atualizarCliente/{id}',[ClientesController::class,'update'])->middleware(['auth']);
+Route::DELETE('/DeletarCliente/{id}',[ClientesController::class,'deleteClient'])->middleware(['auth']);
 
 
 //ENDERECO
-Route::POST('/novoEndereco/{id}',[Address_controller::class,'newAddress'])->middleware(['auth']);
-Route::GET('/VisualizarEndereco/{id}',[Address_controller::class,'viewAddress'])->middleware(['auth']);
-Route::PATCH('/EditarEndereco/{id}',[Address_controller::class,'editAddress'])->middleware(['auth']);
-Route::DELETE('/DeletarEndereco/{id}',[Address_controller::class,'deleteAddress'])->middleware(['auth']);
+Route::POST('/novoEndereco/{id}',[EnderecosController::class,'store'])->middleware(['auth']);
+Route::GET('/VisualizarEndereco/{id}',[EnderecosController::class,'index'])->middleware(['auth']);
+Route::PATCH('/EditarEndereco/{id}',[EnderecosController::class,'update'])->middleware(['auth']);
+Route::DELETE('/DeletarEndereco/{id}',[EnderecosController::class,'delete'])->middleware(['auth']);
 
 // PRODUTO
-Route::POST('/CadastrarProduto', [Products_controller::class, 'newProduct'])->middleware(['auth'])->middleware(['cors']);
-Route::POST('/adicionarMultiplos', [Products_controller::class, 'newMultiple'])->middleware(['auth'])->middleware(['cors']);
-Route::GET('/Produtos',[Products_controller::class,'ProductsStorageView'])->middleware(['auth'])->name('Produtos');
-Route::GET('/ProdutosExcluidos',[Products_controller::class,'ProductsStorageViewDelete'])->middleware(['auth'])->name('ProdutosExcluidos');
-Route::GET('/Produto/{id}',[Products_controller::class,'showProduct'])->middleware(['auth']);
-Route::GET('/EditarProduto/{id}',[Products_controller::class,'viewFilterProducts'])->middleware(['auth']);
-Route::GET('/multiplosProdutos',[Products_controller::class,'multipleProductView'])->middleware(['auth'])->name('multiplosProdutos');
-Route::GET('/EditarMultiplosProdutos',[Products_controller::class,'EditMultipleProductView'])->middleware(['auth'])->name('EditarMultiplosProdutos');
-Route::DELETE('/excluirImagem/{id}',[Products_controller::class,'deleteImage'])->middleware(['auth']);
-Route::DELETE('/DeletarProduto/{id}',[Products_controller::class,'deleteProduct'])->middleware(['auth']);
-Route::PATCH('/EditarProduto/{id}',[Products_controller::class,'editProduct'])->middleware(['auth']);
-Route::PATCH('/EditMultiple', [Products_controller::class, 'EditMultiple'])->middleware(['auth'])->middleware(['cors']);
-Route::PATCH('/RestaurarProduto/{id}', [Products_controller::class, 'restoredProduct'])->middleware(['auth'])->middleware(['cors']);
+Route::POST('/CadastrarProduto', [ProdutosController::class, 'store'])->middleware(['auth'])->middleware(['cors']);
+Route::GET('/produtos',[ProdutosController::class,'index'])->middleware(['auth'])->name('Produtos');
+Route::GET('/produtos_excluidos',[ProdutosController::class,'softDeletesView'])->middleware(['auth'])->name('produtos_excluidos');
+Route::GET('/detalhe_produto/{id}',[ProdutosController::class,'showProduct'])->middleware(['auth']);
+Route::GET('/EditarProduto/{id}',[ProdutosController::class,'viewFilterProducts'])->middleware(['auth']);
+
+Route::GET('/multiplas_entradas',[ProdutosController::class,'index_multiple'])->middleware(['auth'])->name('multiplas_entradas');
+
+Route::GET('/ajustar_estoque',[ProdutosController::class,'index_adjustment'])->middleware(['auth'])->name('ajustar_estoque');
+
+Route::DELETE('/excluirImagem/{id}',[ProdutosController::class,'deleteImage'])->middleware(['auth']);
+Route::DELETE('/DeletarProduto/{id}',[ProdutosController::class,'deleteProduct'])->middleware(['auth']);
+Route::PATCH('/EditarProduto/{id}',[ProdutosController::class,'editProduct'])->middleware(['auth']);
+Route::PATCH('/RestaurarProduto/{id}', [ProdutosController::class, 'restored'])->middleware(['auth'])->middleware(['cors']);
 
 // PEDIDO
-Route::POST('/aprovarPedido/{id_pedido}/{id_cliente}',[Order_controller::class,'finishOrder'])->middleware(['auth']);
-Route::DELETE('/ExcluirPedidoCliente/{id_cliente}/{id_product}',[Order_controller::class,'deleteOrderFinish'])->middleware(['auth']);
-Route::GET('/pedidofinalizado/{id_pedido}', [Order_controller::class, 'showFinishOrder'])->middleware(['auth']);
-Route::GET('/pedidos_excluidos', [Order_controller::class, 'orders_deleted'])->middleware(['auth'])->name('pedidos_excluidos');
-Route::GET('/pedidos_clientes', [Order_controller::class, 'orders_client'])->middleware(['auth'])->name('pedidos_clientes');
-Route::POST('/Restaurar_pedido/{id_pedido}', [Order_controller::class, 'orders_active'])->middleware(['auth']);
+Route::POST('/aprovarPedido/{id_pedido}/{id_cliente}',[PedidosController::class,'finish'])->middleware(['auth']);
+Route::DELETE('/ExcluirPedidoCliente/{id_cliente}/{id_product}',[PedidosController::class,'delete'])->middleware(['auth']);
+Route::GET('/pedidofinalizado/{id_pedido}', [PedidosController::class, 'showFinishOrder'])->middleware(['auth']);
+Route::GET('/pedidos_excluidos', [PedidosController::class, 'orders_deleted'])->middleware(['auth'])->name('pedidos_excluidos');
+Route::GET('/pedidos_clientes', [PedidosController::class, 'orders_client'])->middleware(['auth'])->name('pedidos_clientes');
+Route::POST('/Restaurar_pedido/{id_pedido}', [PedidosController::class, 'orders_active'])->middleware(['auth']);
 
 //CARRINHO
-Route::POST('/finalizarPedido/{id}', [Carrinho_controller::class, 'finishCart'])->middleware(['auth']);
-Route::POST('/CadastrarProduto/Cliente/{id}', [Carrinho_controller::class, 'newProductCart'])->middleware(['auth']);
-Route::GET('/carrinho/{id}', [Carrinho_controller::class, 'showCart'])->middleware(['auth'])->name('carrinho');
-Route::PATCH('/atualizarPedido/{id}', [Carrinho_controller::class, 'updateCart'])->middleware(['auth']);
-Route::PATCH('/atualizarPorcentagem/{id}', [Carrinho_controller::class, 'updateDiscountCart'])->middleware(['auth']);
-Route::GET('/ExcluirProdutoCliente/{id_cliente}/{id_product}',[Carrinho_controller::class,'deleteCart'])->middleware(['auth']);
+Route::GET('/carrinho/{id}', [CarrinhoController::class, 'index'])->middleware(['auth'])->name('carrinho');
+Route::POST('/CadastrarProduto/Cliente/{id}', [CarrinhoController::class, 'store'])->middleware(['auth']);
+Route::POST('/finalizarPedido/{id}', [CarrinhoController::class, 'finish'])->middleware(['auth']);
+Route::PATCH('/atualizarPedido/{id}', [CarrinhoController::class, 'update'])->middleware(['auth']);
+Route::PATCH('/atualizarPorcentagem/{id}', [CarrinhoController::class, 'store_percentage'])->middleware(['auth']);
+Route::GET('/ExcluirProdutoCliente/{id_cliente}/{id_product}',[CarrinhoController::class,'delete'])->middleware(['auth']);
 
 // CATEGORIA
-Route::GET('/Categoria',[Categoria_controller::class,'categoria_view'])->middleware(['auth'])->name('Categoria');
-Route::GET('/Categoria/{id}',[Categoria_controller::class,'showCategory'])->middleware(['auth']);
-Route::POST('/CadastrarCategoria', [Categoria_controller::class, 'newCategory'])->middleware(['auth']);
-Route::DELETE('/DeletarCategoria/{id}', [Categoria_controller::class, 'deleteCategory'])->middleware(['auth']);
-Route::PATCH('/editarCategoria/{id}', [Categoria_controller::class, 'editCategory'])->middleware(['auth']);
+Route::GET('/Categoria',[CategoriaController::class,'index'])->middleware(['auth'])->name('Categoria');
+Route::GET('/Categoria/{id}',[CategoriaController::class,'show'])->middleware(['auth']);
+Route::POST('/CadastrarCategoria', [CategoriaController::class, 'store'])->middleware(['auth']);
+Route::DELETE('/DeletarCategoria/{id}', [CategoriaController::class, 'delete'])->middleware(['auth']);
+Route::PATCH('/editarCategoria/{id}', [CategoriaController::class, 'update'])->middleware(['auth']);
 
 // GRÁFICOS
-Route::GET('/graficos',[Graficos_controller::class,'viewChart'])->middleware(['auth'])->name('graficos');
+Route::GET('/graficos',[GraficosController::class,'index'])->middleware(['auth'])->name('graficos');
 
 // PROMOÇÕES
 Route::GET('/promocoes',[PromocoesController::class,'index'])->middleware(['auth'])->name('promocoes');
-Route::GET('/promocoesExcluidas',[PromocoesController::class,'index_view_delete'])->middleware(['auth'])->name('promocoes_excluidas');
+Route::GET('/promocoesExcluidas',[PromocoesController::class,'detail'])->middleware(['auth'])->name('promocoes_excluidas');
 Route::POST('/adicionarpromocao',[PromocoesController::class,'store'])->middleware(['auth']);
 Route::POST('/restaurarPromocao/{id}',[PromocoesController::class,'restored'])->middleware(['auth']);
 Route::PATCH('/ativarpromocao/{id}',[PromocoesController::class,'update'])->middleware(['auth']);
@@ -117,10 +116,12 @@ Route::GET('/entradas_saidas/{id}',[EntradaController::class,'index'])->middlewa
 Route::PATCH('/entradas_saidas/{id}',[EntradaController::class,'update'])->middleware(['auth']);
 
 // MULTIPLAS ENTRADAS E SAIDAS
-Route::GET('/detalhes_ajuste/{id}',[AjusteEstoqueController::class,'show_ajuste'])->middleware(['auth']);
-Route::GET('/detalhes_multiplos/{id}',[AjusteEstoqueController::class,'show_multiplos'])->middleware(['auth']);
-Route::GET('/visualizar_ajuste',[AjusteEstoqueController::class,'show'])->middleware(['auth'])->name('visualizar_ajuste');
-Route::GET('/visualizar_entradas',[AjusteEstoqueController::class,'entradas_view'])->middleware(['auth'])->name('visualizar_entradas');
+Route::GET('/visualizar_ajuste',[AjusteEstoqueController::class,'index_adjustment'])->middleware(['auth'])->name('visualizar_ajuste');
+Route::GET('/visualizar_entradas',[AjusteEstoqueController::class,'index_multiple'])->middleware(['auth'])->name('visualizar_entradas');
+Route::GET('/detalhes_ajuste/{id}',[AjusteEstoqueController::class,'detail_adjustment'])->middleware(['auth']);
+Route::GET('/detalhes_multiplos/{id}',[AjusteEstoqueController::class,'detail_multiple'])->middleware(['auth']);
+Route::POST('/adicionarMultiplos', [AjusteEstoqueController::class, 'storeMultiple'])->middleware(['auth'])->middleware(['cors']);
+Route::PATCH('/ajustar', [AjusteEstoqueController::class, 'storeAdjustment'])->middleware(['auth'])->middleware(['cors']);
 
 
 

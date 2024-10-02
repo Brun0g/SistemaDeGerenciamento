@@ -30,7 +30,7 @@ class PromocoesController extends Controller
         return view('promocoes', ['produtos' => $produtos, 'listaPromocoes' => $promocoesList]);
     }
 
-    public function index_view_delete(Request $request, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, EstoqueServiceInterface $provider_estoque)
+    public function detail(Request $request, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos, EstoqueServiceInterface $provider_estoque)
     {
         
         $produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
@@ -95,8 +95,6 @@ class PromocoesController extends Controller
         $provider_promocoes->desativarPromocao($promocoes_id, $situacao);
         else
         $provider_promocoes->ativarPromocao($promocoes_id, $situacao);
-
-    
 
         $url = url()->previous();
         

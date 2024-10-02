@@ -20,9 +20,25 @@ use \App\Services\UserServiceInterface;
 use \App\Services\EstoqueServiceInterface;
 
 
-class Carrinho_controller extends Controller
+class CarrinhoController extends Controller
 {
-    public function newProductCart(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
+    public function index(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, EnderecoServiceInterface $provider_endereco, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
+    {
+        $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
+        $visualizar_cliente = $provider_cliente->listarClientes(true);
+        
+        $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
+
+        $enderecos = $provider_endereco->listarEnderecos();
+
+        $porcentagem = $buscar['porcentagem'];
+        $totalSemDesconto = $buscar['totalSemDesconto'];
+        $totalComDesconto = $buscar['totalComDesconto'];
+        
+        return view('carrinho', ['pedidosSession' => $pedidos_no_carrinho, 'id' => $cliente_id, 'visualizarCliente' => $visualizar_cliente, 'totalComDesconto' =>  $totalComDesconto, 'enderecos' => $enderecos, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem]);
+    }
+
+    public function store(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $produtos = $request->input('produto');
     
@@ -59,7 +75,7 @@ class Carrinho_controller extends Controller
         return redirect($url);
     }
 
-    public function updateCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
+    public function update(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $array = $request->input('atualizar');
 
@@ -102,7 +118,7 @@ class Carrinho_controller extends Controller
         return redirect($url);
     }
 
-    public function updateDiscountCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho)
+    public function store_percentage(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho)
     {
         $porcentagem = $request->input('porcentagem');
     
@@ -122,23 +138,7 @@ class Carrinho_controller extends Controller
         return redirect($url);
     }
 
-    public function showCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, EnderecoServiceInterface $provider_endereco, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
-    {
-        $pedidosNaSession = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
-
-        $visualizarCliente = $provider_cliente->listarClientes(true);
-        $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
-
-        $enderecos = $provider_endereco->listarEnderecos();
-
-        $porcentagem = $buscar['porcentagem'];
-        $totalSemDesconto = $buscar['totalSemDesconto'];
-        $totalComDesconto = $buscar['totalComDesconto'];
-        
-        return view('carrinho', ['pedidosSession' => $pedidosNaSession, 'id' => $cliente_id, 'visualizarCliente' => $visualizarCliente, 'totalComDesconto' =>  $totalComDesconto, 'enderecos' => $enderecos, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem]);
-    }
-
-    public function finishCart(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque, ClientesServiceInterface $provider_cliente)
+    public function finish(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, PedidosServiceInterface $provider_pedidos, PromocoesServiceInterface $provider_promocoes, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque, ClientesServiceInterface $provider_cliente)
     {
         $endereco_id = $request->input('endereco_id');
         $cliente = $provider_cliente->buscarCliente($cliente_id);
@@ -196,7 +196,7 @@ class Carrinho_controller extends Controller
         return redirect($url);
     }
     
-    public function deleteCart(Request $request, $cliente_id, $produto_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
+    public function delete(Request $request, $cliente_id, $produto_id, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, PedidosServiceInterface $provider_pedidos)
     {
 
         $provider_carrinho->excluirProduto($cliente_id, $produto_id, true, $provider_produto, $provider_entradas_saidas, $provider_user, $provider_pedidos);

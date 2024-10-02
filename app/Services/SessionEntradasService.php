@@ -146,7 +146,7 @@ class SessionEntradasService implements EntradasServiceInterface
         return $entradas_array;
     }
 
-    function buscarMultiplos($multiplo_id, $provider_user, $provider_produto)
+    function listarMultiplos($multiplo_id, $provider_user, $provider_produto)
     {
         $entradas = session()->get('entradas_saidas' ,[]);
 

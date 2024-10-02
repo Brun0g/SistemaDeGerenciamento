@@ -1,72 +1,19 @@
 <x-app-layout>
-<x-slot name="header">
-<div style="display: flex; justify-content:space-between; ">
-  <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-  {{ __('Pedido de ' . strtoupper($clienteID['name']) ) }}
-  </h2>
-  @if($deletedAt == null)
-  <div style=" display: flex; justify-content: right; width: 60%;" >
-    <a href={{'/carrinho/' . $id }}><i class="fa-solid fa-cart-shopping" style="font-size: 26px;"></i></a>
-  </div>
-  @endif
-</div>
-<div>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <script src="https://kit.fontawesome.com/041db088fc.js" crossorigin="anonymous"></script>
+  <x-slot name="header">
+    <div style="display: flex; justify-content:space-between; ">
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+      {{ __('Pedido de ' . strtoupper($clienteID['name']) ) }}
+      </h2>
+      @if($deletedAt == null)
+        <div style=" display: flex; justify-content: right; width: 60%;" >
+          <a href={{'/carrinho/' . $cliente_id }}><i class="fa-solid fa-cart-shopping" style="font-size: 26px;"></i></a>
+        </div>
+      @endif
+    </div>
   </x-slot>
+
   <style type="text/css">
-  #te {
-  display: flex;
-  justify-content: center;
-  width: 100% ;
-  }
-  label {
-  font-weight: 900;
-  }
-  .but {
-  margin-top: 0.75rem;
-  }
-  caption {
-  background-color: #e5e7eb;
-  }
-  table {
-  border-collapse: collapse;
-  text-align: center;
-  border: 1px solid;
-  width: 100%;
-  }
-  thead {
-  background-color: #e5e7eb;
-  position: sticky;
-  top: -15px;
-  justify-content: center;
-  text-align: center;
-  font-size: 16px;
-  border: 5px solid;
-  }
-  td {
-  text-align: center;
-  }
-  .container-center {
-  display: flex;
-  justify-center: center;
-  }
-  select{
-  width: 67%;
-  padding: 5px;
-  }
-  .produto-container {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-  padding: 10px;
-  border: 1px solid #ddd;
   
-  background-color: #f9f9f9;
-  }
   </style>
   <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -89,7 +36,7 @@
           <tbody>
             @if(isset($clienteID))
             <tr>
-              <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $id }}</td>
+              <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $cliente_id }}</td>
               <td>{{  $clienteID['name'] }}</td>
               <td>{{  $clienteID['email'] }}</td>
               <td>{{  $clienteID['idade'] }}</td>
@@ -145,13 +92,10 @@
             <tbody>
            
             
-
-
+              @if(sizeof($listar_carrinho) > 0)
               
-              @if(sizeof($listarPedidos) > 0)
-              
-              @foreach ($listarPedidos as $pedido_id => $value )
-              @if ($value['cliente_id'] == $id )
+              @foreach ($listar_carrinho as $pedido_id => $value )
+              @if ($value['cliente_id'] == $cliente_id )
               <tr class="bg-white">
                 <td style="color:white; background: black; font-weight: 900; border: 1px solid">{{  $value['cliente_id'] }}</td>
                 <td>{{  $value['produto'] }}</td>
@@ -180,7 +124,7 @@
             </table>
             @if( $clienteID['deleted_at'] == null )
             <div class="container-center" style="display: flex; justify-content: center; margin-top: 15px;">
-              <form method="GET" action="/carrinho/{{$id}}">
+              <form method="GET" action="/carrinho/{{$cliente_id}}">
                 @csrf
                 <button class="btn btn-success"  type="submit">Ir até o carrinho</button>
               </form>
@@ -201,9 +145,8 @@
               <th class="row-inform-item">Criado por</th>
               <th class="row-inform-item">Restaurado por</th>
               <th class="row-inform-item">Total</th>
-             @if($deletedAt == null)
               <th class="row-inform-item">Ação</th>
-             @endif
+         
               <th class="row-inform-item">Ação</th>
          
             </tr>
@@ -211,9 +154,9 @@
 
           <tbody>
             @if(!session()->has('Pedido_encerrado'))
-            <x-dynamic :listarPedidosAprovados="$listarPedidosAprovados" :id="$id" :deletedAt="$deletedAt"></x-dynamic>
+            <x-dynamic :listarPedidosAprovados="$listar_pedidos" :id="$cliente_id" :deletedAt="$deletedAt"></x-dynamic>
             @else
-            <x-dynamic2 :listarPedidosAprovados="$listarPedidosAprovados" :id="$id" :deletedAt="$deletedAt"></x-dynamic2>
+            <x-dynamic2 :listarPedidosAprovados="$listar_pedidos" :id="$cliente_id" :deletedAt="$deletedAt"></x-dynamic2>
             @endif
           </tbody>
         </table>
@@ -230,15 +173,15 @@
                 </button>
               </div>
               <div class="modal-body">
-                <form  method="POST" action="/CadastrarProduto/Cliente/{{$id}}" >
+                <form  method="POST" action="/CadastrarProduto/Cliente/{{$cliente_id}}" >
                   @csrf
                   <div class="container-select">
                     <div class = "select-container">
                       <label for="produto-select">Escolha uma categoria:</label>
                       <select  name="categoria" id="categoria-select" required>
                         <option value="">-- Por favor escolha uma categoria --</option>
-                        @if($categorias != [])
-                        @foreach ($categorias as $key => $value )
+                        @if($listar_categorias != [])
+                        @foreach ($listar_categorias as $key => $value )
                         <option value="{{$value['categoria']}}">{{  $value['categoria'] }}</option>
                         @endforeach
                         @else
@@ -246,7 +189,7 @@
                         @endif
                       </select>
                     </div>
-                    @if($produtosEstoque != [])
+                    @if($listar_produtos != [])
                     <table style="margin-top: 20px;" class="produto-table">
                       <thead>
                         <tr>
@@ -256,14 +199,14 @@
                         </tr>
                       </thead>
                       <tbody>
-                        @foreach ($produtosEstoque as $id => $value)
+                        @foreach ($listar_produtos as $produto_id => $value)
                         <tr>
                           <td class="produto-cell">{{ strtoupper($value['produto']) }}</td>
                           <td class="quantidade-cell">
                             <input
                             type="number"
                             value="0"
-                            name="produto[{{$id}}]"
+                            name="produto[{{$produto_id}}]"
                             class="form-control quantidade-input"
                             placeholder="0"
                             

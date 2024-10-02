@@ -99,7 +99,7 @@ class DBClientesService implements ClientesServiceInterface
             $estado_cliente = $cliente->estado;
             $contato_cliente = $cliente->contato;
 
-            $deleted_at = isset($cliente->deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null;
+            $deleted_at = isset($cliente->deleted_at) ? date_format($cliente->deleted_at,"d/m/Y H:i:s") : null;
             $delete_by = $cliente->delete_by;
             $nome_delete_by = $provider_user->buscarNome($delete_by);
 

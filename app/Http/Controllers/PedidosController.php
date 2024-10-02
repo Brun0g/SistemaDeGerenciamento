@@ -17,16 +17,17 @@ use \App\Services\UserServiceInterface;
 
 
 
-class Order_controller extends Controller
+class PedidosController extends Controller
 {
-    public function finishOrder(Request $request, $pedido_id, $cliente_id, PedidosServiceInterface $provider_pedido)
+    public function finish(Request $request, $pedido_id, $cliente_id, PedidosServiceInterface $provider_pedido)
     {
         $provider_pedido->aprovarPedido($pedido_id, $cliente_id);
+
     
         return redirect('Cliente/' . $cliente_id);
     }
 
-    public function deleteOrderFinish(Request $request, $cliente_id, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque){
+    public function delete(Request $request, $cliente_id, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas){
 
         $provider_pedidos->excluirPedido($pedido_id, $provider_entradas_saidas, null);
 
@@ -37,38 +38,27 @@ class Order_controller extends Controller
     {
         $pedidoEncontrado = $provider_pedidos->buscarPedido($pedido_id);
         $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos);
-
-
-
-
-
         $cliente_id = $pedidoEncontrado['cliente_id'];
         $nome = $provider_cliente->buscarCliente($cliente_id);
-        $nome = $nome['name'];
-
         $endereco_id = $pedidoEncontrado['endereco_id'];
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);
 
-       
-        return view('pedidoFinalizado' , ['nome' => $nome, 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto'], 'data_pedido' =>$pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
+        return view('pedidoFinalizado' , ['nome' => $nome['name'], 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto'], 'data_pedido' =>$pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
     }
 
-    public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente)
+    public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user)
     {
-        
         $excluidos = $provider_pedidos->listarPedidosExcluidos($provider_user);
       
         $now = now();
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-     
         return view('pedidos_excluidos' , ['excluidos' => $excluidos, 'data_atual' => $data]);
     }
 
     public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)
     {
-        
         $tem_estoque = $provider_pedidos->reativarPedido($pedido_id);
 
         $url = url()->previous();
@@ -84,7 +74,7 @@ class Order_controller extends Controller
         return redirect($url);
     }
 
-    public function orders_client(Request $request, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente)
+    public function orders_client(Request $request, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
     {
         $excluidos = $provider_entradas_saidas->listarEntradaSaidas($provider_user, true);
         $excluidos = collect($excluidos)->unique('pedido_id')->where('deleted_at', '!=', null)->sortBy(['data', 'asc']);
@@ -95,7 +85,6 @@ class Order_controller extends Controller
             $pedido_id = $value['pedido_id'];
             $totalComDesconto = $provider_pedidos->buscarPedido($pedido_id);
             $array[] = $totalComDesconto['total'];
-
         }
        
         $now = now();
