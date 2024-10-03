@@ -4,11 +4,6 @@
         {{ __('Entradas') }}
         </h2>
     </x-slot>
-
-<style>
-
-</style>
-
 <div class="container py-5">
     @if ($errors->any())
     <div class="alert alert-danger">
@@ -21,7 +16,7 @@
     @endif
     <div class="d-flex justify-content-center">
         
-        <div class="container_edit">
+        <div class="table_entrada_saida">
             @if(isset($Produtos))
             <form method="POST" action="/entradas_saidas/{{$produto_id}}" enctype="multipart/form-data">
                 @csrf
@@ -31,13 +26,13 @@
                 </div>
                 <div class="form-group">
                     @if($Produtos['image_url'] == null)
-                    <div class="container-default">
-                        <img class="image" src="{{ asset('images/default.png') }}">
+                    <div style="position: relative; width: 80%;">
+                        <img class="image-produto" src="{{ asset('images/default.png') }}">
                     </div>
                     @else
                     
                     <div class="container">
-                        <img class="image" src="{{ $Produtos['image_url'] }}">
+                        <img class="image-produto" src="{{ $Produtos['image_url'] }}">
                     </div>
                     @endif
                 </div>
@@ -87,7 +82,7 @@
                 <button type="submit" class="btn btn-success">Confirmar</button>
             </form>
             @else
-            <p class="text-center">Sem dados de registro!</p>
+            <p>Sem dados de registro!</p>
             @endif
         </div>
     </div>

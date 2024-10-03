@@ -8,20 +8,20 @@
 
             <div  class="p-6 bg-white border-b border-gray-200">
                 <table id="table">
-                    <thead class="thead">
+                    <thead >
                         <tr>
-                            <th class="row-inform-item">ID</th>
-                            <th class="row-inform-item">Nome do Produto</th>
-                            <th class="row-inform-item">Quantidade</th>
-                            <th class="row-inform-item">Valor</th>
+                            <th>ID</th>
+                            <th>Nome do Produto</th>
+                            <th>Quantidade</th>
+                            <th>Valor</th>
                         </tr>
                     </thead>
                     <tbody >
                         <tr>
-                            <td class="row-inform-item">0</td>
-                            <td class="row-inform-item">teste</td>
-                            <td class="row-inform-item">teste</td>
-                            <td class="row-inform-item">teste</td>
+                            <td >0</td>
+                            <td >teste</td>
+                            <td >teste</td>
+                            <td >teste</td>
                         </tr>
                     </tbody>
                 </table>

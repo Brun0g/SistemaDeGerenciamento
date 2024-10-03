@@ -15,14 +15,14 @@
                 <div></div>
             </div>
             <table id="table">
-                <thead class="thead">
+                <thead >
                     <tr>
-                        <th class="row-inform-item">Usuário</th>
-                        <th class="row-inform-item">Tipo</th>
-                        <th class="row-inform-item">Total</th>
-                        <th class="row-inform-item">Excluido</th>
-                        <th class="row-inform-item">Data</th>
-                        <th class="row-inform-item">Ação</th>
+                        <th>Usuário</th>
+                        <th>Tipo</th>
+                        <th>Total</th>
+                        <th>Excluido</th>
+                        <th>Data</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>

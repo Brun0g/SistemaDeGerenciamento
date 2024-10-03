@@ -8,19 +8,19 @@
 
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
             <div class="caption-style" style="display: flex; flex-direction: column;">
                 AJUSTES DO ESTOQUE
                 <div></div>
             </div>
             <table id="table">
-                <thead class="thead">
+                <thead  style="background: black">
                     <tr>
-                        <th class="row-inform-item">Usuário</th>
-                        <th class="row-inform-item">Ação</th>
-                        <th class="row-inform-item">Observação</th>
-                        <th class="row-inform-item">Data</th>
-                        <th class="row-inform-item">Movimentação</th>
+                        <th>Usuário</th>
+                        <th>Ação</th>
+                        <th>Observação</th>
+                        <th>Data</th>
+                        <th>Movimentação</th>
                     </tr>
                 </thead>
                 <tbody>

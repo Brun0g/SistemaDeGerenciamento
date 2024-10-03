@@ -4,7 +4,6 @@
         {{ __('Dashboard') }}
         </h2>
     </x-slot>
-
 <div class="py-12">
     <div class="">
         @if ($errors->any())
@@ -21,11 +20,11 @@
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div  class="p-6 bg-white border-b border-gray-200">
             <table id="table">
-                <thead class="thead">
+                <thead >
                     <tr>
-                        <th class="row-inform-item">ID</th>
-                        <th class="row-inform-item">Categoria</th>
-                        <th class="row-inform-item">Ação</th>
+                        <th>ID</th>
+                        <th>Categoria</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody >

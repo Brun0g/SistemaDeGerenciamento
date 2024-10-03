@@ -10,47 +10,47 @@
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo produto</button>
 </div>
 
-<div class="container-geral">
+<div >
     <div class="sub-container">
        
         @if(isset($Produtos))
         @foreach ($Produtos as $key => $value)
         
-        <div class="sub-container-item">
+        <div class="sub-item">
             <div style="font-weight: 900">
                 
                 ID: <span style="font-weight: 300; font-size: 18px">{{$key}}</span>
                 
             </div>
             
-            <div class="sub-container-image-com-desconto">
+            <div class="image-com-desconto">
                 @if($value['image_url'] == false)
                 <img src="{{ asset('images/default.png') }}">
                 @else
                 <img  src="{{ $value['image_url'] }}">
                 @endif
             </div>
-            <div class="sub-container-name-product">
+            <div>
                 <p>{{strtoupper($value['produto'])}}</p>
             </div>
-            <p class="sub-preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
+            <p class="preco"><span style="color: black"></span>R$ {{  number_format($value['valor'], 2, ",", ".")}}</p>
 
             
-            <p class="sub-preco-desconto" style="margin-top: 15px;"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade_estoque']}}</p>
+            <p class="preco-desconto" style="margin-top: 15px;"><span style="color: black"></span>Quantidade no estoque: {{  $value['quantidade_estoque']}}</p>
             @if(count($Produtos[$key]['promocao']) != [])
-            <div class="sub-preco-desconto">Desconto por quantidade</div>
+            <div class="preco-desconto">Desconto por quantidade</div>
             <div style="display: flex; justify-content: center;">
-                <table>
+                <table style="border: none;">
                     <tr>
-                        <th class="sub-preco-desconto">Quantidade</th>
-                        <th class="sub-preco-desconto">Preço</th>
+                        <th class="preco-desconto">Quantidade</th>
+                        <th class="preco-desconto">Preço</th>
                     </tr>
                     @foreach ($Produtos[$key]['promocao'] as $id => $valor)
                     @foreach($valor as $chave => $dado)
                     @if($dado['produto_id'] == $key)
                     <tr>
-                        <td class="sub-preco-desconto">{{$dado['quantidade']}}</td>
-                        <td class="sub-preco-desconto">R${{  number_format($value['valor'] - ($value['valor'] / 100 * $dado['porcentagem']), 2, ",", ".")}}</td>
+                        <td class="preco-desconto">{{$dado['quantidade']}}</td>
+                        <td class="preco-desconto">R${{  number_format($value['valor'] - ($value['valor'] / 100 * $dado['porcentagem']), 2, ",", ".")}}</td>
                     </tr>
                     @endif
                     @endforeach
@@ -59,45 +59,37 @@
             </div>
             @endif
 
-            <table>
+            <table style="border: none;">
                 <tbody>
-                    <tr>
-                        <td class="afa" style="font-size: 12px;">
-                            <p  class="afa">
-                                <form  action="/DeletarProduto/{{$key}}" method="POST" >
-                                    @csrf
-                                    @method('delete')
-                                    <button class="btn btn-danger"  type="submit">Deletar</button>
-                                </form>
-                            </p>
-                        </td>
-                        <td class="afa" style="font-size: 12px;">
-                            <p  class="afa">
-                                <form  action="/detalhe_produto/{{$key}}" method="GET" >
-                                    @csrf
-                                    <button class="btn btn-primary"  type="submit">Histórico</button>
-                                </form>
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="afa" style="font-size: 12px;"> 
-                            <p  class="afa">
-                                <form  action="/EditarProduto/{{$key}}" method="GET" >
-                                    @csrf
-                                    <button class="btn btn-warning"  type="submit">Editar</button>
-                                </form>
-                            </p>
-                        </td>
-                        <td class="afa" style="font-size: 12px;"> 
-                            <p  class="afa">
-                                <form  action="/entradas_saidas/{{$key}}" method="GET" >
-                                    @csrf
-                                    <button class="btn btn-success"  type="submit">Entrada/Saída</button>
-                                </form>
-                            </p>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        <form action="/DeletarProduto/{{$key}}" method="POST">
+                            @csrf
+                            @method('delete')
+                            <button class="btn btn-danger btn-custom" type="submit">Deletar</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/detalhe_produto/{{$key}}" method="GET">
+                            @csrf
+                            <button class="btn btn-primary btn-custom" type="submit">Histórico</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <form action="/EditarProduto/{{$key}}" method="GET">
+                            @csrf
+                            <button class="btn btn-warning btn-custom" type="submit">Editar</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/entradas_saidas/{{$key}}" method="GET">
+                            @csrf
+                            <button class="btn btn-success btn-custom" type="submit">Entrada/Saída</button>
+                        </form>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -108,6 +100,7 @@
     </div>
 </div>
 </x-app-layout>
+
 <div class="modal fade" id="CadastrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -121,7 +114,7 @@
                 <div class="py-12">
                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                            <div id="container-cadastro-cliente" class="p-6 bg-white border-b border-gray-200">
+                            <div  class="p-6 bg-white border-b border-gray-200">
                                 @if ($errors->any())
                                 <div class="alert alert-danger">
                                     <ul class="mt-3 list-disc list-inside text-sm text-red-600">

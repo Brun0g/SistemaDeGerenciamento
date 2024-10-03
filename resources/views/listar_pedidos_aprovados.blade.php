@@ -20,17 +20,17 @@
       <div class="bg-white overflow-hidden shadow-sm">
         
         <table id="table">
-          <thead class="thead">
+          <thead >
             <tr>
-              <th class="row-inform-item">ID</th>
-              <th class="row-inform-item">Nome</th>
-              <th class="row-inform-item">Email</th>
-              <th class="row-inform-item">Idade</th>
-              <th class="row-inform-item">Cidade</th>
-              <th class="row-inform-item">Cep</th>
-              <th class="row-inform-item">Rua</th>
-              <th class="row-inform-item">Estado</th>
-              <th class="row-inform-item">Contato</th>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Idade</th>
+              <th>Cidade</th>
+              <th>Cep</th>
+              <th>Rua</th>
+              <th>Estado</th>
+              <th>Contato</th>
             </tr>
           </thead>
           <tbody>
@@ -76,17 +76,17 @@
           
           @if($deletedAt == null)
           <div style="display: flex; justify-content: center">
-            <h3>Carrinho</h3>
+            <h1 style="font-size: 32px; margin-bottom: 10px;">Carrinho</h1>
           </div>
           <table id="table">
-            <thead class="thead">
+            <thead >
               <tr>
-                {{-- <th class="row-inform-item">ID PEDIDO</th> --}}
-                <th class="row-inform-item">ID CLIENTE</th>
-                <th class="row-inform-item">Nome do Produto</th>
-                <th class="row-inform-item">Quantidade</th>
-                <th class="row-inform-item">Total</th>
-                <th class="row-inform-item">Desconto</th>
+                {{-- <th>ID PEDIDO</th> --}}
+                <th>ID CLIENTE</th>
+                <th>Nome do Produto</th>
+                <th>Quantidade</th>
+                <th>Total</th>
+                <th>Desconto</th>
               </tr>
             </thead>
             <tbody>
@@ -123,7 +123,7 @@
               @endif
             </table>
             @if( $clienteID['deleted_at'] == null )
-            <div class="container-center" style="display: flex; justify-content: center; margin-top: 15px;">
+            <div style="display: flex; justify-content: center; margin-top: 15px;">
               <form method="GET" action="/carrinho/{{$cliente_id}}">
                 @csrf
                 <button class="btn btn-success"  type="submit">Ir até o carrinho</button>
@@ -136,18 +136,18 @@
            @endif
    
         <div style="display: flex; justify-content: center;">
-          <h3>Pedidos concluídos</h3>
+          <h1 style="font-size: 32px; margin-bottom: 10px;">Pedidos concluídos</h1>
         </div>
         <table id="table">
-          <thead class="thead">
+          <thead >
             <tr>
-              <th class="row-inform-item">ID PEDIDO</th>
-              <th class="row-inform-item">Criado por</th>
-              <th class="row-inform-item">Restaurado por</th>
-              <th class="row-inform-item">Total</th>
-              <th class="row-inform-item">Ação</th>
+              <th>ID PEDIDO</th>
+              <th>Criado por</th>
+              <th>Restaurado por</th>
+              <th>Total</th>
+              <th>Ação</th>
          
-              <th class="row-inform-item">Ação</th>
+              <th>Ação</th>
          
             </tr>
           </thead>
@@ -250,4 +250,4 @@
         <script>
         
         </script>
-        </x-app-layout>
+</x-app-layout>

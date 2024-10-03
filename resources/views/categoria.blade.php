@@ -8,18 +8,18 @@
 
 
 <div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
         
         <div style="display: flex; justify-content: center; margin-bottom: 10px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar categoria</button>
         </div>
-        <table id="table">
-            <thead class="thead">
+        <table id="table" class="rounded shadow-lg">
+            <thead >
                 <tr>
-                    <th class="row-inform-item">ID</th>
-                    <th class="row-inform-item">Categoria</th>
-                    <th class="row-inform-item">Ação</th>
-                    <th class="row-inform-item">Ação</th>
+                    <th>ID</th>
+                    <th>Categoria</th>
+                    <th>Ação</th>
+                    <th>Ação</th>
                 </tr>
             </thead>
             <tbody>

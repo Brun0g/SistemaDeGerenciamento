@@ -4,8 +4,6 @@
 		{{ __('Atualizar endereço') }}
 		</h2>
 	</x-slot>
-	
-
 <div class="py-12">
 	@if ($errors->any())
 	<div class="alert alert-danger">
@@ -96,16 +94,11 @@
 					<input type="number" class="form-control" name="numero" value="{{$enderecos[$endereco_id]['numero']}}">
 				</div>
 				@endif
-				
-				
-				
 			</div>
-			<div class="container-center">
+			<div style="display: flex; justify-content:center">
 				<button class="btn btn-primary" type="submit">Atualizar endereço</button>
 			</div>
 		</form>
-		
-		
 	</div>
 </div>
 </x-app-layout>

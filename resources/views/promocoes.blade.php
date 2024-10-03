@@ -5,7 +5,6 @@
         </h2>
     </x-slot>
     
-
 @if ($errors->any())
 <div  class="p-6 bg-white border-b border-gray-200">
     <div class="alert alert-danger">
@@ -17,28 +16,28 @@
     </div>
     @endif
     <div class="py-12">
-        <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-8xl mx-auto sm:px-6 lg:px-8 ">
             
             <div style="display: flex; justify-content: center; margin-bottom: 10px;">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar promoção</button>
             </div>
-            <table id="table">
-                <thead class="thead">
+            <table id="table" class="shadow-lg">
+                <thead >
                     <tr>
-                        <th class="row-inform-item">ID</th>
-                        <th class="row-inform-item">Criado por</th>
-                        <th class="row-inform-item">Restaurado por</th>
-                        <th class="row-inform-item">Ativado por</th>
-                        <th class="row-inform-item">Desativado por</th>
-                        <th class="row-inform-item">Situação</th>
-                        <th class="row-inform-item" style="width: 2%;">Nome do Produto</th>
-                        <th class="row-inform-item" style="width: 5%">Preço original</th>
-                        <th class="row-inform-item" style="width: 5%">Preço com desconto</th>
+                        <th>ID</th>
+                        <th>Criado por</th>
+                        <th>Restaurado por</th>
+                        <th>Ativado por</th>
+                        <th>Desativado por</th>
+                        <th>Situação</th>
+                        <th  style="width: 2%;">Nome do Produto</th>
+                        <th  style="width: 5%">Preço original</th>
+                        <th  style="width: 5%">Preço com desconto</th>
                        
-                        <th class="row-inform-item">Porcentagem</th>
-                        <th class="row-inform-item">Quantidade</th>
-                        <th class="row-inform-item"style="width: 1%">Ação</th>
-                        <th class="row-inform-item"style="width: 1%">Ação</th>
+                        <th>Porcentagem</th>
+                        <th>Quantidade</th>
+                        <th style="width: 1%">Ação</th>
+                        <th style="width: 1%">Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,11 +143,11 @@
                                 @csrf
                                 
                                 <label for="produto-select">Escolha um produto:</label>
-                                <select  name="produto_id" id="categoria-select">
-                                    <option value="">--Por favor escolha um produto--</option>
+                                <select  name="produto_id" id="categoria-select" style="width: 100%">
+                                    <option value="">Por favor escolha um produto--</option>
                                     @if($produtos != [])
                                     @foreach ($produtos as $key => $value)
-                                    <option value={{$key}}>{{  $value['produto'] }}</option>
+                                    <option value={{$key}}>{{  strtoupper($value['produto']) }}</option>
                                     @endforeach
                                     @else
                                     Sem dados de registro!

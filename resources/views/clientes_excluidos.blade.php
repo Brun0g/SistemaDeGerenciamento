@@ -5,8 +5,6 @@
         </h2>
 
     </x-slot>
-
-
 <div class="py-12">
     <div class="max-w mx-auto sm:px-6 lg:px-8">
         
@@ -16,19 +14,18 @@
         </div>
        
         <table id="table">
-            <thead class="thead">
+            <thead >
                 <tr>
-                    <th class="row-inform-item" style="width: 3%;">ID</th>
-                    <th class="row-inform-item" style="width: 3%;">Excluido por</th>
-                    <th class="row-inform-item" style="width: 15%;">Nome</th>
-                    <th class="row-inform-item">Email</th>
-                    <th class="row-inform-item" style="width: 5%;">Idade</th>
-                    <th class="row-inform-item" >Endereço</th>
-                    <th class="row-inform-item">Contato</th>
-                    <th class="row-inform-item">Total</th>
-                    <th class="row-inform-item">Ação</th>
-                    <th class="row-inform-item">Ação</th>
-                    {{-- <th class="row-inform-item">Ação</th> --}}
+                    <th style="width: 3%;">ID</th>
+                    <th style="width: 3%;">Excluido por</th>
+                    <th style="width: 15%;">Nome</th>
+                    <th>Email</th>
+                    <th style="width: 5%;">Idade</th>
+                    <th>Endereço</th>
+                    <th>Contato</th>
+                    <th>Total</th>
+                    <th>Ação</th>
+                    <th>Ação</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,15 +55,12 @@
                         </ol>
                         @endif
                     </td>
-                    
-                    
                     <td style ="border: 1px solid;">{{  $value['contato'] }}</td>
                     <td style="border: 1px solid; color:green;"> R$ {{isset($total[$key])  ? $total[$key]  : 0}}</td>
                     <td style="border: 1px solid;">
                         <form  action="/restaurarCliente/{{$key}}" method="POST" >
                             @csrf
-                      
-                            <button    class="btn btn-success"  style="padding: 5px;" type="submit">Restaurar</button>
+                            <button class="btn btn-success"  style="padding: 5px;" type="submit">Restaurar</button>
                         </form>
                     </td>
                     <td style="border: 1px solid black;">
@@ -75,12 +69,6 @@
                             <button    class="btn btn-primary"  style="padding: 5px;" type="submit">Visualizar pedidos</button>
                         </form>
                     </td>
-                  {{--   <td style="border: 1px solid black;">
-                        <form  action="/Editar/Cliente/{{$key}}" method="GET" >
-                            @csrf
-                            <button    class="btn btn-primary"  style="padding: 5px;" type="submit">Editar cliente</button>
-                        </form>
-                    </td> --}}
                 </tr>
                 @endif
                 @endforeach

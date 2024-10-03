@@ -5,14 +5,13 @@
         </h2>
     </x-slot>
 
-
-<div class="container-geral">
-    <div class="sub-container">
+<div  >
+    <div class="sub-container" >
         <div class="sm:px-6 lg:px-8">
             <form method="POST" action="/novoMultiplo">
                 @csrf
                 @method('POST')
-                <div class="mb-4" style="margin-top: 20px;">
+                <div class="mb-4">
                     <label for="categoria-select" class="block text-sm font-medium text-black-900">Escolha uma categoria:</label>
                     <select name="categoria" id="categoria-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         <option value="">Por favor escolha uma categoria . . .</option>
@@ -35,7 +34,7 @@
             </div>
         </div>
         @endif
-        <div class="sub-container">
+        <div class="sub-container ">
         </form>
         @if ($errors->any())
         <div class="alert alert-danger">
@@ -49,15 +48,14 @@
     </div>
     @endif
 </div>
-
-<div class="sub-container-estoque">
-    <table id="table">
-        <thead class="thead">
+<div class="table-estoque shadow-lg" >
+    <table>
+        <thead>
             <tr>
-                <th class="row-inform-item" style="width: 3%;">ID</th>
-                <th class="row-inform-item" style="width: 3%;">Imagem</th>
-                <th class="row-inform-item" style="width: 10%;">Nome</th>
-                <th class="row-inform-item" style="width: 15%">Quantidade</th>
+                <th style="width: 3%;">ID</th>
+                <th style="width: 3%;">Imagem</th>
+                <th style="width: 10%;">Nome</th>
+                <th style="width: 15%">Quantidade</th>
             </tr>
         </thead>
         <tbody class="bg-white">
@@ -72,12 +70,12 @@
                 
                 <td style="justify-content: center; width: 1%; text-align: center; vertical-align: middle; align: center;">
                     @if($value['image_url'] == null)
-                    <div  class="container-default">
-                        <img   class="image" src="{{ asset('images/default.png') }}">
+                    <div  style="position: relative; width: 80%;">
+                        <img   class="image-produto" src="{{ asset('images/default.png') }}">
                     </div>
                     @else
                     <div class="container">
-                        <img class="image" src="{{ $value['image_url'] }}">
+                        <img class="image-produto" src="{{ $value['image_url'] }}">
                     </div>
                     @endif
                 </td>

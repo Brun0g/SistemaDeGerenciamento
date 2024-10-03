@@ -5,19 +5,17 @@
         </h2>
     </x-slot>
 
-
 <div class="py-12">
     @if(isset($produtos))
-
-     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8" style="margin-bottom: 15px;">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             
             <table>
                 <thead>
                     <tr>
-                        <th  style="color: black">Criado por</th>
-                        <th  style="color: black">Editado por</th>
-                        <th  style="color: black">Restaurado por</th>  
+                        <th  style="color: white;">Criado por</th>
+                        <th  style="color: white;">Editado por</th>
+                        <th  style="color: white;">Restaurado por</th>  
                     </tr>
 
                 </thead>
@@ -34,15 +32,11 @@
                         <td style="color: black;">{{ $produtos['created_at'] }}</td>
                         <td style="color: black;">{{ isset($produtos['update_by']) ? $produtos['updated_at'] : ''  }}</td>
                         <td style="color: black;">{{ isset($produtos['restored_at']) ? $produtos['restored_at'] : ''  }}</td>
-                        
                     </tr>
                 </tbody>
             </table>
-
-    
             </div>
         </div>
-   
     @endif
     
 
@@ -54,14 +48,14 @@
             </div>
             
             <table id="table">
-                <thead class="thead">
+                <thead  style="background: black">
                     <tr>
-                        <th class="row-inform-item">Usuário</th>
-                        <th class="row-inform-item">Tipo</th>
-                        <th class="row-inform-item">Quantidade</th>
-                        <th class="row-inform-item">Observação</th>
+                        <th>Usuário</th>
+                        <th>Tipo</th>
+                        <th>Quantidade</th>
+                        <th>Observação</th>
                         
-                        <th class="row-inform-item">Data</th>
+                        <th>Data</th>
                     </tr>
                 </thead>
                 <tbody>

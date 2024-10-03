@@ -7,10 +7,9 @@
    
     </x-slot>
   
-
-<div class="py-12">
-    <div class="max-w mx-auto sm:px-6 lg:px-8">
-        
+<div class="py-12 ">
+    <div class="max-w mx-auto sm:px-6 lg:px-8 " >
+       
         <div class="input-group" style="width: 20%">
             <input   id= "search" type="search" class="form-control rounded" placeholder="Procurar clientes" aria-label="Search" aria-describedby="search-addon" />
             <button type="button" class="btn btn-outline-primary" data-mdb-ripple-init>Procurar</button>
@@ -18,19 +17,19 @@
         <div style="display: flex; justify-content: center; margin-bottom: 10px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo cliente</button>
         </div>
-        <table id="table">
-            <thead class="thead">
+        <table id="table" class="rounded shadow-lg ">
+            <thead class="thead ">
                 <tr>
-                    <th class="row-inform-item" style="width: 3%;">ID</th>
-                    <th class="row-inform-item" style="width: 15%;">Cliente</th>
-                    <th class="row-inform-item" style="width: 1%;">Email</th>
-                    <th class="row-inform-item" style="width: 2%;">Idade</th>
-                    <th class="row-inform-item" style="width: 30%;">Endereço</th>
-                    <th class="row-inform-item">Contato</th>
-                    <th class="row-inform-item" style="width: 10%;">Total</th>
-                    <th class="row-inform-item" style="width: 4%;">Ação</th>
-                    <th class="row-inform-item" style="width: 10%;">Ação</th>
-                    <th class="row-inform-item" style="width: 4%;">Ação</th>
+                    <th  style="width: 3%;">ID</th>
+                    <th  style="width: 15%;">Cliente</th>
+                    <th  style="width: 1%;">Email</th>
+                    <th  style="width: 2%;">Idade</th>
+                    <th  style="width: 30%;">Endereço</th>
+                    <th>Contato</th>
+                    <th  style="width: 10%;">Total</th>
+                    <th  style="width: 4%;">Ação</th>
+                    <th  style="width: 10%;">Ação</th>
+                    <th  style="width: 4%;">Ação</th>
                 </tr>
             </thead>
             <tbody>
@@ -119,6 +118,8 @@ $('#table').html(res);
 });
 </script>
 </x-app-layout>
+
+
 <div class="modal fade" id="CadastrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">

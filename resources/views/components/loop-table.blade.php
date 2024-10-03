@@ -1,5 +1,5 @@
 <table id="table">
-    <thead class="thead">
+    <thead >
         
     </thead>
     <tbody>

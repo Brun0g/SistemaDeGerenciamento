@@ -7,10 +7,10 @@
     
 
 
-<div class="py-12">
-    <div class="max-w-8xl mx-auto sm:px-8 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div id ="te" class="p-6 bg-white border-b border-gray-200">
+<div class="py-12" >
+    <div class="max-w-8xl mx-auto sm:px-8 lg:px-8" >
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" >
+            <div class="p-6 bg-white border-b border-gray-200" style="display: flex; flex-direction: column;">
                 
                 @if (session('status'))
                 <div style="display: flex; justify-content: center;">
@@ -38,7 +38,7 @@
                 </ul>
                 @endif
                 <table id="table">
-                    <thead class="thead">
+                    <thead >
                         <tr>
                             <th style="color: white; background-color: black; border: 3px solid #000; font-weight: 900;">ID</th>
                             <th style="color: black; background-color: #e5e7eb; border: 3px solid #000; font-weight: 900;">Produto</th>

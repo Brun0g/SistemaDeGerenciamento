@@ -2,10 +2,7 @@
     <x-slot name="header">
     
     </x-slot>
-
-
         <div class="py-12">
-            
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="py-12">
         
@@ -18,13 +15,13 @@
                                 <h5 style="font-weight: 900;">Criado por:<span style="font-weight: 200;"> {{strtoupper($create_by)}}</span></h5>
                             </div>
                                                         <table id="table">
-                                <thead class="thead">
+                                <thead >
                                     <tr>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Produto</th>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Quantidade</th>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Preço unidade</th>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Preço da unidade c/ promoção</th>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Valor</th>
+                                        <th style="border-right: 1px solid black;">Produto</th>
+                                        <th style="border-right: 1px solid black;">Quantidade</th>
+                                        <th style="border-right: 1px solid black;">Preço unidade</th>
+                                        <th style="border-right: 1px solid black;">Preço da unidade c/ promoção</th>
+                                        <th style="border-right: 1px solid black;">Valor</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -82,4 +79,4 @@
                     </div>
                 </div>
             </div>
-            </x-app-layout>
+</x-app-layout>

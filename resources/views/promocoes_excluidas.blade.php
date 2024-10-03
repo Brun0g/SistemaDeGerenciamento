@@ -19,18 +19,16 @@
     <div class="py-12">
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-8">
             <table id="table">
-                <thead class="thead">
+                <thead >
                     <tr>
-                        <th class="row-inform-item">ID</th>
-                        <th class="row-inform-item">Excluido por</th>
-                        {{-- <th class="row-inform-item">Situação</th> --}}
-                        <th class="row-inform-item">Nome do Produto</th>
-                        <th class="row-inform-item">Preço original</th>
-                        <th class="row-inform-item">Preço com desconto</th>
-                        <th class="row-inform-item">Porcentagem</th>
-                        <th class="row-inform-item">Quantidade</th>
-                        {{-- <th class="row-inform-item">Ação</th> --}}
-                        <th class="row-inform-item">Ação</th>
+                        <th>ID</th>
+                        <th>Excluido por</th>
+                        <th>Nome do Produto</th>
+                        <th>Preço original</th>
+                        <th>Preço com desconto</th>
+                        <th>Porcentagem</th>
+                        <th>Quantidade</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,8 +53,7 @@
                             <td style="border: 1px solid; width: 5%">
                                 {{ $value['quantidade'] }}
                             </td>
-                    
-                        
+            
                         <td style="border: 1px solid; width: 5%">
                             <form  action="/restaurarPromocao/{{$key}}" method="POST" >
                                 @csrf

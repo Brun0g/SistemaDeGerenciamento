@@ -5,7 +5,6 @@
         </h2>
     </x-slot>
 
-
 <div class="py-12">
     <div class="">
         @if ($errors->any())
@@ -22,14 +21,14 @@
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div  class="p-6 bg-white border-b border-gray-200">
             <table id="table">
-                <thead class="thead">
+                <thead >
                     <tr>
-                        <th class="row-inform-item">ID</th>
-                        <th class="row-inform-item"></th>
-                        <th class="row-inform-item">Alterar nome </th>
-                        <th class="row-inform-item">Alterar valor</th>
-                        <th class="row-inform-item">Alterar imagem</th>
-                        <th class="row-inform-item">Ação</th>
+                        <th>ID</th>
+                        <th></th>
+                        <th>Alterar nome </th>
+                        <th>Alterar valor</th>
+                        <th>Alterar imagem</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,13 +41,13 @@
                             </td>
                             <td style="width: 18%; text-align: center; vertical-align: middle; ">
                                 @if($Produtos['image_url'] == null)
-                                <div class="container-default">
-                                    <img class="image" src="{{ asset('images/default.png') }}">
+                                <div style="position: relative; width: 80%;">
+                                    <img class="image-produto" src="{{ asset('images/default.png') }}">
                                 </div>
                                 @else
                                 
                                 <div class="container">
-                                    <img class="image" src="{{ $Produtos['image_url'] }}">
+                                    <img class="image-produto" src="{{ $Produtos['image_url'] }}">
                                     
                                     <div class="middle" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
                                         <div class="text">Excluir imagem</div>
@@ -82,8 +81,7 @@
 </div>
 
 </div>
-<!-- Button trigger modal -->
-<!-- Modal -->
+
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered" role="document">
 <div class="modal-content">

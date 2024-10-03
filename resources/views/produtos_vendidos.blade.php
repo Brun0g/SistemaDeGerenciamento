@@ -6,15 +6,15 @@
 
 </x-slot>
 
-<div class="container">
+<div class="container" style="margin-top: 20px">
     <div class="caption-style">
-        Relatório de Clientes e Produtos
+        Produtos vendidos
     </div>
-    <div class="table-container">
-        <table>
-            <thead>
+    <div class="rounded shadow-lg" style="position: relative; overflow-x: auto; overflow-y: auto; max-height: 600px;">
+        <table style="width: 100%;">
+            <thead style="background: black">
                 <tr>
-                    <th>Clientes</th>
+                    <th style="width: 25%">Clientes</th>
                     @if(isset($produtos))
                     @foreach($produtos as $produto)
                     <th>{{ strtoupper($produto['produto']) }}</th>
@@ -26,10 +26,10 @@
                 @if(isset($Clientes))
                 @foreach($Clientes as $cliente => $valor)
                 <tr style="background: white;">
-                    <td data-label="Clientes">{{ strtoupper($valor['name']) }}</td>
+                    <td style="width: 35%; border: 1px solid black" data-label="Clientes">{{ strtoupper($valor['name']) }}</td>
                     @if(isset($produtos))
                     @foreach($produtos as $produto)
-                    <td data-label="{{ strtoupper($produto['produto']) }}">{{ $clientes_produtos[$cliente][$produto['produto']] ?? 0 }}</td>
+                    <td style="border: 1px solid black" data-label="{{ strtoupper($produto['produto']) }}">{{ $clientes_produtos[$cliente][$produto['produto']] ?? 0 }}</td>
                     @endforeach
                     @endif
                 </tr>

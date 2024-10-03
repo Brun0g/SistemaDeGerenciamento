@@ -4,33 +4,31 @@
         {{ __('Múltiplas entradas') }}
         </h2>
     </x-slot>
-
-
 <div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8" >
+        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
             <div class="caption-style" style="display: flex; flex-direction: column;">
                 {{strtoupper('entradas no estoque')}}
                 <div></div>
             </div>
-            <table id="table">
-                <thead class="thead">
+            <table id="table" >
+                <thead  style="background: black">
                     <tr>
-                        <th class="row-inform-item">Usuário</th>
-                        <th class="row-inform-item">Ação</th>
-                        <th class="row-inform-item">Observação</th>
-                        <th class="row-inform-item">Data</th>
-                        <th class="row-inform-item">Movimentação</th>
+                        <th>Usuário</th>
+                        <th>Ação</th>
+                        <th>Observação</th>
+                        <th>Data</th>
+                        <th>Movimentação</th>
                     </tr>
                 </thead>
-                <tbody>
-                    
+                <tbody >
+                
                     @if(isset($multiplos))
                     @foreach($multiplos as $key => $value)
                     
                     @if(isset($value['multiplo_id']))
-                    <tr>
-                        <td>{{  strtoupper($value['create_by'])}}</td>
+                    <tr >
+                        <td >{{  strtoupper($value['create_by'])}}</td>
                         
                         <td>
                             <form action="/detalhes_multiplos/{{$value['multiplo_id']}}" method="POST">

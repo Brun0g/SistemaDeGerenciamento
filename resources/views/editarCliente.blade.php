@@ -3,28 +3,24 @@
 
     </x-slot> 
 
-
 <div class="py-12">
-
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
          <div class="caption-style" style="display: flex; flex-direction: column; ">
                 HISTORICO DO CLIENTE
         </div>
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             
-            <table>
+            <table >
                 <thead>
                     <tr>
-                        <th  style="color: black">Criado por</th>
-                        <th  style="color: black">Editado por</th>
-                        <th  style="color: black">Restaurado por</th>  
+                        <th>Criado por</th>
+                        <th>Editado por</th>
+                        <th>Restaurado por</th>  
                     </tr>
-
                 </thead>
                 <tbody>
 
                     <tr class="bg-white">
-
                         <td style="color: black;">{{ strtoupper( $cliente['create_by'] ) }}</td>
                         <td style="color: black;">{{ isset($cliente['update_by']) ? strtoupper( $cliente['update_by'] ) : ''  }}</td>
                         <td style="color: black;">{{ isset($cliente['restored_by']) ? strtoupper( $cliente['restored_by'] ) : ''  }}</td>
@@ -34,13 +30,10 @@
 
                         <td style="color: black;">{{ $cliente['created_at'] }}</td>
                         <td style="color: black;">{{ isset($cliente['update_by']) ? $cliente['updated_at'] : ''  }}</td>
-                        <td style="color: black;">{{ isset($cliente['restored_at']) ? $cliente['restored_at'] : ''  }}</td>
-                        
+                        <td style="color: black;">{{ isset($cliente['restored_at']) ? $cliente['restored_at'] : ''  }}</td>      
                     </tr>
                 </tbody>
             </table>
-
-    
             </div>
         </div>
     @if ($errors->any())
@@ -67,13 +60,13 @@
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
             
             <table id="table">
-                <thead class="thead">
+                <thead >
                     <tr>
-                        <th class="row-inform-item">Nome</th>
-                        <th class="row-inform-item">Email</th>
-                        <th class="row-inform-item">Telefone</th>
-                        <th class="row-inform-item">Idade</th>
-                        <th class="row-inform-item">Ação</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Idade</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,17 +96,17 @@
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar Endereço</button>
         </div>
         <table id="table">
-            <thead class="thead">
+            <thead >
                 <tr>
-                    <th class="row-inform-item">ID</th>
-                    <th class="row-inform-item">Cidade</th>
-                    <th class="row-inform-item">Rua</th>
-                    <th class="row-inform-item">Número</th>
-                    <th class="row-inform-item">Estado</th>
-                    <th class="row-inform-item">CEP</th>
-                    <th class="row-inform-item">Ação</th>
+                    <th>ID</th>
+                    <th>Cidade</th>
+                    <th>Rua</th>
+                    <th>Número</th>
+                    <th>Estado</th>
+                    <th>CEP</th>
+                    <th>Ação</th>
                     @if(count($listarEnderecos) > 1)
-                    <th class="row-inform-item">Ação</th>
+                    <th>Ação</th>
                     @endif
                 </tr>
             </thead>

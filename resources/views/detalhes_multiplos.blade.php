@@ -2,8 +2,6 @@
     <x-slot name="header">
 
     </x-slot>
-
-
         <div class="py-12">
             
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -14,13 +12,13 @@
                             <div style="display: flex; justify-content: left">
                                 <h4 style="">N° AJUSTES: <span style=" font-weight: 900;color: blue">{{$estoque_id}}</span></h4>
                             </div>
-                            <table id="table">
-                                <thead class="thead">
+                            <table id="table" >
+                                <thead >
                                     <tr>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Usúario</th>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Produto</th>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Ajuste</th>
-                                        <th style="border-right: 1px solid black;"class="row-inform-item">Data</th>
+                                        <th style="border-right: 1px solid black;">Usúario</th>
+                                        <th style="border-right: 1px solid black;">Produto</th>
+                                        <th style="border-right: 1px solid black;">Ajuste</th>
+                                        <th style="border-right: 1px solid black;">Data</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -48,4 +46,4 @@
                     </div>
                 </div>
             </div>
-            </x-app-layout>
+</x-app-layout>
