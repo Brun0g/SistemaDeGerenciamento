@@ -22,7 +22,21 @@ class SessionPedidosService implements PedidosServiceInterface
         $index = count($Pedido_encerrado);
         $pedido_id = $index + 1;
         
-        $Pedido_encerrado[$pedido_id] = ['create_by' => Auth::id(), 'delete_by' => null, 'restored_by' => null, 'pedido_id' => $pedido_id, 'cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $valor_final, 'porcentagem' => $porcentagem, 'totalSemDesconto' => $valor_total, 'excluido' => 0, 'created_at' => now(), 'deleted_at' => null, 'restored_at' => null];
+        $Pedido_encerrado[$pedido_id] = [
+            'create_by' => Auth::id(), 
+            'delete_by' => null, 
+            'restored_by' => null, 
+            'pedido_id' => $pedido_id, 
+            'cliente_id' => $cliente_id, 
+            'endereco_id' => $endereco_id, 
+            'total' => $valor_final, 
+            'porcentagem' => $porcentagem, 
+            'totalSemDesconto' => $valor_total, 
+            'excluido' => 0, 
+            'created_at' => now()->subDay(1), 
+            'deleted_at' => null, 
+            'restored_at' => null
+        ];
 
         session()->put('Pedido_encerrado', $Pedido_encerrado);
 
@@ -36,8 +50,21 @@ class SessionPedidosService implements PedidosServiceInterface
 
         $count = sizeof($Pedido_encerrado);
     
-        $Pedido_encerrado_individual[] = ['create_by' => Auth::id(), 'delete_by' => null, 'restored_by' => null, 'pedido_id' => $pedido_id, 'produto_id' => $produto_id,'quantidade' => $quantidade, 'porcentagem' => $porcentagem_unidade, 'total' => $valor_final, 'preco_unidade' => $preco_unidade, 'totalSemDesconto' => $valor_total, 'created_at' => now(), 'deleted_at' => null, 'restored_at' => null];
-
+        $Pedido_encerrado_individual[] = [
+            'create_by' => Auth::id(), 
+            'delete_by' => null, 
+            'restored_by' => null, 
+            'pedido_id' => $pedido_id, 
+            'produto_id' => $produto_id,
+            'quantidade' => $quantidade, 
+            'porcentagem' => $porcentagem_unidade, 
+            'total' => $valor_final, 
+            'preco_unidade' => $preco_unidade, 
+            'totalSemDesconto' => $valor_total, 
+            'created_at' => now(), 
+            'deleted_at' => null, 
+            'restored_at' => null
+        ];
 
         session()->put('Pedido_encerrado_individual', $Pedido_encerrado_individual);
 
@@ -114,24 +141,36 @@ class SessionPedidosService implements PedidosServiceInterface
         session()->put('Pedido_encerrado_individual', $pedidos_individual);
     }
 
-    public function listarQuantidadePedidos()
+    public function listarQuantidadePedidos($cliente, $data_inicial, $data_final, $provider_estoque, $provider_user)
     {
-        $pedidosPorClientes = session()->get('Pedido_encerrado_individual', []);
-        
         $service_pedidos = new SessionPedidosService();
+        $service_clientes = new SessionClientesService();
 
-        foreach ($pedidosPorClientes as $pedidoKey => $value) {
+        $pedidos = session()->get('Pedido_encerrado_individual', []);
+
+        if($data_inicial && $data_final)
+        {
+            $collection = collect($pedidos);
+
+           $pedidos = $collection->filter(function ($value, $key) use ($data_inicial, $data_final) {
+                return $value['created_at']->format('Y-m-d') >= $data_inicial && $value['created_at']->format('Y-m-d') <= $data_final;
+            });
+        }
+
+        foreach ($pedidos as $key => $value) {
+            
+            $pedido_id = $value['pedido_id'];
+            $cliente_id = $service_pedidos->buscarPedido($pedido_id)['cliente_id'];
+            $nome = $service_clientes->buscarCliente($cliente_id)['name'];
+            $created_at = $value['created_at'];
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            $pedido_id = $value['pedido_id'];
-            $cliente_id = $service_pedidos->buscarPedido($pedido_id)['cliente_id'];
             
-
-            $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade]; 
+            $pedidos[$key] = ['nome' => $nome, 'cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'created_at' => $created_at];
         } 
-
-        return $pedidosPorClientes; 
+        
+        return $pedidos; 
     }
 
     public function listarPedidos($cliente_id, $provider_estoque, $provider_user)
@@ -159,17 +198,25 @@ class SessionPedidosService implements PedidosServiceInterface
                 $endereco = $value['endereco_id'];
                 $total = $value['total'];
                 $porcentagem = $value['porcentagem'];
-                // $data = $value['deleted_at'];
-                $created_at = $value['created_at']; 
-                $deleted_at = $value['deleted_at']; 
-                $restored_at = $value['restored_at'];
+    
+                $created_at = date_format($value['created_at'],"d/m/Y H:i:s"); 
+                $deleted_at = isset($value['deleted_at']) ? date_format($value['deleted_at'],"d/m/Y H:i:s") : null; 
+                $restored_at = isset($value['restored_at']) ? date_format($value['restored_at'], "d/m/Y H:i:s") : null;
                 $excluido = $value['excluido'];
-                $listaPedidos[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'excluido' => $excluido,
 
-                'created_at' => date_format($created_at,"d/m/Y H:i:s"),
-                'delete_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
-                'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
-            ];  
+                $listaPedidos[$pedido_id] = [
+                    'create_by' => $nome_create, 
+                    'delete_by' => $nome_delete, 
+                    'restored_by' => $nome_restored, 
+                    'cliente_id' => $id_cliente, 
+                    'endereco' => $endereco, 
+                    'total' => $total, 
+                    'porcentagem' => $porcentagem, 
+                    'excluido' => $excluido,
+                    'created_at' => $created_at,
+                    'delete_at' => $deleted_at,
+                    'restored_at' => $restored_at
+                ];  
                 
             }
         }
@@ -182,7 +229,6 @@ class SessionPedidosService implements PedidosServiceInterface
         $array = [];
 
         $pedidos = session()->get('Pedido_encerrado',[]);
-
 
         foreach ($pedidos as $key => $value) {
 
@@ -199,18 +245,33 @@ class SessionPedidosService implements PedidosServiceInterface
                 $nome_restored = $value['restored_by'];
                 $nome_restored = $provider_user->buscarNome($nome_restored);
 
-                $id_cliente = $value['cliente_id'];
+                $cliente_id = $value['cliente_id'];
                 $endereco = $value['endereco_id'];
                 $total = $value['total'];
                 $porcentagem = $value['porcentagem'];
-                $deleted_at = $value['deleted_at']; 
-                $created_at = $value['created_at']; 
 
-                $array[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'ano' => $deleted_at->year, 'dia_do_ano' => $deleted_at->dayOfYear, 'dia_da_semana' => $deleted_at->dayOfWeek, 'hora' => $deleted_at->hour, 'minuto' => $deleted_at->minute, 'segundo' => $deleted_at->second, 'mes' => $deleted_at->month,
-                  
-                    'created_at' => date_format($created_at,"d/m/Y H:i:s"),
-                    'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
-                    'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
+                $deleted_at = $value['deleted_at']; 
+                $created_at = date_format($value['created_at'],"d/m/Y H:i:s"); 
+                $restored_at = isset($value['restored_at']) ? date_format($value['restored_at'], "d/m/Y H:i:s") : null;
+
+                $array[$pedido_id] = [
+                    'create_by' => $nome_create, 
+                    'delete_by' => $nome_delete, 
+                    'restored_by' => $nome_restored, 
+                    'cliente_id' => $cliente_id, 
+                    'endereco' => $endereco, 
+                    'total' => $total, 
+                    'porcentagem' => $porcentagem, 
+                    'ano' => $deleted_at->year, 
+                    'dia_do_ano' => $deleted_at->dayOfYear, 
+                    'dia_da_semana' => $deleted_at->dayOfWeek, 
+                    'hora' => $deleted_at->hour, 
+                    'minuto' => $deleted_at->minute, 
+                    'segundo' => $deleted_at->second, 
+                    'mes' => $deleted_at->month,
+                    'created_at' => $created_at,
+                    'deleted_at' => isset($value['deleted_at']) ? date_format($value['deleted_at'],"d/m/Y H:i:s") : null,
+                    'restored_at' => $restored_at
                 ]; 
             }  
         }
@@ -226,35 +287,33 @@ class SessionPedidosService implements PedidosServiceInterface
         $provider_user = new DBUserService;
 
         foreach ($pedidos as $pedido) {
-           
+
             $cliente_id = $pedidos['cliente_id'];
             $endereco_id = $pedidos['endereco_id'];
             $total = $pedidos['total'];
             $totalSemDesconto = $pedidos['totalSemDesconto'];
             $porcentagem = $pedidos['porcentagem'];
-
-            $deleted_at = $pedidos['deleted_at'];
             $created_at = $pedidos['created_at'];
-            $restored_at = $pedidos['restored_at'];
-
             $create_by = $pedidos['create_by'];
-            $created_at = $pedidos['created_at'];
-
             $nome_create_by = $provider_user->buscarNome($create_by);
 
-          
-            $pedidoEncontrado = ['create_by' => $nome_create_by, 'cliente_id' => $cliente_id, 'endereco_id' => $endereco_id, 'total' => $total,'porcentagem' => $porcentagem, 'totalSemDesconto' => $totalSemDesconto,
+            $deleted_at = isset($pedidos['deleted_at']) ? date_format($pedidos['deleted_at'],"d/m/Y H:i:s") : null;
+            $created_at = isset($pedidos['created_at']) ? date_format($pedidos['created_at'], "d/m/Y H:i:s") : null;
+            $restored_at = isset($pedidos['restored_at']) ? date_format($pedidos['restored_at'], "d/m/Y H:i:s") : null;
 
-            'created_at' => date_format($created_at,"d/m/Y H:i:s"),
-            'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
-            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
-
-
+            $pedidoEncontrado = [
+                'create_by' => $nome_create_by, 
+                'cliente_id' => $cliente_id, 
+                'endereco_id' => $endereco_id, 
+                'total' => $total, 
+                'totalSemDesconto' => $totalSemDesconto, 
+                'porcentagem' => $porcentagem,
+                'created_at' => $created_at, 
+                'restored_at' => $restored_at,
+                'deleted_at' => $deleted_at
             ];
-          
         }
 
-        
         return $pedidoEncontrado;
     }
 
@@ -276,12 +335,9 @@ class SessionPedidosService implements PedidosServiceInterface
                 $produto = $service_produtos->buscarProduto($produto_id)['produto'];
                 $preco_unidade = $pedido['preco_unidade'];
 
-               
-
                 $total += $valor;
 
-    
-            $lista[$pedidoKey] = ['produto_id' => $produto_id, 'produto' => $produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'porcentagem' => $porcentagem, 'totalComDesconto' => $total];  
+                $lista[$pedidoKey] = ['produto_id' => $produto_id, 'produto' => $produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'porcentagem' => $porcentagem, 'totalComDesconto' => $total];  
             } 
         }
 

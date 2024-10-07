@@ -43,6 +43,8 @@ Route::get('/dashboard', function () {
 // VISUALIZAÇÃO DE QUANTIDADE DE PRODUTOS POR CLIENTES
 Route::GET('/produtos_vendidos',[VendasController::class,'index'])->middleware(['auth'])->name('produtos_vendidos');
 
+
+
 // CLIENTE
 Route::GET('/Clientes',[ClientesController::class,'index'])->middleware(['auth'])->name('Clientes')->middleware(['cors']);
 Route::GET('/Cliente/{id}',[ClientesController::class,'show'])->middleware(['auth'])->middleware(['cors']);
@@ -83,6 +85,7 @@ Route::GET('/pedidofinalizado/{id_pedido}', [PedidosController::class, 'showFini
 Route::GET('/pedidos_excluidos', [PedidosController::class, 'orders_deleted'])->middleware(['auth'])->name('pedidos_excluidos');
 Route::GET('/pedidos_clientes', [PedidosController::class, 'orders_client'])->middleware(['auth'])->name('pedidos_clientes');
 Route::POST('/Restaurar_pedido/{id_pedido}', [PedidosController::class, 'orders_active'])->middleware(['auth']);
+
 
 //CARRINHO
 Route::GET('/carrinho/{id}', [CarrinhoController::class, 'index'])->middleware(['auth'])->name('carrinho');

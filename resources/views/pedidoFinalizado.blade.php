@@ -11,7 +11,7 @@
                             <div style="display: flex; justify-content: left; flex-direction: column;">
                                 <h4>N° PEDIDO: <span style=" font-weight: 900;color: blue">{{$pedido_id}}</span></h4>
                                 
-                                <h5 style="font-weight: 900;">Data do pedido:<span style="font-weight: 200;"> {{strtoupper($data_pedido)}}</span></h5>
+                                <h1 style="font-weight: 900;">Data do pedido:<span style="font-weight: 200;"> {{strtoupper($data_pedido)}}</span></h1>
                                 <h5 style="font-weight: 900;">Criado por:<span style="font-weight: 200;"> {{strtoupper($create_by)}}</span></h5>
                             </div>
                                                         <table id="table">

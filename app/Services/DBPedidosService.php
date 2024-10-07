@@ -15,6 +15,8 @@ use App\Models\Entradas_saidas;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 
+ use Illuminate\Support\Carbon;
+
 
 class DBPedidosService implements PedidosServiceInterface
 {
@@ -123,24 +125,30 @@ class DBPedidosService implements PedidosServiceInterface
         }
     }
 
-    public function listarQuantidadePedidos()
+    public function listarQuantidadePedidos($cliente, $data_inicial, $data_final, $provider_estoque, $provider_user)
     {
-        $pedidosPorClientes = PedidosIndividuais::all();
-        
         $service_pedidos = new DBPedidosService();
+        $service_clientes = new DBClientesService();
 
-        foreach ($pedidosPorClientes as $pedidoKey => $value) {
+        if($data_inicial && $data_final)
+            $pedidos = PedidosIndividuais::withTrashed()->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->get();
+        else
+            $pedidos = PedidosIndividuais::withTrashed()->get();
+
+
+        foreach ($pedidos as $key => $value) {
+            $pedido_id = $value['pedido_id'];
+            $cliente_id = $service_pedidos->buscarPedido($pedido_id)['cliente_id'];
+            $nome = $service_clientes->buscarCliente($cliente_id)['name'];
+            $created_at = $value['created_at'];
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            $pedido_id = $value['pedido_id'];
-            $cliente_id = $service_pedidos->buscarPedido($pedido_id)['cliente_id'];
             
-
-            $pedidosPorClientes[$pedidoKey] = ['cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade]; 
+            $pedidos[$key] = ['nome' => $nome, 'cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'created_at' => $created_at];
         } 
         
-        return $pedidosPorClientes; 
+        return $pedidos; 
     }
 
     public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
@@ -192,17 +200,23 @@ class DBPedidosService implements PedidosServiceInterface
             $total = $pedidos[$key]->total;
             $porcentagem = $pedidos[$key]->porcentagem;
 
-            $deleted_at = $pedidos[$key]->deleted_at; 
-            $created_at = $pedidos[$key]->created_at; 
-            $restored_at = $pedidos[$key]->restored_at;
-
-            $array[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'created_at' => $created_at, 'restored_at' => $restored_at,
-
-            'created_at' => date_format($created_at,"d/m/Y H:i:s"),
-            'delete_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
-            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
-            ]; 
+            $deleted_at = isset($pedidos[$key]->deleted_at) ? date_format($pedidos[$key]->deleted_at,"d/m/Y H:i:s") : null;
+            $created_at = isset($pedidos[$key]->created_at) ? date_format($pedidos[$key]->created_at, "d/m/Y H:i:s") : null;
+            $restored_at = isset($pedidos[$key]->restored_at) ? date_format($pedidos[$key]->restored_at, "d/m/Y H:i:s") : null;
             
+            $array[$pedido_id] = 
+            [
+                'create_by' => $nome_create, 
+                'delete_by' => $nome_delete, 
+                'restored_by' => $nome_restored, 
+                'cliente_id' => $id_cliente, 
+                'endereco' => $endereco, 
+                'total' => $total, 
+                'porcentagem' => $porcentagem, 
+                'created_at' => $created_at, 
+                'restored_at' => $restored_at,
+                'deleted_at' => $deleted_at
+            ]; 
         }
 
         return $array;
@@ -232,16 +246,30 @@ class DBPedidosService implements PedidosServiceInterface
             $endereco = $pedidos[$key]->endereco_id;
             $total = $pedidos[$key]->total;
             $porcentagem = $pedidos[$key]->porcentagem;
-            $deleted_at = $pedidos[$key]->deleted_at; 
-            $created_at = $pedidos[$key]->created_at; 
 
-            $array[$pedido_id] = ['create_by' => $nome_create, 'delete_by' => $nome_delete, 'restored_by' => $nome_restored, 'cliente_id' => $id_cliente, 'endereco' => $endereco, 'total' => $total, 'porcentagem' => $porcentagem, 'ano' => $deleted_at->year, 'dia_do_ano' => $deleted_at->dayOfYear, 'dia_da_semana' => $deleted_at->dayOfWeek, 'hora' => $deleted_at->hour, 'minuto' => $deleted_at->minute, 'segundo' => $deleted_at->second, 'mes' => $deleted_at->month,
+            $deleted_at = $pedidos[$key]->deleted_at;
+            $created_at = isset($pedidos[$key]->created_at) ? date_format($pedidos[$key]->created_at, "d/m/Y H:i:s") : null;
+            $restored_at = isset($pedidos[$key]->restored_at) ? date_format($pedidos[$key]->restored_at, "d/m/Y H:i:s") : null;
 
 
-            'created_at' => date_format($created_at,"d/m/Y H:i:s"),
-            'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
-            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
-
+            $array[$pedido_id] = [
+                'create_by' => $nome_create, 
+                'delete_by' => $nome_delete, 
+                'restored_by' => $nome_restored, 
+                'cliente_id' => $id_cliente, 
+                'endereco' => $endereco, 
+                'total' => $total, 
+                'porcentagem' => $porcentagem, 
+                'ano' => $deleted_at->year, 
+                'dia_do_ano' => $deleted_at->dayOfYear, 
+                'dia_da_semana' => $deleted_at->dayOfWeek, 
+                'hora' => $deleted_at->hour, 
+                'minuto' => $deleted_at->minute, 
+                'segundo' => $deleted_at->second, 
+                'mes' => $deleted_at->month,
+                'created_at' => $created_at, 
+                'restored_at' => $restored_at,
+                'deleted_at' => isset($pedidos[$key]->deleted_at) ? date_format($pedidos[$key]->deleted_at,"d/m/Y H:i:s") : null
             ]; 
             
         }
@@ -259,21 +287,30 @@ class DBPedidosService implements PedidosServiceInterface
         foreach ($pedido as $key => $value) {
 
 
-            $id_cliente = $pedido->cliente_id;
+            $cliente_id = $pedido->cliente_id;
             $endereco_id = $pedido->endereco_id;
             $total = $pedido->total;
             $totalSemDesconto = $pedido->totalSemDesconto;
             $porcentagem = $pedido->porcentagem;
             $created_at = $pedido->created_at;
             $create_by = $pedido->create_by;
-
             $nome_create_by = $provider_user->buscarNome($create_by);
 
-            $pedidoEncontrado = ['create_by' => $nome_create_by, 'cliente_id' => $id_cliente, 'endereco_id' => $endereco_id, 'total' => $total, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem,
-    
-            'created_at' => date_format($created_at,"d/m/Y H:i:s"),
-            'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
-            'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null ];
+            $deleted_at = isset($pedido->deleted_at) ? date_format($pedido->deleted_at,"d/m/Y H:i:s") : null;
+            $created_at = isset($pedido->created_at) ? date_format($pedido->created_at, "d/m/Y H:i:s") : null;
+            $restored_at = isset($pedido->restored_at) ? date_format($pedido->restored_at, "d/m/Y H:i:s") : null;
+
+            $pedidoEncontrado = [
+                'create_by' => $nome_create_by, 
+                'cliente_id' => $cliente_id, 
+                'endereco_id' => $endereco_id, 
+                'total' => $total, 
+                'totalSemDesconto' => $totalSemDesconto, 
+                'porcentagem' => $porcentagem,
+                'created_at' => $created_at, 
+                'restored_at' => $restored_at,
+                'deleted_at' => $deleted_at
+            ];
         }
 
         return $pedidoEncontrado;

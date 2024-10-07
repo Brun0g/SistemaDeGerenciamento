@@ -11,10 +11,10 @@
                     <table id="table" class="bg-white">
                         <thead >
                             <tr>
-                                <th style="border-right: 1px solid black;">Usúario</th>
-                                <th style="border-right: 1px solid black;">Produto</th>
-                                <th style="border-right: 1px solid black;">Ajuste</th>
-                                <th style="border-right: 1px solid black;">Data</th>
+                                <th >Usúario</th>
+                                <th >Produto</th>
+                                <th >Ajuste</th>
+                                <th >Data</th>
                             </tr>
                         </thead>
                         <tbody>

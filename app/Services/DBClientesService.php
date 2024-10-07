@@ -103,15 +103,15 @@ class DBClientesService implements ClientesServiceInterface
             $delete_by = $cliente->delete_by;
             $nome_delete_by = $provider_user->buscarNome($delete_by);
 
-            $created_at = $cliente->created_at;
+            $created_at = isset($cliente->created_at) ? date_format($cliente->created_at, "d/m/Y H:i:s") : null;
             $create_by = $cliente->create_by;
             $nome_create_by = $provider_user->buscarNome($create_by);
 
-            $restored_at = $cliente->restored_at;
+            $restored_at = isset($cliente->restored_at) ? date_format($cliente->restored_at, "d/m/Y H:i:s") : null;
             $restored_by = $cliente->restored_by;
             $nome_restored_by = $provider_user->buscarNome($restored_by);
 
-            $updated_at = $cliente->updated_at;
+            $updated_at = isset($cliente->updated_at) ? date_format($cliente->updated_at, "d/m/Y H:i:s") : null;
             $update_by = $cliente->update_by;
             $nome_update_by = $provider_user->buscarNome($update_by);
             
@@ -130,9 +130,9 @@ class DBClientesService implements ClientesServiceInterface
                 'estado' => $estado_cliente,
                 'contato' => $contato_cliente,
                 'deleted_at' => $deleted_at,
-                'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
-                'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null,
-                'updated_at' => isset($updated_at) ? date_format($updated_at, "d/m/Y H:i:s") : null
+                'restored_at' => $restored_at,
+                'created_at' => $created_at,
+                'updated_at' => $updated_at
             ];       
         }
 
@@ -183,23 +183,41 @@ class DBClientesService implements ClientesServiceInterface
             $estado_cliente = $cliente->estado;
             $contato_cliente = $cliente->contato;
 
-            $deleted_at = $cliente->deleted_at;
+            $deleted_at = isset($cliente->deleted_at) ? date_format($cliente->deleted_at,"d/m/Y H:i:s") : null;
             $delete_by = $cliente->delete_by;
             $nome_delete_by = $provider_user->buscarNome($delete_by);
 
-            $created_at = $cliente->created_at;
+            $created_at = isset($cliente->created_at) ? date_format($cliente->created_at, "d/m/Y H:i:s") : null;
             $create_by = $cliente->create_by;
             $nome_create_by = $provider_user->buscarNome($create_by);
 
-            $restored_at = $cliente->restored_at;
+            $restored_at = isset($cliente->restored_at) ? date_format($cliente->restored_at, "d/m/Y H:i:s") : null;
             $restored_by = $cliente->restored_by;
             $nome_restored_by = $provider_user->buscarNome($restored_by);
 
-            $updated_at = $cliente->updated_at;
+            $updated_at = isset($cliente->updated_at) ? date_format($cliente->updated_at, "d/m/Y H:i:s") : null;
             $update_by = $cliente->update_by;
             $nome_update_by = $provider_user->buscarNome($update_by);
 
-            return [ 'create_by' => $nome_create_by, 'update_by' => $nome_update_by, 'restored_by' => $nome_restored_by, 'deleted_by' => $nome_delete_by, 'name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null, 'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null, 'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null, 'updated_at' => isset($updated_at) ? date_format($updated_at, "d/m/Y H:i:s") : null];
+            return [ 
+                'create_by' => $nome_create_by, 
+                'update_by' => $nome_update_by, 
+                'restored_by' => $nome_restored_by, 
+                'deleted_by' => $nome_delete_by, 
+                'name' => $nome_cliente, 
+                'email' => $email_cliente, 
+                'idade' => $idade_cliente, 
+                'cidade' => $cidade_cliente, 
+                'cep' => $cep_cliente, 
+                'rua' => $rua_cliente, 
+                'numero' => $numero_cliente, 
+                'estado' => $estado_cliente, 
+                'contato' => $contato_cliente, 
+                'deleted_at' => $deleted_at, 
+                'restored_at' => $restored_at, 
+                'created_at' => $created_at, 
+                'updated_at' => $updated_at
+            ];
 		}
 
 		return [];
