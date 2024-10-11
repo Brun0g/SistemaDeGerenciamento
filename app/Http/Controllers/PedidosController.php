@@ -15,6 +15,7 @@ use \App\Services\ClientesServiceInterface;
 
 use \App\Services\UserServiceInterface;
 
+use Illuminate\Support\Carbon;
 
 
 class PedidosController extends Controller
@@ -27,11 +28,15 @@ class PedidosController extends Controller
         return redirect('Cliente/' . $cliente_id);
     }
 
-    public function delete(Request $request, $cliente_id, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas){
+    public function delete(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas){
 
-        $provider_pedidos->excluirPedido($pedido_id, $provider_entradas_saidas, null);
+        $provider_pedidos->excluirPedido($pedido_id, $provider_entradas_saidas);
 
-        return redirect('Cliente/' . $cliente_id);
+        $url = url()->previous();
+
+        session()->flash('status', 'Pedido deletado com sucesso!'); 
+
+        return redirect($url);
     }
     
     public function showFinishOrder(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente)
@@ -46,15 +51,54 @@ class PedidosController extends Controller
         return view('pedidoFinalizado' , ['nome' => $nome['name'], 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto'], 'data_pedido' =>$pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
     }
 
-    public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user)
+    public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente, EstoqueServiceInterface $provider_estoque)
     {
-        $excluidos = $provider_pedidos->listarPedidosExcluidos($provider_user);
-      
+        
+        $escolha = $request->input('pedidos');
+
+        $data_inicial = $request->input('data_inicial');
+        $data_final = $request->input('data_final');
+
+        $pagina_atual = 0;
+        $pagina = 0;
+
+        if(!session()->has('pagina_atual'))
+            session()->put('pagina_atual', $pagina_atual);
+        else 
+            $pagina_atual = session()->get('pagina_atual');
+
+
+        if( !isset($data_inicial, $data_final, $escolha) )
+        {
+            $data_inicial = now()->toDateString();
+            $data_final = now()->toDateString();
+            $escolha = 1;
+        }
+
+        if( Carbon::parse($data_inicial) > Carbon::parse($data_final) )
+        {
+            session()->flash('date_error', 'A data inicial deve ser menor ou igual a data final!');
+            $data_inicial = now()->toDateString();
+        }
+
+
+
+        if($escolha == "1"){
+            $pedidos = $provider_pedidos->listarPedidos(null, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual);
+
+            $pagina = $pedidos['page'];
+            $pedidos = $pedidos['array']; 
+        }
+        else{
+            $pedidos = $provider_pedidos->listarPedidosExcluidos($provider_user, $data_inicial, $data_final);
+        }
+
         $now = now();
+
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $excluidos, 'data_atual' => $data]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'page' => $pagina]);
     }
 
     public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)
@@ -92,5 +136,28 @@ class PedidosController extends Controller
         $data_atual = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
         return view('pedidos_clientes' , ['excluidos' => $excluidos, 'data_atual' => $data_atual, 'totalComDesconto' => $array ]);
+    }
+
+    public function switch_page(Request $request, $switch, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
+    {
+            
+        $url = url()->previous();
+
+        $pagina_atual = session()->get('pagina_atual');
+
+        $pagina_atual += $switch;
+        
+        session()->put('pagina_atual', $pagina_atual);
+
+        return redirect($url);
+    }
+    public function switch_page_link(Request $request, $switch, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
+    {
+        $url = url()->previous();
+
+
+        session()->put('pagina_atual', $switch);
+
+        return redirect($url);
     }
 }

@@ -5,8 +5,8 @@ namespace App\Services;
 
 interface PedidosServiceInterface
 {
-	function listarPedidos($cliente_id, $provider_estoque, $provider_user);
-	function listarPedidosExcluidos($provider_user);
+	function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual);
+	function listarPedidosExcluidos($provider_user, $data_inicial, $data_final);
 	function buscarPedido($pedido_id);
 	function salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total);
 	function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos);

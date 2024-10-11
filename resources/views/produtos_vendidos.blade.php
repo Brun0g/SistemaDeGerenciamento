@@ -6,13 +6,12 @@
 
 </x-slot>
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mt-3 list-disc list-inside text-sm text-red-600">
-        @foreach ($errors->all() as $error)
-        <li>{{ $error }}</li>
-        @endforeach
-        </ul>
+@if (session('date_error'))
+    <div style="display: flex; justify-content: center; margin-top: 20px">
+        <div class="alert alert-danger" style="text-align: center; width: 25%; margin-right: 10px; font-weight: 600;">
+
+        {{ session('date_error') }}
+        </div>
     </div>
 @endif
                   
@@ -20,7 +19,9 @@
 <form  action="/produtos_vendidos" method="GET" >
 @csrf
     <div style="display: flex; justify-content: center;   ">
+
         <div style="margin-right: 15px;">
+
             <label for="cliente-select" class="block text-sm font-medium text-gray-700">Escolha um cliente:</label>
             <select style="width: 315px;"name="procurar_cliente" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                 <option  value="">Todos os clientes</option>
@@ -34,18 +35,23 @@
             </select>
         </div>
         <div>
-            <label for="cliente-select" class="block text-sm font-medium text-gray-700">Escolha a data inicial e data final:</label>
-            <div style="display: flex; justify-content: center;">
 
-            <div style="text-align: left; ">
-                <label for="data_inicial">Data inicial:</label>
-                <input type="date" name="data_inicial"  />
-            </div>
-            <div style="text-align: right; margin-left: 15px;">
-                <label for="data_final">Data final:</label>
-                <input style="text-align" type="date" name="data_final"  />
+            <label for="cliente-select" class="block text-sm font-medium text-gray-700">Escolha a data inicial e data final:</label>
+                <div style="display: flex; justify-content: center;">
+
+                <div style="text-align: left; ">
+                    <label for="data_inicial">Data inicial:</label>
+                    <input type="date" name="data_inicial" value="{{$data_inicial}}" />
+                </div>
+                <div style="text-align: right; margin-left: 15px;">
+                    <label for="data_final">Data final:</label>
+                    @if(!$data_final)
+                    <input style="text-align" type="date" name="data_final" value="{{$data_inicial}}" required />
+                    @else
+                    <input style="text-align" type="date" name="data_final" value="{{$data_final}}" required />
+                    @endif
+                </div> 
             </div> 
-        </div> 
         </div>
         
    </div>
@@ -54,6 +60,7 @@
         </div>
 </div>
  </form>
+
 
 
 <div class="container" style="margin-top: 20px">

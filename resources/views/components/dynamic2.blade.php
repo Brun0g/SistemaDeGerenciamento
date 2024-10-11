@@ -6,7 +6,7 @@
 @foreach ($listarPedidosAprovados as $pedido_id => $value)
 
 @if ($value['cliente_id'] == $id )
-@if($value['delete_at'] == null)
+
 <tr class="bg-white">
     <td style="color:white; background: black; font-weight: 900; ">{{  $pedido_id }}</td>
     <td>{{strtoupper($value['create_by'])}}</td>
@@ -18,7 +18,7 @@
     <td style="color:green;">R$ {{ number_format($value['total'], 2, ",", ".")  }}</td>
     @if($deletedAt == null)
     <td>
-        <form  action="/ExcluirPedidoCliente/{{$value['cliente_id']}}/{{$pedido_id}}" method="POST" >
+        <form  action="/excluirPedido/{{$pedido_id}}" method="POST" >
             @csrf
             @method('DELETE')
             <button    class="btn btn-danger"  type="submit">Excluir</button>
@@ -47,7 +47,7 @@
          @endif
     </tr>
     @endif
-    @endif
+ 
     @endforeach
     @else
     <td style="background: white;" colspan="6" >Sem dados de registro!</td>

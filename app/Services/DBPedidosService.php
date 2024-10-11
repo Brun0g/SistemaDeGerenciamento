@@ -12,6 +12,7 @@ use App\Models\PedidosIndividuais;
 use App\Models\Pedidos;
 use App\Models\Entradas_saidas;
 
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -130,13 +131,13 @@ class DBPedidosService implements PedidosServiceInterface
         $service_pedidos = new DBPedidosService();
         $service_clientes = new DBClientesService();
 
-        if($data_inicial && $data_final)
-            $pedidos = PedidosIndividuais::withTrashed()->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->get();
-        else
-            $pedidos = PedidosIndividuais::withTrashed()->get();
+        
+        $pedidos = PedidosIndividuais::withTrashed()->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->get();
 
+        $pedidos_por_data = [];
 
         foreach ($pedidos as $key => $value) {
+
             $pedido_id = $value['pedido_id'];
             $cliente_id = $service_pedidos->buscarPedido($pedido_id)['cliente_id'];
             $nome = $service_clientes->buscarCliente($cliente_id)['name'];
@@ -144,11 +145,11 @@ class DBPedidosService implements PedidosServiceInterface
             $produto_id = $value['produto_id'];
             $quantidade = $value['quantidade'];
             $valor = $value['total'];
-            
-            $pedidos[$key] = ['nome' => $nome, 'cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'created_at' => $created_at];
+
+            $pedidos_por_data[] = ['nome' => $nome, 'cliente_id' => $cliente_id, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'created_at' => $created_at];
         } 
-        
-        return $pedidos; 
+
+        return $pedidos_por_data; 
     }
 
     public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
@@ -177,35 +178,50 @@ class DBPedidosService implements PedidosServiceInterface
         return $lista;          
     }
 
-    public function listarPedidos($cliente_id, $provider_estoque, $provider_user)
+    public function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual)
     {
         $array = [];
 
-        $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
+        $row = Pedidos::count();
+        $limit = 5;
+        $adapt_list = round($row / 2);
+
+        if($adapt_list > $limit)
+            $limit = $adapt_list - 1;
+
+        $pagina_atual = $pagina_atual * $limit;
+        $numero_paginas = round($row / $limit);
+
+        if($cliente_id)
+            $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
+        else
+            $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($limit)->offset($pagina_atual)->get();
+
 
         foreach ($pedidos as $key => $value) {
 
             $pedido_id = $pedidos[$key]->id;
+    
+            $nome_create = $pedidos[$key]->create_by;
+            $nome_create = $provider_user->buscarNome($nome_create);
 
             $nome_delete = $pedidos[$key]->delete_by;
-            $nome_restored = $pedidos[$key]->restored_by;
-            $nome_create = $pedidos[$key]->create_by;
-
             $nome_delete = $provider_user->buscarNome($nome_delete);
+
+            $nome_restored = $pedidos[$key]->restored_by;
             $nome_restored = $provider_user->buscarNome($nome_restored);
-            $nome_create = $provider_user->buscarNome($nome_create);
-            
+
             $id_cliente = $pedidos[$key]->cliente_id;
             $endereco = $pedidos[$key]->endereco_id;
             $total = $pedidos[$key]->total;
             $porcentagem = $pedidos[$key]->porcentagem;
 
-            $deleted_at = isset($pedidos[$key]->deleted_at) ? date_format($pedidos[$key]->deleted_at,"d/m/Y H:i:s") : null;
-            $created_at = isset($pedidos[$key]->created_at) ? date_format($pedidos[$key]->created_at, "d/m/Y H:i:s") : null;
+            $deleted_at = null;
+            $created_at = $pedidos[$key]->created_at;
             $restored_at = isset($pedidos[$key]->restored_at) ? date_format($pedidos[$key]->restored_at, "d/m/Y H:i:s") : null;
-            
-            $array[$pedido_id] = 
-            [
+
+
+            $array[$pedido_id] = [
                 'create_by' => $nome_create, 
                 'delete_by' => $nome_delete, 
                 'restored_by' => $nome_restored, 
@@ -213,21 +229,29 @@ class DBPedidosService implements PedidosServiceInterface
                 'endereco' => $endereco, 
                 'total' => $total, 
                 'porcentagem' => $porcentagem, 
-                'created_at' => $created_at, 
+                'ano' => $created_at->year, 
+                'dia_do_ano' => $created_at->dayOfYear, 
+                'dia_da_semana' => $created_at->dayOfWeek, 
+                'hora' => $created_at->hour, 
+                'minuto' => $created_at->minute, 
+                'segundo' => $created_at->second, 
+                'mes' => $created_at->month,
+                'created_at' => isset($pedidos[$key]->created_at) ? date_format($pedidos[$key]->created_at, "d/m/Y H:i:s") : null, 
                 'restored_at' => $restored_at,
-                'deleted_at' => $deleted_at
+                'deleted_at' => isset($pedidos[$key]->deleted_at) ? date_format($pedidos[$key]->deleted_at,"d/m/Y H:i:s") : null
             ]; 
+            
         }
 
-        return $array;
+        return ['array' => $array, 'page'=> $numero_paginas];
     }
 
-    public function listarPedidosExcluidos($provider_user)
+    public function listarPedidosExcluidos($provider_user, $data_inicial, $data_final)
     {
         $array = [];
 
-        $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->get();
-
+        $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->get();
+     
 
         foreach ($pedidos as $key => $value) {
 
@@ -332,5 +356,5 @@ class DBPedidosService implements PedidosServiceInterface
         }
 
         return true;
-    }
+    }  
 }

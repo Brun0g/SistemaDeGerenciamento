@@ -38,6 +38,8 @@ use \App\Services\SessionEntradasService;
 use \App\Services\SessionUserService;
 use \App\Services\SessionEstoqueService;
 
+use Illuminate\Pagination\Paginator;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -45,23 +47,23 @@ class AppServiceProvider extends ServiceProvider
 
     public $bindings = [
 
-        ClientesServiceInterface::class => SessionClientesService::class,
-        CategoriaServiceInterface::class => SessionCategoriaService::class,
-        ProdutosServiceInterface::class => SessionProdutosService::class,
-        PedidosServiceInterface::class => SessionPedidosService::class,
-        EnderecoServiceInterface::class => SessionEnderecoService::class,
-        PromocoesServiceInterface::class => SessionPromocoesService::class,
-        EntradasServiceInterface::class => SessionEntradasService::class,
-        EstoqueServiceInterface::class => SessionEstoqueService::class,
+        // ClientesServiceInterface::class => SessionClientesService::class,
+        // CategoriaServiceInterface::class => SessionCategoriaService::class,
+        // ProdutosServiceInterface::class => SessionProdutosService::class,
+        // PedidosServiceInterface::class => SessionPedidosService::class,
+        // EnderecoServiceInterface::class => SessionEnderecoService::class,
+        // PromocoesServiceInterface::class => SessionPromocoesService::class,
+        // EntradasServiceInterface::class => SessionEntradasService::class,
+        // EstoqueServiceInterface::class => SessionEstoqueService::class,
 
-        // ClientesServiceInterface::class => DBClientesService::class,
-        // CategoriaServiceInterface::class => DBCategoriasService::class,
-        // ProdutosServiceInterface::class => DBProdutosService::class,
-        // PedidosServiceInterface::class => DBPedidosService::class,
-        // EnderecoServiceInterface::class => DBEnderecosService::class,
-        // PromocoesServiceInterface::class => DBPromocoesService::class,
-        // EntradasServiceInterface::class => DBEntradasService::class,
-        // EstoqueServiceInterface::class => DBEstoqueService::class,
+        ClientesServiceInterface::class => DBClientesService::class,
+        CategoriaServiceInterface::class => DBCategoriasService::class,
+        ProdutosServiceInterface::class => DBProdutosService::class,
+        PedidosServiceInterface::class => DBPedidosService::class,
+        EnderecoServiceInterface::class => DBEnderecosService::class,
+        PromocoesServiceInterface::class => DBPromocoesService::class,
+        EntradasServiceInterface::class => DBEntradasService::class,
+        EstoqueServiceInterface::class => DBEstoqueService::class,
 
         UserServiceInterface::class => DBUserService::class,
         CarrinhoServiceInterface::class => SessionCarrinhoService::class,
@@ -85,6 +87,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        Paginator::useBootstrap();
     }
 }

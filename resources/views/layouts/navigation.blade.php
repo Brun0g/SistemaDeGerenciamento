@@ -147,7 +147,7 @@
                             <x-dropdown-link :href="route('pedidos_excluidos')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Pedidos excluidos') }}
+                                {{ __('Lista de pedidos') }}
                             </x-dropdown-link>
                         </form>
                        {{--  <form method="POST" action="{{ route('pedidos_clientes') }}">

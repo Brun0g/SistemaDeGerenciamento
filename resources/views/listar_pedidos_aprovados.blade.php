@@ -153,11 +153,9 @@
           </thead>
 
           <tbody>
-            @if(!session()->has('Pedido_encerrado'))
+           
             <x-dynamic :listarPedidosAprovados="$listar_pedidos" :id="$cliente_id" :deletedAt="$deletedAt"></x-dynamic>
-            @else
-            <x-dynamic2 :listarPedidosAprovados="$listar_pedidos" :id="$cliente_id" :deletedAt="$deletedAt"></x-dynamic2>
-            @endif
+
           </tbody>
         </table>
         

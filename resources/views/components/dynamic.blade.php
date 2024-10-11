@@ -20,7 +20,7 @@
     <td style="color:green;">R$ {{ number_format($value['total'], 2, ",", ".")  }}</td>
 
     <td>
-        <form  action="/ExcluirPedidoCliente/{{$value['cliente_id']}}/{{$pedido_id}}" method="POST" >
+        <form  action="/excluirPedido/{{$pedido_id}}" method="POST" >
             @csrf
             @method('DELETE')
             <button    class="btn btn-danger"  type="submit">Excluir</button>

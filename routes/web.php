@@ -80,11 +80,13 @@ Route::PATCH('/RestaurarProduto/{id}', [ProdutosController::class, 'restored'])-
 
 // PEDIDO
 Route::POST('/aprovarPedido/{id_pedido}/{id_cliente}',[PedidosController::class,'finish'])->middleware(['auth']);
-Route::DELETE('/ExcluirPedidoCliente/{id_cliente}/{id_product}',[PedidosController::class,'delete'])->middleware(['auth']);
+Route::DELETE('/excluirPedido/{id_product}',[PedidosController::class,'delete'])->middleware(['auth']);
 Route::GET('/pedidofinalizado/{id_pedido}', [PedidosController::class, 'showFinishOrder'])->middleware(['auth']);
 Route::GET('/pedidos_excluidos', [PedidosController::class, 'orders_deleted'])->middleware(['auth'])->name('pedidos_excluidos');
 Route::GET('/pedidos_clientes', [PedidosController::class, 'orders_client'])->middleware(['auth'])->name('pedidos_clientes');
 Route::POST('/Restaurar_pedido/{id_pedido}', [PedidosController::class, 'orders_active'])->middleware(['auth']);
+Route::GET('/trocar_pagina/{page}', [PedidosController::class, 'switch_page'])->middleware(['auth']);
+Route::GET('/trocar_pagina_link{page}', [PedidosController::class, 'switch_page_link'])->middleware(['auth']);
 
 
 //CARRINHO
