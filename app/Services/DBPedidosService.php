@@ -182,24 +182,26 @@ class DBPedidosService implements PedidosServiceInterface
     {
         $array = [];
 
-        $row = Pedidos::count();
-        $limit = 5;
-        $adapt_list = round($row / 2);
+        $numero_paginas = 0;
 
-        if($adapt_list > $limit)
-            $limit = $adapt_list - 1;
+        if($data_inicial && $data_final)
+        {
+            $row = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->count();
+            $row_limit = 5;
+            $pagina_atual = $pagina_atual * $row_limit;                
+            
+            $numero_paginas = ceil($row / $row_limit - 1);
+        }
 
-        $pagina_atual = $pagina_atual * $limit;
-        $numero_paginas = round($row / $limit);
-
+        
         if($cliente_id)
             $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
         else
-            $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($limit)->offset($pagina_atual)->get();
+            $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->get();
 
-
-        foreach ($pedidos as $key => $value) {
-
+        
+        foreach ($pedidos as $key => $value) 
+        {
             $pedido_id = $pedidos[$key]->id;
     
             $nome_create = $pedidos[$key]->create_by;
@@ -220,7 +222,6 @@ class DBPedidosService implements PedidosServiceInterface
             $created_at = $pedidos[$key]->created_at;
             $restored_at = isset($pedidos[$key]->restored_at) ? date_format($pedidos[$key]->restored_at, "d/m/Y H:i:s") : null;
 
-
             $array[$pedido_id] = [
                 'create_by' => $nome_create, 
                 'delete_by' => $nome_delete, 
@@ -239,20 +240,29 @@ class DBPedidosService implements PedidosServiceInterface
                 'created_at' => isset($pedidos[$key]->created_at) ? date_format($pedidos[$key]->created_at, "d/m/Y H:i:s") : null, 
                 'restored_at' => $restored_at,
                 'deleted_at' => isset($pedidos[$key]->deleted_at) ? date_format($pedidos[$key]->deleted_at,"d/m/Y H:i:s") : null
-            ]; 
-            
+            ];  
         }
 
         return ['array' => $array, 'page'=> $numero_paginas];
     }
 
-    public function listarPedidosExcluidos($provider_user, $data_inicial, $data_final)
+    public function listarPedidosExcluidos($provider_user, $data_inicial, $data_final, $pagina_atual)
     {
         $array = [];
 
-        $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->get();
-     
+        $numero_paginas = 0;
 
+        if($data_inicial && $data_final)
+        {
+            $row = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->count();
+            $row_limit = 5;
+            $pagina_atual = $pagina_atual * $row_limit;
+            
+            $numero_paginas = ceil($row / $row_limit - 1);
+        }
+
+        $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->get();
+     
         foreach ($pedidos as $key => $value) {
 
             $pedido_id = $pedidos[$key]->id;
@@ -274,7 +284,6 @@ class DBPedidosService implements PedidosServiceInterface
             $deleted_at = $pedidos[$key]->deleted_at;
             $created_at = isset($pedidos[$key]->created_at) ? date_format($pedidos[$key]->created_at, "d/m/Y H:i:s") : null;
             $restored_at = isset($pedidos[$key]->restored_at) ? date_format($pedidos[$key]->restored_at, "d/m/Y H:i:s") : null;
-
 
             $array[$pedido_id] = [
                 'create_by' => $nome_create, 
@@ -298,7 +307,9 @@ class DBPedidosService implements PedidosServiceInterface
             
         }
 
-        return $array;
+
+
+        return ['array' => $array, 'page' => $numero_paginas];
     }
 
     public function buscarPedido($pedido_id)

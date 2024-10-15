@@ -169,7 +169,7 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-    public function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $next, $previous)
+    public function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual)
     {
         $array = [];
 
@@ -224,26 +224,35 @@ class SessionPedidosService implements PedidosServiceInterface
                         'mes' => $created_at->month,
                         'created_at' => isset($pedidos[$key]['created_at']) ? date_format($pedidos[$key]['created_at'], "d/m/Y H:i:s") : null,
                         'restored_at' => $restored_at,
-                        'deleted_at' =>  null
+                        'deleted_at' =>  null,
+                        'pedido_id' => $pedido_id
                     ]; 
                 }
+
                 
-            
         }
 
-       
-     
-        return $array;
+        $numero_paginas = 0;
+
+        if($data_inicial && $data_final)
+        {
+            $row_limit = 5;
+            $row = sizeof($array); 
+            $pagina_atual = $pagina_atual * $row_limit;
+            $array = array_slice($array, $pagina_atual, $row_limit); 
+
+            $numero_paginas = ceil($row / $row_limit - 1);
+        }
+  
+        return ['array' => $array, 'page'=> $numero_paginas];
     }
 
-     public function listarPedidosExcluidos($provider_user, $data_inicial, $data_final)
+     public function listarPedidosExcluidos($provider_user, $data_inicial, $data_final, $pagina_atual)
     {
         $array = [];
 
         $pedidos = session()->get('Pedido_encerrado',[]);
         
-        
-
         foreach ($pedidos as $key => $value) {
 
         $buscar_por_data = false;
@@ -294,7 +303,8 @@ class SessionPedidosService implements PedidosServiceInterface
                         'mes' => $deleted_at->month,
                         'created_at' => $created_at, 
                         'restored_at' => $restored_at,
-                        'deleted_at' => isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null
+                        'deleted_at' => isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
+                        'pedido_id' => $pedido_id
                     ]; 
                 }
                 
@@ -303,7 +313,19 @@ class SessionPedidosService implements PedidosServiceInterface
         }
 
 
-        return $array;
+        $numero_paginas = 0;
+
+        if($data_inicial && $data_final)
+        {
+            $row_limit = 5;
+            $row = sizeof($array); 
+            $pagina_atual = $pagina_atual * $row_limit;
+            $array = array_slice($array, $pagina_atual, $row_limit); 
+            $numero_paginas = ceil($row / $row_limit - 1);
+
+        }
+        
+        return ['array' => $array, 'page'=> $numero_paginas];
     }
 
     public function buscarPedido($pedido_id)

@@ -32,9 +32,14 @@ class PedidosController extends Controller
 
         $provider_pedidos->excluirPedido($pedido_id, $provider_entradas_saidas);
 
+        $pagina_atual = $request->input('pagina_atual');
+
         $url = url()->previous();
 
         session()->flash('status', 'Pedido deletado com sucesso!'); 
+
+        if(isset($pagina_atual))
+            return redirect('pedidos_excluidos');
 
         return redirect($url);
     }
@@ -53,20 +58,17 @@ class PedidosController extends Controller
 
     public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente, EstoqueServiceInterface $provider_estoque)
     {
-        
         $escolha = $request->input('pedidos');
-
         $data_inicial = $request->input('data_inicial');
         $data_final = $request->input('data_final');
+        $request_page = $request->input('page');
 
         $pagina_atual = 0;
-        $pagina = 0;
 
-        if(!session()->has('pagina_atual'))
-            session()->put('pagina_atual', $pagina_atual);
-        else 
-            $pagina_atual = session()->get('pagina_atual');
+        if($request_page)
+            $pagina_atual = $request_page;
 
+        $total_paginas = 0;
 
         if( !isset($data_inicial, $data_final, $escolha) )
         {
@@ -82,15 +84,18 @@ class PedidosController extends Controller
         }
 
 
-
         if($escolha == "1"){
             $pedidos = $provider_pedidos->listarPedidos(null, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual);
 
-            $pagina = $pedidos['page'];
+            $total_paginas = $pedidos['page'];
             $pedidos = $pedidos['array']; 
         }
-        else{
-            $pedidos = $provider_pedidos->listarPedidosExcluidos($provider_user, $data_inicial, $data_final);
+        else
+        {
+            $pedidos = $provider_pedidos->listarPedidosExcluidos($provider_user, $data_inicial, $data_final, $pagina_atual);
+
+            $total_paginas = $pedidos['page'];
+            $pedidos = $pedidos['array']; 
         }
 
         $now = now();
@@ -98,7 +103,51 @@ class PedidosController extends Controller
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'page' => $pagina]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'page' => $total_paginas]);
+    }
+
+    public function orders_list(Request $request, $pagina_atual, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente, EstoqueServiceInterface $provider_estoque)
+    {
+        $escolha = $request->input('pedidos');
+        $data_inicial = $request->input('data_inicial');
+        $data_final = $request->input('data_final');
+        $total_paginas = 0;
+
+        if( !isset($data_inicial, $data_final, $escolha) )
+        {
+            $data_inicial = now()->toDateString();
+            $data_final = now()->toDateString();
+            $escolha = 1;
+        }
+
+        if( Carbon::parse($data_inicial) > Carbon::parse($data_final) )
+        {
+            session()->flash('date_error', 'A data inicial deve ser menor ou igual a data final!');
+            $data_inicial = now()->toDateString();
+        }
+
+
+        if($escolha == "1"){
+            $pedidos = $provider_pedidos->listarPedidos(null, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual);
+
+            $total_paginas = $pedidos['page'];
+            $pedidos = $pedidos['array']; 
+        }
+        else
+        {
+            $pedidos = $provider_pedidos->listarPedidosExcluidos($provider_user, $data_inicial, $data_final, $pagina_atual);
+
+            $total_paginas = $pedidos['page'];
+            $pedidos = $pedidos['array']; 
+        }
+
+        $now = now();
+
+
+
+        $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
+
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'page' => $total_paginas]);
     }
 
     public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)
@@ -136,28 +185,5 @@ class PedidosController extends Controller
         $data_atual = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
         return view('pedidos_clientes' , ['excluidos' => $excluidos, 'data_atual' => $data_atual, 'totalComDesconto' => $array ]);
-    }
-
-    public function switch_page(Request $request, $switch, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
-    {
-            
-        $url = url()->previous();
-
-        $pagina_atual = session()->get('pagina_atual');
-
-        $pagina_atual += $switch;
-        
-        session()->put('pagina_atual', $pagina_atual);
-
-        return redirect($url);
-    }
-    public function switch_page_link(Request $request, $switch, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user)
-    {
-        $url = url()->previous();
-
-
-        session()->put('pagina_atual', $switch);
-
-        return redirect($url);
     }
 }
