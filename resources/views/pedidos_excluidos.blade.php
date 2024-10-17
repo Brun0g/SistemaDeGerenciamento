@@ -72,6 +72,8 @@
         </div>
         <div style="margin-bottom: 15px; margin-top: 20px;"><button type="submit" class="btn btn-success">Confirmar</button></div>
     </div>
+
+        <input type="hidden" name="page" value="0">
 </form>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
@@ -88,9 +90,60 @@
                     <tr>
                         <th>Pedido criado</th>
                         <th>Pedido deletado</th>
-                        <th>Tipo</th>
-                       <th> <button>Total</button></th>
-                        <th>Excluido</th>
+                                                        <th>
+                                    <form action="/pedidos_excluidos/{{$pagina_atual}}" method="POST">
+                                        <span style="color: white; font-weight: 900;">Tipo</span>
+                                        @csrf
+                                        
+                                    
+                                            <button class="btn btn-{{!$order_by['id'] ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['id'] ? 'down' : 'up'}}"></i></button>
+                                            <input type="hidden" name="ordernar_id" value={{$order_by['id'] == 0 ? 1 : 0}}>
+                                            
+                                            <input type="hidden" name="ordernar_data" value={{null}}>
+                                            <input type="hidden" name="ordernar_total" value={{null}}>
+
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+                                    </form>
+                                </th>
+                                <th>
+                                    <form action="/pedidos_excluidos/{{$pagina_atual}}" method="POST">
+                                        <span style="color: white; font-weight: 900;">Total</span>
+
+                                        @csrf
+                                        
+                                       
+                                            <button class="btn btn-{{!$order_by['total'] ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['total'] ? 'down' : 'up'}}"></i></button>
+                                            <input type="hidden" name="ordernar_total" value={{$order_by['total'] == 0 ? 1 : 0}}>
+                                            
+                                            <input type="hidden" name="ordernar_data" value={{null}}>
+                                            <input type="hidden" name="ordernar_id" value={{null}}>
+
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+                                    </form>
+                                </th>
+                                <th>
+                                    <form action="/pedidos_excluidos/{{$pagina_atual}}" method="POST">
+                                        <span style="color: white; font-weight: 900;">Data</span>
+
+                                        @csrf
+                                        
+                                        
+                                            <button class="btn btn-{{!$order_by['deleted_at'] ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['deleted_at'] ? 'down' : 'up'}}"></i></button>
+                                            <input type="hidden" name="ordernar_data" value={{$order_by['deleted_at'] == 0 ? 1 : 0}}>
+                                            
+                                            <input type="hidden" name="ordernar_total" value={{null}}>
+                                            <input type="hidden" name="ordernar_id" value={{null}}>
+
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                    </form>
+                                </th>
                         <th>Ação</th>
                     </tr>
                 </thead>
@@ -141,7 +194,7 @@
 
                                         @csrf
                                         
-                                        
+                                          
                                             <button class="btn btn-{{!$order_by['created_at'] ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['created_at'] ? 'down' : 'up'}}"></i></button>
                                             <input type="hidden" name="ordernar_data" value={{$order_by['created_at'] == 0 ? 1 : 0}}>
                                             
@@ -156,8 +209,6 @@
                                 </th>
                                 <th>Ação</th>
                             </tr>
-                            
-                   
                     </thead>
                 @endif
                     <tbody>
@@ -176,6 +227,10 @@
                         </td>
                         <td style="color: green"> R$ {{  number_format($value['total'], 2, ",", ".")}}</td>
 
+
+                                
+                               
+
                         @if($data_atual['dia_do_ano'] > $value['dia_do_ano'] && $data_atual['mes'] == $value['mes'])
                         <td>{{$data_atual['dia_do_ano'] - $value['dia_do_ano']}} dia atrás</td>
                         @elseif($data_atual['mes'] - $value['mes'] == 1)
@@ -187,9 +242,16 @@
                         @endif
 
                         <td>
-                            <form action="/Restaurar_pedido/{{isset($value['pedido_id']) ? $value['pedido_id'] : $key}}" method="POST">
+                            <form action="/Restaurar_pedido" method="POST">
                             @csrf
                                 <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Restaurar</span></button>
+                                <input type="hidden" name="pagina_atual" value={{$pagina_atual}}>
+                                <input type="hidden" name="pedido_id" value={{isset($value['pedido_id']) ? $value['pedido_id'] : $key}}>
+                                <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                <input type="hidden" name="data_final" value="{{$data_final}}">
+                                <input type="hidden" name="page" value="{{$pagina_atual}}">
+
                             </form>
                         </td>
                     </tr>
@@ -238,6 +300,15 @@
                             @method('DELETE')
                             <button class="btn btn-danger" type="submit" style="color: white; font-weight: 900;">Excluir</span></button>
                             <input type="hidden" name="pagina_atual" value="{{$pagina_atual}}">
+                            <input type="hidden" name="pedido_id" value="{{$pagina_atual}}">
+
+                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                            <input type="hidden" name="data_final" value="{{$data_final}}">
+                            <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
+                            <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
+                            <input type="hidden" name="ordernar_data" value={{$escolha == 1 ? $order_by['created_at'] : $order_by['deleted_at']}}>
+                            <input type="hidden" name="page" value="{{$pagina_atual}}">
                             </form>
                         </td>
                     </tr>
@@ -254,7 +325,7 @@
         </div>
     </div>
 
-@if($page != 0)
+@if($total_paginas != 0)
 <div style="display: flex; justify-content: center; margin-top: 20px;">
 
     @if($pagina_atual > 0)
@@ -266,14 +337,15 @@
         <input type="hidden" name="data_final" value="{{$data_final}}">
         <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
         <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
-        <input type="hidden" name="ordernar_data" value={{$order_by['created_at']}}>
+        <input type="hidden" name="page" value="{{$pagina_atual}}">
+        <input type="hidden" name="ordernar_data" value={{$escolha == 1 ? $order_by['created_at'] : $order_by['deleted_at']}}>
         <div><button class="btn btn-info" type="submit" style="color: white; font-weight: 900;"><</span></button></div>
         </form>
     </div>
     @endif
 
     <div style="display: flex; justify-content: center; ">
-        @for ($i = 0; $i <= $page; $i++)
+        @for ($i = 0; $i <= $total_paginas; $i++)
             <form action="/pedidos_excluidos/{{$i}}" method="POST">
             @csrf
                 <input type="hidden" name="pedidos" value="{{$escolha}}">
@@ -281,13 +353,14 @@
                 <input type="hidden" name="data_final" value="{{$data_final}}">
             <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
             <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
-            <input type="hidden" name="ordernar_data" value={{$order_by['created_at']}}>
+            <input type="hidden" name="ordernar_data" value={{$escolha == 1 ? $order_by['created_at'] : $order_by['deleted_at']}}>
+            <input type="hidden" name="page" value="{{$pagina_atual}}">
                 <button class="btn {{$pagina_atual == $i ? 'btn-secondary' : 'btn-dark'}} " name="page"  value="{{$i}}"type="submit" style="color: white; font-weight: 900;">{{$i}}</span></button>
             </form>
         @endfor
     </div>
 
-    @if($page  > $pagina_atual)
+    @if($total_paginas  > $pagina_atual)
     <div style="display: flex; justify-content: center;">
         <form action="/pedidos_excluidos/{{$pagina_atual + 1}}" method="POST">
             @csrf
@@ -296,7 +369,8 @@
             <input type="hidden" name="data_final" value="{{$data_final}}">
             <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
             <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
-            <input type="hidden" name="ordernar_data" value={{$order_by['created_at']}}>
+            <input type="hidden" name="ordernar_data" value={{$escolha == 1 ? $order_by['created_at'] : $order_by['deleted_at']}}>
+            <input type="hidden" name="page" value="{{$pagina_atual}}">
             <button class="btn btn-info" type="submit" style="color: white; font-weight: 900;">></span></button>
         </form>
     </div>

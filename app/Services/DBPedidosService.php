@@ -182,7 +182,7 @@ class DBPedidosService implements PedidosServiceInterface
     {
         $array = [];
 
-        $numero_paginas = 0;
+        $total_paginas = 0;
 
 
         if($data_inicial && $data_final)
@@ -191,21 +191,21 @@ class DBPedidosService implements PedidosServiceInterface
             $row_limit = 5;
             $pagina_atual = $pagina_atual * $row_limit;                
             
-            $numero_paginas = ceil($row / $row_limit - 1);
+            $total_paginas = ceil($row / $row_limit - 1);
         }
 
+        if($order_by)
+        {
+            $key = key($order_by);
+            $order = $order_by[$key] == 0 ? 'asc' : 'desc';
+        }
         
-        $key = key($order_by);
-        $order = $order_by[$key] == 0 ? 'asc' : 'desc';
 
         if($cliente_id)
             $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
         else
             $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->get();
 
-
-
-        
         foreach ($pedidos as $key => $value) 
         {
             $pedido_id = $pedidos[$key]->id;
@@ -249,14 +249,14 @@ class DBPedidosService implements PedidosServiceInterface
             ];  
         }
 
-        return ['array' => $array, 'page'=> $numero_paginas];
+        return ['array' => $array, 'total_paginas'=> $total_paginas];
     }
 
-    public function listarPedidosExcluidos($provider_user, $data_inicial, $data_final, $pagina_atual)
+    public function listarPedidosExcluidos($provider_user, $data_inicial, $data_final, $pagina_atual, $order_by)
     {
         $array = [];
 
-        $numero_paginas = 0;
+        $total_paginas = 0;
 
         if($data_inicial && $data_final)
         {
@@ -264,10 +264,16 @@ class DBPedidosService implements PedidosServiceInterface
             $row_limit = 5;
             $pagina_atual = $pagina_atual * $row_limit;
             
-            $numero_paginas = ceil($row / $row_limit - 1);
+            $total_paginas = ceil($row / $row_limit - 1);
         }
 
-        $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->get();
+        if($order_by)
+        {
+            $key = key($order_by);
+            $order = $order_by[$key] == 0 ? 'asc' : 'desc';
+        }
+
+        $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->get();
      
         foreach ($pedidos as $key => $value) {
 
@@ -313,9 +319,7 @@ class DBPedidosService implements PedidosServiceInterface
             
         }
 
-
-
-        return ['array' => $array, 'page' => $numero_paginas];
+        return ['array' => $array, 'total_paginas' => $total_paginas];
     }
 
     public function buscarPedido($pedido_id)

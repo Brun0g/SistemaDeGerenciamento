@@ -169,7 +169,7 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-    public function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual)
+    public function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual, $order_by)
     {
         $array = [];
 
@@ -202,7 +202,7 @@ class SessionPedidosService implements PedidosServiceInterface
 
                 if (isset($cliente_id) && $id_cliente == $value['cliente_id'] && $value['deleted_at'] == null)
                     $buscar = true;
-                elseif($data_inicial && $data_inicial && $created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final && $value['deleted_at'] == null)
+                elseif($data_inicial && $data_inicial && $created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final && $value['deleted_at'] == null &&)
                     $buscar = true;
                 
                 if($buscar)
