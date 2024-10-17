@@ -64,11 +64,11 @@ class PedidosController extends Controller
         $request_page = $request->input('page');
 
         $pagina_atual = 0;
+        $total_paginas = 0;
+        $order_by = ['id' => null, 'total' => null, 'created_at' => null];
 
         if($request_page)
             $pagina_atual = $request_page;
-
-        $total_paginas = 0;
 
         if( !isset($data_inicial, $data_final, $escolha) )
         {
@@ -85,7 +85,7 @@ class PedidosController extends Controller
 
 
         if($escolha == "1"){
-            $pedidos = $provider_pedidos->listarPedidos(null, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual);
+            $pedidos = $provider_pedidos->listarPedidos(null, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual, $order_by);
 
             $total_paginas = $pedidos['page'];
             $pedidos = $pedidos['array']; 
@@ -100,10 +100,9 @@ class PedidosController extends Controller
 
         $now = now();
 
-
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'page' => $total_paginas]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'page' => $total_paginas, 'order_by' => $order_by]);
     }
 
     public function orders_list(Request $request, $pagina_atual, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente, EstoqueServiceInterface $provider_estoque)
@@ -111,8 +110,24 @@ class PedidosController extends Controller
         $escolha = $request->input('pedidos');
         $data_inicial = $request->input('data_inicial');
         $data_final = $request->input('data_final');
+
+        $ordernar_id = $request->input('ordernar_id');
+        $ordernar_total = $request->input('ordernar_total');
+        $ordernar_data = $request->input('ordernar_data');
+
+        $order_by = ['id' => $ordernar_id];
         $total_paginas = 0;
 
+        if(is_numeric($ordernar_total))
+            $order_by = ['total' => $ordernar_total];
+        
+        if(is_numeric($ordernar_data))
+            $order_by = ['created_at' => $ordernar_data];
+
+
+        $array_order = ['id' => $ordernar_id, 'total' => $ordernar_total, 'created_at' => $ordernar_data];
+
+        
         if( !isset($data_inicial, $data_final, $escolha) )
         {
             $data_inicial = now()->toDateString();
@@ -128,7 +143,7 @@ class PedidosController extends Controller
 
 
         if($escolha == "1"){
-            $pedidos = $provider_pedidos->listarPedidos(null, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual);
+            $pedidos = $provider_pedidos->listarPedidos(null, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual, $order_by);
 
             $total_paginas = $pedidos['page'];
             $pedidos = $pedidos['array']; 
@@ -143,11 +158,10 @@ class PedidosController extends Controller
 
         $now = now();
 
-
-
+        
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'page' => $total_paginas]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'page' => $total_paginas, 'order_by' => $array_order]);
     }
 
     public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)

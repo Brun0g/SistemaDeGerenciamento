@@ -35,7 +35,7 @@ class ClientesController extends Controller
 
         foreach ($tabela_clientes as $cliente_id => $value) {
             $valor_total_pedido[$cliente_id] = 0;
-            $buscar_pedido_cliente = $provider_pedido->listarPedidos($cliente_id, $provider_estoque, $provider_user, null, null, null)['array'];
+            $buscar_pedido_cliente = $provider_pedido->listarPedidos($cliente_id, $provider_estoque, $provider_user, null, null, null, null)['array'];
 
             foreach ($buscar_pedido_cliente as $value) {
                 if($cliente_id == $value['cliente_id'])
@@ -118,7 +118,7 @@ class ClientesController extends Controller
         $listar_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);  
         $listar_produtos = $provider_produto->listarProduto($provider_promocoes, $provider_estoque, false);
         $listar_categorias = $provider_categoria->listarCategoria();
-        $listar_pedidos = $provider_pedidos->listarPedidos($cliente_id, $provider_estoque, $provider_user, null, null, null)['array'];
+        $listar_pedidos = $provider_pedidos->listarPedidos($cliente_id, $provider_estoque, $provider_user, null, null, null, null)['array'];
 
 
 

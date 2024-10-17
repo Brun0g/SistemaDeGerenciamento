@@ -178,11 +178,12 @@ class DBPedidosService implements PedidosServiceInterface
         return $lista;          
     }
 
-    public function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual)
+    public function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual, $order_by)
     {
         $array = [];
 
         $numero_paginas = 0;
+
 
         if($data_inicial && $data_final)
         {
@@ -194,10 +195,15 @@ class DBPedidosService implements PedidosServiceInterface
         }
 
         
+        $key = key($order_by);
+        $order = $order_by[$key] == 0 ? 'asc' : 'desc';
+
         if($cliente_id)
             $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
         else
-            $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->get();
+            $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->get();
+
+
 
         
         foreach ($pedidos as $key => $value) 
@@ -367,5 +373,17 @@ class DBPedidosService implements PedidosServiceInterface
         }
 
         return true;
-    }  
+    }
+
+    // public function filtrar($ordernar_id, $ordernar_total, $ordernar_data)
+    // {
+    //     $order_by = session()->get('filtragem_pedidos', []);
+
+    //     if(isset($ordernar_id, $ordernar_total, $ordernar_data))
+    //         $order_by = ['id' => $ordernar_id, 'total' => $ordernar_total, 'data' => $ordernar_data];
+
+    //     session()->put('filtragem_pedidos', $order_by);
+
+    //     return $order_by;
+    // }
 }

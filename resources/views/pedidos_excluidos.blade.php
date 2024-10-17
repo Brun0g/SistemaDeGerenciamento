@@ -96,39 +96,68 @@
                 </thead>
                 @else
                     <thead style="background: black">
-                        <form action="/pedidofinalizado/" method="GET">
                             <tr>
-                                <th><span style="color: white; font-weight: 900;">Pedido criado</span>
-                                
-                                    @csrf
-                                    <button class="btn btn-danger" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-down"></i></button>
-                                    <button class="btn btn-success" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-up"></i></button>
-                               
+                                <th>
+                                    <span style="color: white; font-weight: 900;">Pedido criado</span>
                                 </th>
-                                <th><span style="color: white; font-weight: 900;">Tipo</span>
-                                
-                                    @csrf
-                                    <button class="btn btn-danger" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-down"></i></button>
-                                    <button class="btn btn-success" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-up"></i></button>
-                               
+                                <th>
+                                    <form action="/pedidos_excluidos/{{$pagina_atual}}" method="POST">
+                                        <span style="color: white; font-weight: 900;">Tipo</span>
+                                        @csrf
+                                        
+                                    
+                                            <button class="btn btn-{{!$order_by['id'] ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['id'] ? 'down' : 'up'}}"></i></button>
+                                            <input type="hidden" name="ordernar_id" value={{$order_by['id'] == 0 ? 1 : 0}}>
+                                            
+                                            <input type="hidden" name="ordernar_data" value={{null}}>
+                                            <input type="hidden" name="ordernar_total" value={{null}}>
+
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+                                    </form>
                                 </th>
-                                <th><span style="color: white; font-weight: 900;">Total</span>
-                                
-                                    @csrf
-                                    <button class="btn btn-danger" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-down"></i></button>
-                                    <button class="btn btn-success" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-up"></i></button>
-                               
+                                <th>
+                                    <form action="/pedidos_excluidos/{{$pagina_atual}}" method="POST">
+                                        <span style="color: white; font-weight: 900;">Total</span>
+
+                                        @csrf
+                                        
+                                       
+                                            <button class="btn btn-{{!$order_by['total'] ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['total'] ? 'down' : 'up'}}"></i></button>
+                                            <input type="hidden" name="ordernar_total" value={{$order_by['total'] == 0 ? 1 : 0}}>
+                                            
+                                            <input type="hidden" name="ordernar_data" value={{null}}>
+                                            <input type="hidden" name="ordernar_id" value={{null}}>
+
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+                                    </form>
                                 </th>
-                                <th><span style="color: white; font-weight: 900;">Data</span>
-                                
-                                    @csrf
-                                    <button class="btn btn-danger" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-down"></i></button>
-                                    <button class="btn btn-success" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-up"></i></button>
-                               
+                                <th>
+                                    <form action="/pedidos_excluidos/{{$pagina_atual}}" method="POST">
+                                        <span style="color: white; font-weight: 900;">Data</span>
+
+                                        @csrf
+                                        
+                                        
+                                            <button class="btn btn-{{!$order_by['created_at'] ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['created_at'] ? 'down' : 'up'}}"></i></button>
+                                            <input type="hidden" name="ordernar_data" value={{$order_by['created_at'] == 0 ? 1 : 0}}>
+                                            
+                                            <input type="hidden" name="ordernar_total" value={{null}}>
+                                            <input type="hidden" name="ordernar_id" value={{null}}>
+
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                    </form>
                                 </th>
                                 <th>Ação</th>
                             </tr>
-                        </form>
+                            
+                   
                     </thead>
                 @endif
                     <tbody>
@@ -235,6 +264,9 @@
         <input type="hidden" name="pedidos" value="{{$escolha}}">
         <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
         <input type="hidden" name="data_final" value="{{$data_final}}">
+        <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
+        <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
+        <input type="hidden" name="ordernar_data" value={{$order_by['created_at']}}>
         <div><button class="btn btn-info" type="submit" style="color: white; font-weight: 900;"><</span></button></div>
         </form>
     </div>
@@ -247,6 +279,9 @@
                 <input type="hidden" name="pedidos" value="{{$escolha}}">
                 <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                 <input type="hidden" name="data_final" value="{{$data_final}}">
+            <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
+            <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
+            <input type="hidden" name="ordernar_data" value={{$order_by['created_at']}}>
                 <button class="btn {{$pagina_atual == $i ? 'btn-secondary' : 'btn-dark'}} " name="page"  value="{{$i}}"type="submit" style="color: white; font-weight: 900;">{{$i}}</span></button>
             </form>
         @endfor
@@ -259,6 +294,9 @@
             <input type="hidden" name="pedidos" value="{{$escolha}}">
             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
             <input type="hidden" name="data_final" value="{{$data_final}}">
+            <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
+            <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
+            <input type="hidden" name="ordernar_data" value={{$order_by['created_at']}}>
             <button class="btn btn-info" type="submit" style="color: white; font-weight: 900;">></span></button>
         </form>
     </div>
