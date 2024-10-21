@@ -178,33 +178,50 @@ class DBPedidosService implements PedidosServiceInterface
         return $lista;          
     }
 
-    public function listarPedidos($cliente_id, $provider_estoque, $provider_user, $data_inicial, $data_final, $pagina_atual, $order_by)
+    public function listarPedidos($cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user)
     {
         $array = [];
 
         $total_paginas = 0;
 
+        if($cliente_id)
+            $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
+
 
         if($data_inicial && $data_final)
         {
-            $row = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->count();
+            if($escolha == 1)
+                $row = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->when($cliente_id, function ($query, $cliente_id) {
+                                return $query->where('cliente_id', $cliente_id);
+                        })->count();
+            else
+                $row = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->when($cliente_id, function ($query, $cliente_id) {
+                                return $query->where('cliente_id', $cliente_id);
+                        })->count();
+
+            
             $row_limit = 5;
             $pagina_atual = $pagina_atual * $row_limit;                
-            
             $total_paginas = ceil($row / $row_limit - 1);
-        }
 
-        if($order_by)
-        {
-            $key = key($order_by);
-            $order = $order_by[$key] == 0 ? 'asc' : 'desc';
-        }
-        
+            if(!$cliente_id)
+                $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->get();
 
-        if($cliente_id)
-            $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
-        else
-            $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->get();
+            if($order_by)
+            {
+                $key = key($order_by);
+                $order = $order_by[$key] == 0 ? 'asc' : 'desc';
+
+                if($escolha == 1)
+                    $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->when($cliente_id, function ($query, $cliente_id) {
+                                return $query->where('cliente_id', $cliente_id);
+                        })->get();
+                else
+                    $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->when($cliente_id, function ($query, $cliente_id) {
+                                return $query->where('cliente_id', $cliente_id);
+                        })->get();
+            }
+        }
 
         foreach ($pedidos as $key => $value) 
         {
@@ -224,8 +241,11 @@ class DBPedidosService implements PedidosServiceInterface
             $total = $pedidos[$key]->total;
             $porcentagem = $pedidos[$key]->porcentagem;
 
-            $deleted_at = null;
-            $created_at = $pedidos[$key]->created_at;
+            if($escolha == 2)
+                $data = $pedidos[$key]->deleted_at;
+            else
+                $data = $pedidos[$key]->created_at;
+
             $restored_at = isset($pedidos[$key]->restored_at) ? date_format($pedidos[$key]->restored_at, "d/m/Y H:i:s") : null;
 
             $array[$pedido_id] = [
@@ -235,14 +255,16 @@ class DBPedidosService implements PedidosServiceInterface
                 'cliente_id' => $id_cliente, 
                 'endereco' => $endereco, 
                 'total' => $total, 
-                'porcentagem' => $porcentagem, 
-                'ano' => $created_at->year, 
-                'dia_do_ano' => $created_at->dayOfYear, 
-                'dia_da_semana' => $created_at->dayOfWeek, 
-                'hora' => $created_at->hour, 
-                'minuto' => $created_at->minute, 
-                'segundo' => $created_at->second, 
-                'mes' => $created_at->month,
+                'porcentagem' => $porcentagem,
+
+                'ano' => $data->year, 
+                'dia_do_ano' => $data->dayOfYear, 
+                'dia_da_semana' => $data->dayOfWeek, 
+                'hora' => $data->hour, 
+                'minuto' => $data->minute, 
+                'segundo' => $data->second, 
+                'mes' => $data->month,
+
                 'created_at' => isset($pedidos[$key]->created_at) ? date_format($pedidos[$key]->created_at, "d/m/Y H:i:s") : null, 
                 'restored_at' => $restored_at,
                 'deleted_at' => isset($pedidos[$key]->deleted_at) ? date_format($pedidos[$key]->deleted_at,"d/m/Y H:i:s") : null
@@ -250,76 +272,6 @@ class DBPedidosService implements PedidosServiceInterface
         }
 
         return ['array' => $array, 'total_paginas'=> $total_paginas];
-    }
-
-    public function listarPedidosExcluidos($provider_user, $data_inicial, $data_final, $pagina_atual, $order_by)
-    {
-        $array = [];
-
-        $total_paginas = 0;
-
-        if($data_inicial && $data_final)
-        {
-            $row = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->count();
-            $row_limit = 5;
-            $pagina_atual = $pagina_atual * $row_limit;
-            
-            $total_paginas = ceil($row / $row_limit - 1);
-        }
-
-        if($order_by)
-        {
-            $key = key($order_by);
-            $order = $order_by[$key] == 0 ? 'asc' : 'desc';
-        }
-
-        $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->get();
-     
-        foreach ($pedidos as $key => $value) {
-
-            $pedido_id = $pedidos[$key]->id;
-    
-            $nome_create = $pedidos[$key]->create_by;
-            $nome_create = $provider_user->buscarNome($nome_create);
-
-            $nome_delete = $pedidos[$key]->delete_by;
-            $nome_delete = $provider_user->buscarNome($nome_delete);
-
-            $nome_restored = $pedidos[$key]->restored_by;
-            $nome_restored = $provider_user->buscarNome($nome_restored);
-
-            $id_cliente = $pedidos[$key]->cliente_id;
-            $endereco = $pedidos[$key]->endereco_id;
-            $total = $pedidos[$key]->total;
-            $porcentagem = $pedidos[$key]->porcentagem;
-
-            $deleted_at = $pedidos[$key]->deleted_at;
-            $created_at = isset($pedidos[$key]->created_at) ? date_format($pedidos[$key]->created_at, "d/m/Y H:i:s") : null;
-            $restored_at = isset($pedidos[$key]->restored_at) ? date_format($pedidos[$key]->restored_at, "d/m/Y H:i:s") : null;
-
-            $array[$pedido_id] = [
-                'create_by' => $nome_create, 
-                'delete_by' => $nome_delete, 
-                'restored_by' => $nome_restored, 
-                'cliente_id' => $id_cliente, 
-                'endereco' => $endereco, 
-                'total' => $total, 
-                'porcentagem' => $porcentagem, 
-                'ano' => $deleted_at->year, 
-                'dia_do_ano' => $deleted_at->dayOfYear, 
-                'dia_da_semana' => $deleted_at->dayOfWeek, 
-                'hora' => $deleted_at->hour, 
-                'minuto' => $deleted_at->minute, 
-                'segundo' => $deleted_at->second, 
-                'mes' => $deleted_at->month,
-                'created_at' => $created_at, 
-                'restored_at' => $restored_at,
-                'deleted_at' => isset($pedidos[$key]->deleted_at) ? date_format($pedidos[$key]->deleted_at,"d/m/Y H:i:s") : null
-            ]; 
-            
-        }
-
-        return ['array' => $array, 'total_paginas' => $total_paginas];
     }
 
     public function buscarPedido($pedido_id)

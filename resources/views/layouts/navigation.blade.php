@@ -141,9 +141,9 @@
                     </x-slot>
 
                      <x-slot name="content">
-                        <form method="POST" action="{{ route('pedidos_excluidos') }}">
+                        <form method="GET" action="{{ route('pedidos_excluidos') }}">
                             @csrf
-                            @method('GET')
+                         
                             <x-dropdown-link :href="route('pedidos_excluidos')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">

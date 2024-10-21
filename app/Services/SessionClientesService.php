@@ -135,33 +135,36 @@ class SessionClientesService implements ClientesServiceInterface
 
             foreach ($clientes as $key => $value) {
 
-                $nome_cliente = $value['name'];
-                $email_cliente = $value['email'];
-                $idade_cliente = $value['idade'];
-                $cidade_cliente = $value['cidade'];
-                $cep_cliente = $value['cep'];
-                $rua_cliente = $value['rua'];
-                $numero_cliente = $value['numero'];
-                $estado_cliente = $value['estado'];
-                $contato_cliente = $value['contato'];
+                if($cliente_id == $key)
+                {
+                    $nome_cliente = $value['name'];
+                    $email_cliente = $value['email'];
+                    $idade_cliente = $value['idade'];
+                    $cidade_cliente = $value['cidade'];
+                    $cep_cliente = $value['cep'];
+                    $rua_cliente = $value['rua'];
+                    $numero_cliente = $value['numero'];
+                    $estado_cliente = $value['estado'];
+                    $contato_cliente = $value['contato'];
 
-                $deleted_at = $value['deleted_at'];
-                $delete_by = $value['delete_by'];
-                $nome_delete_by = $provider_user->buscarNome($delete_by);
+                    $deleted_at = $value['deleted_at'];
+                    $delete_by = $value['delete_by'];
+                    $nome_delete_by = $provider_user->buscarNome($delete_by);
 
-                $created_at = $value['created_at'];
-                $create_by = $value['create_by'];
-                $nome_create_by = $provider_user->buscarNome($create_by);
+                    $created_at = $value['created_at'];
+                    $create_by = $value['create_by'];
+                    $nome_create_by = $provider_user->buscarNome($create_by);
 
-                $restored_at = $value['restored_at'];
-                $restored_by = $value['restored_by'];
-                $nome_restored_by = $provider_user->buscarNome($restored_by);
+                    $restored_at = $value['restored_at'];
+                    $restored_by = $value['restored_by'];
+                    $nome_restored_by = $provider_user->buscarNome($restored_by);
 
-                $updated_at = $value['updated_at'];
-                $update_by = $value['update_by'];
-                $nome_update_by = $provider_user->buscarNome($update_by);
+                    $updated_at = $value['updated_at'];
+                    $update_by = $value['update_by'];
+                    $nome_update_by = $provider_user->buscarNome($update_by);
 
-                return [ 'create_by' => $nome_create_by, 'update_by' => $nome_update_by, 'restored_by' => $nome_restored_by, 'deleted_by' => $nome_delete_by, 'name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,  'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null, 'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null, 'updated_at' => isset($updated_at) ? date_format($updated_at, "d/m/Y H:i:s") : null];
+                    return [ 'create_by' => $nome_create_by, 'update_by' => $nome_update_by, 'restored_by' => $nome_restored_by, 'deleted_by' => $nome_delete_by, 'name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente, 'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,  'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null, 'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null, 'updated_at' => isset($updated_at) ? date_format($updated_at, "d/m/Y H:i:s") : null];
+                } 
             }
         }    
 

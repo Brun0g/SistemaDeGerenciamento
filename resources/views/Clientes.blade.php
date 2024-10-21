@@ -35,10 +35,11 @@
             <tbody>
 
                 @if(isset($tabela_clientes))
-                @foreach ($tabela_clientes as $key => $value )
+
+                @foreach ($tabela_clientes as $cliente_id => $value )
                 @if( $value['deleted_at'] == null)
                 <tr style="background: white;">
-                    <td style="font-size: 16px;  color:white; background: black; font-weight: 900; border: 1px solid">{{  $key }}</td>
+                    <td style="font-size: 16px;  color:white; background: black; font-weight: 900; border: 1px solid">{{  $cliente_id }}</td>
                     <td style ="width: 15%; border: 1px solid; ">{{  strtoupper($value['name']) }}</td>
                     <td style ="width: 15%; border: 1px solid;">{{  $value['email'] }}</td>
                     <td style ="width: 2%; border: 1px solid;">{{  $value['idade'] }}</td>
@@ -47,7 +48,7 @@
                             
                             @if($listar_enderecos != [])
                             @foreach ($listar_enderecos as $id_endereco => $endereco)
-                            @if($key == $endereco['cliente_id'])
+                            @if($cliente_id == $endereco['cliente_id'])
                             
                             <li style="  border-right: none; ">
                                 
@@ -61,22 +62,22 @@
                     
                     
                     <td style ="border: 1px solid;">{{  $value['contato'] }}</td>
-                    <td style="border: 1px solid; color:green;"> R$ {{isset($total[$key])  ? $total[$key]  : 0}}</td>
+                    <td style="border: 1px solid; color:green;"> R$ {{isset($total[$cliente_id])  ? $total[$cliente_id]  : 0}}</td>
                     <td style="width: 2%; border: 1px solid;">
-                        <form  action="/DeletarCliente/{{$key}}" method="POST" >
+                        <form  action="/DeletarCliente/{{$cliente_id}}" method="POST" >
                             @csrf
                             @method('delete')
                             <button    class="btn btn-danger"  style="padding: 5px;" type="submit">Deletar</button>
                         </form>
                     </td>
                     <td style="width: 7%; border: 1px solid black;">
-                        <form  action="/Cliente/{{$key}}" method="GET" >
+                        <form  action="/Cliente/{{$cliente_id}}" method="GET" >
                             @csrf
                             <button    class="btn btn-primary"  style="padding: 5px;" type="submit">Visualizar pedidos</button>
                         </form>
                     </td>
                     <td style="width: 7%; border: 1px solid black;">
-                        <form  action="/Editar/Cliente/{{$key}}" method="GET" >
+                        <form  action="/Editar/Cliente/{{$cliente_id}}" method="GET" >
                             @csrf
                             <button    class="btn btn-primary"  style="padding: 5px;" type="submit">Editar cliente</button>
                         </form>
