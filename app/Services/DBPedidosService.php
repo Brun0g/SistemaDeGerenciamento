@@ -178,7 +178,7 @@ class DBPedidosService implements PedidosServiceInterface
         return $lista;          
     }
 
-    public function listarPedidos($cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user)
+    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user)
     {
         $array = [];
 
@@ -188,16 +188,34 @@ class DBPedidosService implements PedidosServiceInterface
             $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
 
 
+        $provider_cliente = new DBClientesService;
+
+        $array_id_clientes = $provider_cliente->searchClient($search);
+
         if($data_inicial && $data_final)
         {
             if($escolha == 1)
-                $row = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->when($cliente_id, function ($query, $cliente_id) {
-                                return $query->where('cliente_id', $cliente_id);
-                        })->count();
+            {
+                $row = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->when($search, function ($query, $search) use ($array_id_clientes) {
+
+                            foreach ($array_id_clientes as $key => $value) {
+                                
+                                return $query->where('cliente_id', $key);
+                            }
+
+                    })->count();
+            }
             else
-                $row = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->when($cliente_id, function ($query, $cliente_id) {
-                                return $query->where('cliente_id', $cliente_id);
-                        })->count();
+            {
+                $row = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->when($search, function ($query, $search) use ($array_id_clientes) {
+
+                            foreach ($array_id_clientes as $key => $value) {
+                                
+                                return $query->where('cliente_id', $key);
+                            }
+
+                    })->count();
+            }
 
             
             $row_limit = 5;
@@ -212,14 +230,30 @@ class DBPedidosService implements PedidosServiceInterface
                 $key = key($order_by);
                 $order = $order_by[$key] == 0 ? 'asc' : 'desc';
 
+                $filtro = $escolha == 1 ? null : 
+
                 if($escolha == 1)
-                    $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->when($cliente_id, function ($query, $cliente_id) {
-                                return $query->where('cliente_id', $cliente_id);
-                        })->get();
+                {
+                    $pedidos = Pedidos::whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->when($search, function ($query, $search) use ($array_id_clientes) {
+
+                            foreach ($array_id_clientes as $key => $value) {
+                                
+                                return $query->where('cliente_id', $key);
+                            }
+
+                    })->get();
+                }
                 else
-                    $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->when($cliente_id, function ($query, $cliente_id) {
-                                return $query->where('cliente_id', $cliente_id);
-                        })->get();
+                {
+                    $pedidos = Pedidos::withTrashed()->where('deleted_at', '!=', null)->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->when($search, function ($query, $search) use ($array_id_clientes)  {
+
+                            foreach ($array_id_clientes as $key => $value) {
+                                
+                                return $query->where('cliente_id', $key);
+                            }
+
+                    })->get();
+                }
             }
         }
 
@@ -330,16 +364,4 @@ class DBPedidosService implements PedidosServiceInterface
 
         return true;
     }
-
-    // public function filtrar($ordernar_id, $ordernar_total, $ordernar_data)
-    // {
-    //     $order_by = session()->get('filtragem_pedidos', []);
-
-    //     if(isset($ordernar_id, $ordernar_total, $ordernar_data))
-    //         $order_by = ['id' => $ordernar_id, 'total' => $ordernar_total, 'data' => $ordernar_data];
-
-    //     session()->put('filtragem_pedidos', $order_by);
-
-    //     return $order_by;
-    // }
 }

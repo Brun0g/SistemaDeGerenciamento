@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\PedidosServiceInterface;
 use \App\Services\SessionProdutosService;
 use \App\Services\SessionEstoqueService;
+use \App\Services\SessionClientesService;
 use App\Models\Pedido;
 use App\Models\Pedidos_finalizados;
 
@@ -169,16 +170,20 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-    public function listarPedidos($cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user)
+    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user)
     {
         $array = [];
 
         $pedidos = session()->get('Pedido_encerrado',[]);
 
         $service_produtos = new SessionProdutosService();
+        $provider_clientes = new SessionClientesService();
 
         if(!$escolha)
             $escolha = 1;
+
+        $array_id_clientes = $provider_clientes->searchClient($search);
+
 
         foreach ($pedidos as $key => $value) {
 
@@ -215,18 +220,30 @@ class SessionPedidosService implements PedidosServiceInterface
 
                 if($escolha == 1 && $filtro_data && $filtro_data_inicial_final && $trashed)
                 {
-                    if($filtro_cliente)
-                        continue;
+                    if($search)
+                    {
+                        foreach ($array_id_clientes as $id => $value_cliente) {
+                                if($id == $value['cliente_id'])
+                                    $buscar = true;
+                        }
 
-                    $buscar = true;
+                    } else
+                        $buscar = true;
                 }
                 elseif($escolha == 2 && $filtro_data && $filtro_data_inicial_final && $trashed != null)
                 {
-                    if($filtro_cliente)
-                        continue;
-
-                    $buscar = true;
                     $filtro_carbon = $value['deleted_at'];
+
+                    if($search)
+                    {
+                        foreach ($array_id_clientes as $id => $value_cliente) {
+                                if($id == $value['cliente_id'])
+                                    $buscar = true;
+                                
+                        }
+                 
+                    } else
+                        $buscar = true;
                 }
 
                 if($buscar)

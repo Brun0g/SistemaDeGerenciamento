@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use \App\Services\DBUserService;
 
 use App\Models\Endereco;
+use Illuminate\Support\Collection;
 
 class SessionClientesService implements ClientesServiceInterface
 {
@@ -185,5 +186,26 @@ class SessionClientesService implements ClientesServiceInterface
         }
 
         session()->put('Clientes', $cliente);
+    }
+
+    function searchClient($search)
+    {
+
+        $clientes = session()->get('Clientes',[]);
+
+        $listarClientes = [];
+
+        foreach ($clientes as $key => $value) 
+        {
+            if(stripos($value['name'], $search) === 0)
+            {
+                $nome_cliente = $value['name'];
+          
+                $listarClientes[$key] = ['name' => $nome_cliente];  
+            }
+        }
+
+        
+        return $listarClientes;
     }
 }

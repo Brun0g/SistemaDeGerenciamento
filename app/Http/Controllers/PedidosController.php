@@ -76,7 +76,7 @@ class PedidosController extends Controller
         $ordernar_total = $request->input('ordernar_total');
         $ordernar_created_at = $request->input('ordernar_created_at');
         $ordernar_deleted_at = $request->input('ordernar_deleted_at');
-        $cliente_id = $request->input('cliente_id');
+        $search = $request->input('search');
         $page = $request->input('page');
 
         $lista_clientes = $provider_cliente->listarClientes(true);
@@ -98,7 +98,7 @@ class PedidosController extends Controller
         if(is_numeric($ordernar_deleted_at))
             $order_by = ['deleted_at' => $ordernar_deleted_at];
 
-        $array_order = ['id' => $ordernar_id, 'total' => $ordernar_total, 'created_at' => $ordernar_created_at, 'deleted_at' => $ordernar_deleted_at, 'cliente_id' => $cliente_id];
+        $array_order = ['id' => $ordernar_id, 'total' => $ordernar_total, 'created_at' => $ordernar_created_at, 'deleted_at' => $ordernar_deleted_at, 'search' => $search];
 
         if( !isset($data_inicial, $data_final, $escolha) )
         {
@@ -114,7 +114,7 @@ class PedidosController extends Controller
         }
 
 
-        $pedidos = $provider_pedidos->listarPedidos($cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user);
+        $pedidos = $provider_pedidos->listarPedidos($search, null, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user);
 
         $total_paginas = $pedidos['total_paginas'];
         $pedidos = $pedidos['array']; 
@@ -123,7 +123,7 @@ class PedidosController extends Controller
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'Clientes' => $lista_clientes, 'cliente_id' => $cliente_id]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'Clientes' => $lista_clientes, 'search' => $search]);
     }
 
     public function orders_active(Request $request, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)

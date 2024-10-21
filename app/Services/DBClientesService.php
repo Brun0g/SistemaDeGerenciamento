@@ -142,7 +142,7 @@ class DBClientesService implements ClientesServiceInterface
 
     function searchClient($search)
     {
-        $clientes = Cliente::where('name', 'like', '%'.$search.'%')->orWhere('email', 'like', '%'.$search.'%')->orWhere('contato', 'like', '%'.$search.'%')->orWhere('idade', 'like', '%'.$search.'%')->orWhere('cidade', 'like', '%'.$search.'%')->orWhere('estado', 'like', '%'.$search.'%')->orderBy('id', 'desc');
+        $clientes = Cliente::where('name', 'like', $search .'%')->get();
 
         $listarClientes = [];
 
@@ -158,7 +158,11 @@ class DBClientesService implements ClientesServiceInterface
             $estado_cliente = $cliente->estado;
             $contato_cliente = $cliente->contato;
 
-            $listarClientes[$cliente->id] = ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente];       
+            // $listarClientes[$cliente->id] = ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente];   
+
+            $listarClientes[$cliente->id] = ['name' => $nome_cliente];  
+
+
         }
 
         return $listarClientes;
