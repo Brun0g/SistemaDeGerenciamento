@@ -10,6 +10,12 @@ class Pedidos extends Model
 {
     use HasFactory, softDeletes;
 
+
+
+    public function clientes()
+    {
+        return $this->belongsTo(Cliente::class);
+    }
      /**
      * The attributes that should be cast.
      *

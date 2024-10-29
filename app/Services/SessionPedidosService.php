@@ -170,111 +170,120 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user)
+    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $provider_user)
     {
         $array = [];
-
+        $valores = [];
+        
         $pedidos = session()->get('Pedido_encerrado',[]);
 
         $service_produtos = new SessionProdutosService();
         $provider_clientes = new SessionClientesService();
 
+        $max = !$maximo ? 0 : (int)$maximo;
+        $min = !$minimo ? 0 : (int)$minimo;
+
+        $filtro_min_max = null;
+
+        if($maximo || $minimo)
+        {
+            $array_pedidos = array_column($pedidos, 'total', 'pedido_id');
+            $max_valor =  max($array_pedidos);
+            $min_valor =  min($array_pedidos);
+            $valores = ['maximo' => $maximo, 'minimo' => $minimo, 'max_valor' => $max_valor];
+        }
+
         if(!$escolha)
             $escolha = 1;
 
-        $array_id_clientes = $provider_clientes->searchClient($search);
-
-
         foreach ($pedidos as $key => $value) {
 
-                $buscar = false;
-                $pedido_id = $key;
-                
-                $nome_create = $pedidos[$key]['create_by'];
-                $nome_create = $provider_user->buscarNome($nome_create);
+            $buscar = false;
+            $pedido_id = $key;
 
-                $nome_delete = $pedidos[$key]['delete_by'];
-                $nome_delete = $provider_user->buscarNome($nome_delete);
+            $nome_create = $pedidos[$key]['create_by'];
+            $nome_create = $provider_user->buscarNome($nome_create);
+            $nome_delete = $pedidos[$key]['delete_by'];
+            $nome_delete = $provider_user->buscarNome($nome_delete);
 
-                $nome_restored = $pedidos[$key]['restored_by'];
-                $nome_restored = $provider_user->buscarNome($nome_restored);
+            $nome_restored = $pedidos[$key]['restored_by'];
+            $nome_restored = $provider_user->buscarNome($nome_restored);
 
-                $endereco = $pedidos[$key]['endereco_id'];
-                $total = $pedidos[$key]['total'];
-                $porcentagem = $pedidos[$key]['porcentagem'];
+            $endereco = $pedidos[$key]['endereco_id'];
+            $total = $pedidos[$key]['total'];
+            $porcentagem = $pedidos[$key]['porcentagem'];
 
-                $created_at = $pedidos[$key]['created_at'];
-                $restored_at = isset($pedidos[$key]['restored_at']) ? date_format($pedidos[$key]['restored_at'], "d/m/Y H:i:s") : null;
+            $created_at = $pedidos[$key]['created_at'];
+            $restored_at = isset($pedidos[$key]['restored_at']) ? date_format($pedidos[$key]['restored_at'], "d/m/Y H:i:s") : null;
+            $nome_cliente = $provider_clientes->buscarCliente($value['cliente_id'])['name'];
 
-                $filtro_escolha = $escolha == 1 ? $value['created_at'] : $value['deleted_at'];
-                $filtro_data = isset($data_inicial, $data_final);
-                $filtro_cliente = $cliente_id == $value['cliente_id'];
-                $filtro_data_inicial_final = $created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final;
-                $trashed = $escolha == 1 ? $value['deleted_at'] == null : $value['deleted_at'] != null;
+            $filtro_data = isset($data_inicial, $data_final);
+            $filtro_data_inicial_final = $created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final;
 
-               
-                $filtro_carbon = $value['created_at'];
-               
-                if($filtro_cliente && !$filtro_data)
+            $deleted_at = $value['deleted_at'];
+            $filtro_carbon = $value['created_at'];
+            $nome_do_cliente = $provider_clientes->buscarCliente($value['cliente_id'])['name'];
+
+            $filtro_not_trashed = $escolha == 1 && $deleted_at == null;
+            $filtro_trashed = $escolha == 2 && $deleted_at != null;
+
+            $filtro_search = stripos($nome_do_cliente, $search) === 0;
+
+            if($max > 0 || $min > 0)
+            {
+                $filtro_min_max = true;
+
+                if($min > $max)
+                    $max = $max_valor;
+            }
+
+            if($filtro_data && $filtro_data_inicial_final)
+            {
+                if(
+                    !$filtro_min_max && !$search && $filtro_not_trashed 
+                    || !$filtro_min_max && $search && $filtro_search && $filtro_not_trashed 
+                    || $filtro_not_trashed && $total >= $min && $total <= $max )
                     $buscar = true;
-
-                if($escolha == 1 && $filtro_data && $filtro_data_inicial_final && $trashed)
+                elseif(
+                    !$filtro_min_max && !$search && $filtro_trashed 
+                    || !$filtro_min_max && $filtro_search && $filtro_trashed 
+                    || $filtro_trashed && $total >= $min && $total <= $max)
                 {
-                    if($search)
-                    {
-                        foreach ($array_id_clientes as $id => $value_cliente) {
-                                if($id == $value['cliente_id'])
-                                    $buscar = true;
-                        }
-
-                    } else
-                        $buscar = true;
-                }
-                elseif($escolha == 2 && $filtro_data && $filtro_data_inicial_final && $trashed != null)
-                {
+                    $buscar = true;
                     $filtro_carbon = $value['deleted_at'];
-
-                    if($search)
-                    {
-                        foreach ($array_id_clientes as $id => $value_cliente) {
-                                if($id == $value['cliente_id'])
-                                    $buscar = true;
-                                
-                        }
-                 
-                    } else
-                        $buscar = true;
                 }
 
-                if($buscar)
-                {
-                        $array[$pedido_id] = [
-                        'create_by' => $nome_create,
-                        'delete_by' => $nome_delete,
-                        'restored_by' => $nome_restored,
-                        'cliente_id' => $value['cliente_id'],
-                        'endereco' => $endereco,
-                        'total' => $total,
-                        'porcentagem' => $porcentagem,
+            } else
+                $buscar = true;
 
-                        'ano' => $filtro_carbon->year,
-                        'dia_do_ano' => $filtro_carbon->dayOfYear,
-                        'dia_da_semana' => $filtro_carbon->dayOfWeek,
-                        'hora' => $filtro_carbon->hour,
-                        'minuto' => $filtro_carbon->minute,
-                        'segundo' => $filtro_carbon->second,
-                        'mes' => $filtro_carbon->month,
+            if($buscar)
+            {
+                $array[$pedido_id] = [
+                    'create_by' => $nome_create,
+                    'delete_by' => $nome_delete,
+                    'restored_by' => $nome_restored,
+                    'cliente_id' => $value['cliente_id'],
+                    'endereco' => $endereco,
+                    'total' => $total,
+                    'porcentagem' => $porcentagem,
+                    'nome_cliente' => $nome_cliente,
+                    'ano' => $filtro_carbon->year,
+                    'dia_do_ano' => $filtro_carbon->dayOfYear,
+                    'dia_da_semana' => $filtro_carbon->dayOfWeek,
+                    'hora' => $filtro_carbon->hour,
+                    'minuto' => $filtro_carbon->minute,
+                    'segundo' => $filtro_carbon->second,
+                    'mes' => $filtro_carbon->month,
 
-                        'created_at' => isset($pedidos[$key]['created_at']) ? date_format($pedidos[$key]['created_at'], "d/m/Y H:i:s") : null,
-                        'restored_at' => $restored_at,
-                        'deleted_at' =>  isset($pedidos[$key]['deleted_at']) ? date_format($pedidos[$key]['deleted_at'], "d/m/Y H:i:s") : null,
-                        'pedido_id' => $pedido_id
-                    ]; 
-                }  
+                    'created_at' => isset($pedidos[$key]['created_at']) ? date_format($pedidos[$key]['created_at'], "d/m/Y H:i:s") : null,
+                    'restored_at' => $restored_at,
+                    'deleted_at' =>  isset($pedidos[$key]['deleted_at']) ? date_format($pedidos[$key]['deleted_at'], "d/m/Y H:i:s") : null,
+                    'pedido_id' => $pedido_id
+                ]; 
+            }  
         }
 
         $total_paginas = 0;
-
 
         if($order_by)
         {
@@ -285,28 +294,25 @@ class SessionPedidosService implements PedidosServiceInterface
             if($key == 'id')
                 $key = 'pedido_id';
             
-
             $sort = array_column($array, $key);
-
 
             if($order == 'asc')
                 array_multisort($sort, SORT_ASC, $array);
             else
-               array_multisort($sort, SORT_DESC, $array);
+                array_multisort($sort, SORT_DESC, $array);
         }
 
         if($data_inicial && $data_final)
         {
             $row_limit = 5;
-            $row = sizeof($array); 
+            $row = sizeof($array);
             $pagina_atual = $pagina_atual * $row_limit;
-            $array = array_slice($array, $pagina_atual, $row_limit); 
-
+            $array = array_slice($array, $pagina_atual, $row_limit);
             $total_paginas = ceil($row / $row_limit - 1);
-        }
 
-  
-        return ['array' => $array, 'total_paginas'=> $total_paginas];
+        }
+        
+        return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'maximo_minimo' => $valores];
     }
 
     public function buscarPedido($pedido_id)
@@ -315,8 +321,9 @@ class SessionPedidosService implements PedidosServiceInterface
         $pedidos = session()->get('Pedido_encerrado')[$pedido_id]; 
 
         $provider_user = new DBUserService;
+        $provider_clientes = new SessionClientesService;
 
-        foreach ($pedidos as $pedido) {
+        foreach ($pedidos as $key => $value) {
 
             $cliente_id = $pedidos['cliente_id'];
             $endereco_id = $pedidos['endereco_id'];
@@ -327,12 +334,26 @@ class SessionPedidosService implements PedidosServiceInterface
             $create_by = $pedidos['create_by'];
             $nome_create_by = $provider_user->buscarNome($create_by);
 
+            $nome_delete = $pedidos['delete_by'];
+            $nome_delete = $provider_user->buscarNome($nome_delete);
+
+            $nome_restored = $pedidos['restored_by'];
+            $nome_restored = $provider_user->buscarNome($nome_restored);
+
+            $nome_cliente = $provider_clientes->buscarCliente($cliente_id)['name'];
+
             $deleted_at = isset($pedidos['deleted_at']) ? date_format($pedidos['deleted_at'],"d/m/Y H:i:s") : null;
             $created_at = isset($pedidos['created_at']) ? date_format($pedidos['created_at'], "d/m/Y H:i:s") : null;
             $restored_at = isset($pedidos['restored_at']) ? date_format($pedidos['restored_at'], "d/m/Y H:i:s") : null;
 
+            $filtro_carbon = $pedidos['created_at'];
+
+
             $pedidoEncontrado = [
                 'create_by' => $nome_create_by, 
+                'delete_by' => $nome_delete,
+                'restored_by' => $nome_restored,
+
                 'cliente_id' => $cliente_id, 
                 'endereco_id' => $endereco_id, 
                 'total' => $total, 
@@ -340,7 +361,23 @@ class SessionPedidosService implements PedidosServiceInterface
                 'porcentagem' => $porcentagem,
                 'created_at' => $created_at, 
                 'restored_at' => $restored_at,
-                'deleted_at' => $deleted_at
+                'deleted_at' => $deleted_at,
+
+                'nome_cliente' => $nome_cliente,
+
+                'ano' => $filtro_carbon->year,
+                'dia_do_ano' => $filtro_carbon->dayOfYear,
+                'dia_da_semana' => $filtro_carbon->dayOfWeek,
+                'hora' => $filtro_carbon->hour,
+                'minuto' => $filtro_carbon->minute,
+                'segundo' => $filtro_carbon->second,
+                'mes' => $filtro_carbon->month,
+
+                'created_at' => isset($pedidos['created_at']) ? date_format($pedidos['created_at'], "d/m/Y H:i:s") : null,
+                'restored_at' => $restored_at,
+                'deleted_at' =>  isset($pedidos['deleted_at']) ? date_format($pedidos['deleted_at'], "d/m/Y H:i:s") : null,
+                'pedido_id' => $pedido_id
+
             ];
         }
 

@@ -32,14 +32,11 @@ class PedidosController extends Controller
 
         $provider_pedidos->excluirPedido($pedido_id, $provider_entradas_saidas);
 
-        
         $escolha = $request->input('pedidos');
         $cliente_id = $request->input('cliente_id');
         $data_inicial = $request->input('data_inicial');
         $data_final = $request->input('data_final');
         $page = $request->input('page');
-
-
 
         $url = url()->previous();
 
@@ -54,8 +51,6 @@ class PedidosController extends Controller
     public function showFinishOrder(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EnderecoServiceInterface $provider_endereco, EntradasServiceInterface $provider_entradas_saidas, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente)
     {
         $pedidoEncontrado = $provider_pedidos->buscarPedido($pedido_id);
-
-       
 
         $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos);
         $cliente_id = $pedidoEncontrado['cliente_id'];
@@ -76,11 +71,15 @@ class PedidosController extends Controller
         $ordernar_total = $request->input('ordernar_total');
         $ordernar_created_at = $request->input('ordernar_created_at');
         $ordernar_deleted_at = $request->input('ordernar_deleted_at');
-        $search = $request->input('search');
-        $page = $request->input('page');
-
-        $lista_clientes = $provider_cliente->listarClientes(true);
         
+        $page = $request->input('page');
+        $cliente_id = $request->input('cliente_id');
+
+        $maximo = $request->input('valor_maximo');
+        $minimo =  $request->input('valor_minimo');
+
+        $search = $request->input('search');
+
         $total_paginas = 0;
         $pagina_atual = 0;
 
@@ -98,7 +97,7 @@ class PedidosController extends Controller
         if(is_numeric($ordernar_deleted_at))
             $order_by = ['deleted_at' => $ordernar_deleted_at];
 
-        $array_order = ['id' => $ordernar_id, 'total' => $ordernar_total, 'created_at' => $ordernar_created_at, 'deleted_at' => $ordernar_deleted_at, 'search' => $search];
+        $array_order = ['id' => $ordernar_id, 'total' => $ordernar_total, 'created_at' => $ordernar_created_at, 'deleted_at' => $ordernar_deleted_at, 'search' => $search, 'cliente_id' => $cliente_id];
 
         if( !isset($data_inicial, $data_final, $escolha) )
         {
@@ -114,16 +113,17 @@ class PedidosController extends Controller
         }
 
 
-        $pedidos = $provider_pedidos->listarPedidos($search, null, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $provider_user);
+        $pedidos = $provider_pedidos->listarPedidos($search, null, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $provider_user);
 
         $total_paginas = $pedidos['total_paginas'];
-        $pedidos = $pedidos['array']; 
-       
+        $valores = $pedidos['maximo_minimo'];
+        $pedidos = $pedidos['array'];
+
         $now = now();
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'Clientes' => $lista_clientes, 'search' => $search]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'valores' => $valores]);
     }
 
     public function orders_active(Request $request, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)

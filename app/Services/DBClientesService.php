@@ -146,6 +146,8 @@ class DBClientesService implements ClientesServiceInterface
 
         $listarClientes = [];
 
+
+
         foreach ($clientes as $cliente) 
         {
             $nome_cliente = $cliente->name;
@@ -161,9 +163,8 @@ class DBClientesService implements ClientesServiceInterface
             // $listarClientes[$cliente->id] = ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente];   
 
             $listarClientes[$cliente->id] = ['name' => $nome_cliente];  
-
-
         }
+
 
         return $listarClientes;
     }

@@ -36,7 +36,7 @@
         @csrf
         <div style="display: flex; justify-content: center;">
             <div style="margin-right: 15px;">
-                <label for="cliente-select" class="block text-sm font-medium text-gray-700">Escolha uma opção:</label>
+                <label class="block text-sm font-medium text-gray-700">Escolha uma opção:</label>
                 <select style="width: 315px;" name="pedidos" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
                     @if(!$escolha)
                         <option  value="1">Pedidos aprovados</option>
@@ -54,11 +54,21 @@
             </div>
             <div style="margin-right: 15px;">
 
-            <label for="cliente-select" class="block text-sm font-medium text-gray-700">Escolha um cliente:</label>
+            <label class="block text-sm font-medium text-gray-700">Escolha um cliente:</label>
             <input type="search" name="search">
+
+            
         </div>
+            <div style="margin-right: 15px;">
+                <label class="block text-sm font-medium text-gray-700">Escolha um valor mínimo:</label>
+                <input type="number" name="valor_minimo">
+            </div>
+            <div style="margin-right: 15px;">
+                <label class="block text-sm font-medium text-gray-700">Escolha um valor máximo:</label>
+                <input type="number" name="valor_maximo">
+            </div>
             <div> 
-                <label for="cliente-select" class="block text-sm font-medium text-gray-700">Escolha a data inicial e data final:</label>
+                <label class="block text-sm font-medium text-gray-700">Escolha a data inicial e data final:</label>
                 <div style="display: flex; justify-content: center;">
                     <div style="text-align: left; ">
                         <label for="data_inicial">Data inicial:</label>
@@ -74,6 +84,7 @@
                     </div> 
                 </div> 
             </div>
+
         </div>
         <div style="margin-bottom: 15px; margin-top: 20px;"><button type="submit" class="btn btn-success">Confirmar</button></div>
     </div>
@@ -93,6 +104,31 @@
                 @if($escolha == 2)
                 <thead  style="background: black">
                     <tr>
+                                
+                                <th>
+                                    <form action="/pedidos_excluidos" method="GET">
+                                        <span style="color: white; font-weight: 900;">Nome do cliente</span>
+
+                                        @csrf
+                                            @if($order_by['cliente_id'] != null)
+                                            <button class="btn btn-{{$order_by['cliente_id'] == 0 ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['cliente_id'] ? 'down' : 'up'}}"></i></button>
+                                            @else
+                                            <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['cliente_id'] ? 'down' : 'up'}}"></i></button>
+                                            @endif
+                                            <input type="hidden" name="search" value="{{$search}}">
+                                            <input type="hidden" name="cliente_id" value={{$order_by['cliente_id'] == 0 ? 1 : 0}}>
+                                            <input type="hidden" name="ordernar_created_at" value={{null}}>
+                                            <input type="hidden" name="ordernar_deleted_at" value={{null}}>
+
+                                            <input type="hidden" name="ordernar_total" value={{null}}>
+                                            <input type="hidden" name="ordernar_id" value={{null}}>
+
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                    </form>
+                                </th>   
                                 <th>
                                     <form action="/pedidos_excluidos" method="GET">
                                         <span style="color: white; font-weight: 900;">Pedido criado</span>
@@ -103,12 +139,13 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['created_at'] ? 'down' : 'up'}}"></i></button>
                                             @endif
+
+                                            <input type="hidden" name="search" value="{{$search}}">
+                                            <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_created_at" value={{$order_by['created_at'] == 0 ? 1 : 0}}>
                                             <input type="hidden" name="ordernar_deleted_at" value={{null}}>
-
                                             <input type="hidden" name="ordernar_total" value={{null}}>
                                             <input type="hidden" name="ordernar_id" value={{null}}>
-
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -125,15 +162,15 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['deleted_at'] ? 'down' : 'up'}}"></i></button>
                                             @endif
+                                <input type="hidden" name="search" value="{{$search}}">
+                                            <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_deleted_at" value={{$order_by['deleted_at'] == 0 ? 1 : 0}}>
-
                                             <input type="hidden" name="ordernar_created_at" value={{null}}>
                                             <input type="hidden" name="ordernar_total" value={{null}}>
                                             <input type="hidden" name="ordernar_id" value={{null}}>
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
-
                                     </form>
                                 </th>
 
@@ -146,11 +183,12 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['id'] ? 'down' : 'up'}}"></i></button>
                                             @endif
+                                <input type="hidden" name="search" value="{{$search}}">
+
+                                            <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_id" value={{$order_by['id'] == 0 ? 1 : 0}}>
-                                            
                                             <input type="hidden" name="ordernar_data" value={{null}}>
                                             <input type="hidden" name="ordernar_total" value={{null}}>
-
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -166,11 +204,12 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['total'] ? 'down' : 'up'}}"></i></button>
                                             @endif
+
+                                            <input type="hidden" name="search" value="{{$search}}">
+                                            <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_total" value={{$order_by['total'] == 0 ? 1 : 0}}>
-                                            
                                             <input type="hidden" name="ordernar_data" value={{null}}>
                                             <input type="hidden" name="ordernar_id" value={{null}}>
-
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -178,25 +217,7 @@
                                 </th>
                                 <th>
                                     Data
-                                    {{-- <form action="/pedidos_excluidos" method="GET">
-                                        <span style="color: white; font-weight: 900;">Data</span>
-
-                                        @csrf
-                                            @if($order_by['deleted_at'] != null)
-                                            <button class="btn btn-{{$order_by['deleted_at'] == 0 ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['deleted_at'] ? 'down' : 'up'}}"></i></button>
-                                            @else
-                                            <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['deleted_at'] ? 'down' : 'up'}}"></i></button>
-                                            @endif
-                                            <input type="hidden" name="ordernar_data" value={{$order_by['deleted_at'] == 0 ? 1 : 0}}>
-                                            
-                                            <input type="hidden" name="ordernar_total" value={{null}}>
-                                            <input type="hidden" name="ordernar_id" value={{null}}>
-
-                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
-                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
-                                            <input type="hidden" name="data_final" value="{{$data_final}}">
-
-                                    </form> --}}
+                                    
                                 </th>
                         <th>Ação</th>
                     </tr>
@@ -204,6 +225,29 @@
                 @else
                     <thead style="background: black">
                             <tr>
+                                <th>
+                                    <form action="/pedidos_excluidos" method="GET">
+                                        <span style="color: white; font-weight: 900;">Nome do cliente</span>
+
+                                        @csrf
+                                            @if($order_by['cliente_id'] != null)
+                                            <button class="btn btn-{{$order_by['cliente_id'] == 0 ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['cliente_id'] ? 'down' : 'up'}}"></i></button>
+                                            @else
+                                            <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['cliente_id'] ? 'down' : 'up'}}"></i></button>
+                                            @endif
+
+                                            <input type="hidden" name="search" value="{{$search}}">
+                                            <input type="hidden" name="cliente_id" value={{$order_by['cliente_id'] == 0 ? 1 : 0}}>
+                                            <input type="hidden" name="ordernar_created_at" value={{null}}>
+                                            <input type="hidden" name="ordernar_deleted_at" value={{null}}>
+                                            <input type="hidden" name="ordernar_total" value={{null}}>
+                                            <input type="hidden" name="ordernar_id" value={{null}}>
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                    </form>
+                                </th> 
                                  <th>
                                     <form action="/pedidos_excluidos" method="GET">
                                         <span style="color: white; font-weight: 900;">Pedido criado</span>
@@ -215,8 +259,9 @@
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['created_at'] ? 'down' : 'up'}}"></i></button>
                                             @endif
 
+
+                                            <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_created_at" value={{$order_by['created_at'] == 0 ? 1 : 0}}>
-                                         
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="ordernar_deleted_at" value={{null}}>
                                             <input type="hidden" name="ordernar_total" value={{null}}>
@@ -237,6 +282,7 @@
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['id'] ? 'down' : 'up'}}"></i></button>
                                             @endif
 
+                                            <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="ordernar_id" value={{$order_by['id'] == 0 ? 1 : 0}}>
                                             <input type="hidden" name="ordernar_created_at" value={{null}}>
@@ -259,7 +305,7 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['total'] ? 'down' : 'up'}}"></i></button>
                                             @endif
-
+                                            <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="ordernar_total" value={{$order_by['total'] == 0 ? 1 : 0}}>
                                             <input type="hidden" name="ordernar_created_at" value={{null}}>
@@ -274,27 +320,7 @@
                                 </th>
                                 <th>
                                     Data
-                                    {{-- <form action="/pedidos_excluidos" method="GET">
-                                        <span style="color: white; font-weight: 900;">Data</span>
-
-                                        @csrf
-                                            @if($order_by['created_at'] != null)
-                                            <button class="btn btn-{{$order_by['created_at'] == 0 ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['created_at'] ? 'down' : 'up'}}"></i></button>
-                                            @else
-                                            <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['created_at'] ? 'down' : 'up'}}"></i></button>
-                                            @endif
-
-                                            <input type="hidden" name="ordernar_created_at" value={{$order_by['created_at'] == 0 ? 1 : 0}}>
-                                         
-                                            <input type="hidden" name="ordernar_deleted_at" value={{null}}>
-                                            <input type="hidden" name="ordernar_total" value={{null}}>
-                                            <input type="hidden" name="ordernar_id" value={{null}}>
-
-                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
-                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
-                                            <input type="hidden" name="data_final" value="{{$data_final}}">
-                                            <input type="hidden" name="page" value="{{$pagina_atual}}">
-                                    </form> --}}
+                                    
                                 </th>
                                 <th>Ação</th>
                             </tr>
@@ -306,6 +332,7 @@
                     @foreach($excluidos as $key => $value)
 
                     <tr style="border-top: 1px solid black">
+                        <td>{{ strtoupper($value['nome_cliente'])}}</td>
                         <td>{{ strtoupper($value['create_by'])}}</td>
                         <td>{{ strtoupper($value['delete_by'])}}</td>
                         <td>
@@ -330,6 +357,7 @@
                             <form action="/Restaurar_pedido" method="POST">
                             @csrf
                                 <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Restaurar</span></button>
+                                <input type="hidden" name="cliente_id" value={{$cliente_id}}>
                                 <input type="hidden" name="search" value="{{$search}}">
                                 <input type="hidden" name="pedido_id" value={{isset($value['pedido_id']) ? $value['pedido_id'] : $key}}>
                                 <input type="hidden" name="pedidos" value="{{$escolha}}">
@@ -340,6 +368,7 @@
                         </td>
                     </tr>
                     <tr>
+                        <td></td>
                         <td>{{  $value['created_at'] }}</td>
                         <td>{{  $value['deleted_at'] }}</td>
                     </tr>
@@ -353,6 +382,8 @@
                     @foreach($excluidos as $key => $value)
 
                     <tr style="border-top: 1px solid black">
+                        <td style="font-weight: 600">{{ strtoupper($value['nome_cliente'])}}</td>
+
                         <td>{{ strtoupper($value['create_by'])}}</td>
                                
                         <td>
@@ -387,6 +418,7 @@
                         </td>
                     </tr>
                     <tr>
+                        <td></td>
                         <td>{{  $value['created_at'] }}</td>
                     </tr>
                     @endforeach
@@ -406,6 +438,7 @@
     <div style="display: flex; justify-content: center; ">
         <form action="/pedidos_excluidos" method="GET">
         @csrf
+        <input type="hidden" name="cliente_id" value={{$cliente_id}}>
         <input type="hidden" name="search" value="{{$search}}">
         <input type="hidden" name="pedidos" value="{{$escolha}}">
         <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
@@ -424,6 +457,8 @@
         @for ($i = 0; $i <= $total_paginas; $i++)
             <form action="/pedidos_excluidos" method="GET">
             @csrf
+            <input type="hidden" name="cliente_id" value={{$cliente_id}}>
+
             <input type="hidden" name="search" value="{{$search}}">
                 <input type="hidden" name="pedidos" value="{{$escolha}}">
                 <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
@@ -445,6 +480,7 @@
     <div style="display: flex; justify-content: center;">
         <form action="/pedidos_excluidos" method="GET">
             @csrf
+            <input type="hidden" name="cliente_id" value={{$cliente_id}}>
             <input type="hidden" name="search" value="{{$search}}">
             <input type="hidden" name="pedidos" value="{{$escolha}}">
             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">

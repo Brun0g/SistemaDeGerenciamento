@@ -11,6 +11,13 @@ class Cliente extends Model
 {
     use HasFactory, softDeletes;
 
+
+
+    public function PedidosClientes()
+    {
+        return $this->hasMany(Pedidos::class);
+    }
+
       /**
      * The attributes that should be cast.
      *
@@ -20,3 +27,6 @@ class Cliente extends Model
         'restored_at' => 'datetime:Y-m-d',
     ];
 }
+
+
+
