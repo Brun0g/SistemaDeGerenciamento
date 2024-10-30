@@ -29,9 +29,6 @@ class ClientesController extends Controller
         $tabela_clientes = $provider_cliente->listarClientes( false );
         $listar_enderecos = $provider_endereco->listarEnderecos();
 
-        if($request->search_string != null)
-            $tabela_clientes = $provider_cliente->searchCliente($request->search_string);
-
         foreach ($tabela_clientes as $cliente_id => $valor) {
             $valor_total_pedido[$cliente_id] = 0;
             $buscar_pedido_cliente = $provider_pedido->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, $provider_user)['array'];
@@ -41,10 +38,6 @@ class ClientesController extends Controller
                 $valor_total_pedido[$cliente_id] += $value['total'];
             }
         }
-
-
-
-
 
         return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valor_total_pedido]);
     }
@@ -86,10 +79,6 @@ class ClientesController extends Controller
         $valor_total_pedido = [];
         $tabela_clientes = $provider_cliente->listarClientes(true);
         $listar_enderecos = $provider_endereco->listarEnderecos();
-
-        if($request->search_string != null)
-            $tabela_clientes = $provider_cliente->searchCliente($request->search_string);
-
 
         foreach ($tabela_clientes as $cliente_id => $value) {
             $valor_total_pedido[$cliente_id] = 0;

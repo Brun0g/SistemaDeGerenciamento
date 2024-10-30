@@ -126,7 +126,9 @@
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
-
+                                            
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
                                     </form>
                                 </th>   
                                 <th>
@@ -150,6 +152,9 @@
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
 
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+
                                     </form>
                                 </th>                          
                                 <th>
@@ -162,7 +167,8 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['deleted_at'] ? 'down' : 'up'}}"></i></button>
                                             @endif
-                                <input type="hidden" name="search" value="{{$search}}">
+
+                                            <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_deleted_at" value={{$order_by['deleted_at'] == 0 ? 1 : 0}}>
                                             <input type="hidden" name="ordernar_created_at" value={{null}}>
@@ -171,6 +177,9 @@
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
                                     </form>
                                 </th>
 
@@ -183,8 +192,8 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['id'] ? 'down' : 'up'}}"></i></button>
                                             @endif
-                                <input type="hidden" name="search" value="{{$search}}">
 
+                                            <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_id" value={{$order_by['id'] == 0 ? 1 : 0}}>
                                             <input type="hidden" name="ordernar_data" value={{null}}>
@@ -192,6 +201,9 @@
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
                                     </form>
                                 </th>
                                 <th>
@@ -213,6 +225,9 @@
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
                                     </form>
                                 </th>
                                 <th>
@@ -246,6 +261,9 @@
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
 
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+
                                     </form>
                                 </th> 
                                  <th>
@@ -270,6 +288,9 @@
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
                                             <input type="hidden" name="page" value="{{$pagina_atual}}">
+
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
                                     </form>
                                 </th>
                                 <th>
@@ -292,6 +313,9 @@
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
                                             <input type="hidden" name="page" value="{{$pagina_atual}}">
+
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
                                     </form>
                                 </th>
                                 <th>
@@ -316,6 +340,8 @@
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
                                             <input type="hidden" name="page" value="{{$pagina_atual}}">
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
                                     </form>
                                 </th>
                                 <th>
@@ -447,6 +473,10 @@
         <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
         <input type="hidden" name="page" value="{{$pagina_atual - 1}}">
         <input type="hidden" name="ordernar_data" value={{$escolha == 1 ? $order_by['created_at'] : $order_by['deleted_at']}}>
+
+        <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+        <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+
         <div><button class="btn btn-info" type="submit" style="color: white; font-weight: 900;"><</span></button></div>
         </form>
     </div>
@@ -460,13 +490,17 @@
             <input type="hidden" name="cliente_id" value={{$cliente_id}}>
 
             <input type="hidden" name="search" value="{{$search}}">
-                <input type="hidden" name="pedidos" value="{{$escolha}}">
-                <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
-                <input type="hidden" name="data_final" value="{{$data_final}}">
+            <input type="hidden" name="pedidos" value="{{$escolha}}">
+            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+            <input type="hidden" name="data_final" value="{{$data_final}}">
             <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
             <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
             <input type="hidden" name="ordernar_data" value={{$escolha == 1 ? $order_by['created_at'] : $order_by['deleted_at']}}>
             <input type="hidden" name="page" value="{{$i}}">
+
+            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+
             @if($total_paginas == 0 && $pagina_atual == 0)
             @else
             <button class="btn {{$pagina_atual == $i ? 'btn-secondary' : 'btn-dark'}} " name="page"  value="{{$i}}"type="submit" style="color: white; font-weight: 900;">{{$i}}</span></button>
@@ -489,6 +523,9 @@
             <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
             <input type="hidden" name="ordernar_data" value={{$escolha == 1 ? $order_by['created_at'] : $order_by['deleted_at']}}>
             <input type="hidden" name="page" value="{{$pagina_atual + 1}}">
+
+            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
             <button class="btn btn-info" type="submit" style="color: white; font-weight: 900;">></span></button>
         </form>
     </div>

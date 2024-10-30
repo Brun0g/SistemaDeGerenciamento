@@ -139,35 +139,6 @@ class DBClientesService implements ClientesServiceInterface
 
         return $listarClientes;
 	}
-
-    function searchClient($search)
-    {
-        $clientes = Cliente::where('name', 'like', $search .'%')->get();
-
-        $listarClientes = [];
-
-
-
-        foreach ($clientes as $cliente) 
-        {
-            $nome_cliente = $cliente->name;
-            $email_cliente = $cliente->email;
-            $idade_cliente = $cliente->idade;
-            $cidade_cliente = $cliente->cidade;
-            $cep_cliente = $cliente->cep;
-            $rua_cliente = $cliente->rua;
-            $numero_cliente = $cliente->numero;
-            $estado_cliente = $cliente->estado;
-            $contato_cliente = $cliente->contato;
-
-            // $listarClientes[$cliente->id] = ['name' => $nome_cliente, 'email' => $email_cliente, 'idade' => $idade_cliente, 'cidade' => $cidade_cliente, 'cep' => $cep_cliente, 'rua' => $rua_cliente, 'numero' => $numero_cliente, 'estado' => $estado_cliente, 'contato' => $contato_cliente];   
-
-            $listarClientes[$cliente->id] = ['name' => $nome_cliente];  
-        }
-
-
-        return $listarClientes;
-    }
     
 	function buscarCliente($cliente_id)
 	{

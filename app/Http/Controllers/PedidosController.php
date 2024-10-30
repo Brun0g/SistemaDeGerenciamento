@@ -119,6 +119,7 @@ class PedidosController extends Controller
         $valores = $pedidos['maximo_minimo'];
         $pedidos = $pedidos['array'];
 
+
         $now = now();
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];

@@ -184,15 +184,10 @@ class SessionPedidosService implements PedidosServiceInterface
         $min = !$minimo ? 0 : (int)$minimo;
 
         $filtro_min_max = null;
-
-        if($maximo || $minimo)
-        {
-            $array_pedidos = array_column($pedidos, 'total', 'pedido_id');
-            $max_valor =  max($array_pedidos);
-            $min_valor =  min($array_pedidos);
-            $valores = ['maximo' => $maximo, 'minimo' => $minimo, 'max_valor' => $max_valor];
-        }
-
+        $array_pedidos = array_column($pedidos, 'total', 'pedido_id');
+        $max_valor =  sizeof($pedidos) > 0 ? max($array_pedidos) : null;
+        $valores = ['max' => $maximo, 'min' => $minimo, 'max_valor' => $max_valor];
+       
         if(!$escolha)
             $escolha = 1;
 

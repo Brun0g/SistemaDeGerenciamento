@@ -191,25 +191,43 @@ class DBPedidosService implements PedidosServiceInterface
 
         if($cliente_id)
             $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
+        else
+            $pedidos = Pedidos::withTrashed()->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final)->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')->select('pedidos.*');
 
-        $pedidos = Pedidos::withTrashed()->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final)->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')->select('pedidos.*');
+        $max = !$maximo ? 0 : (int)$maximo;
+        $min = !$minimo ? 0 : (int)$minimo;
 
+        $filtro_min_max = null;
+        $max_valor =  $pedidos->max('total') != null ? $pedidos->max('total') : 0;
+        $valores = ['max' => $maximo, 'min' => $minimo, 'max_valor' => $max_valor];
 
+        if($min > $max)
+            $max = $max_valor;
+       
         if($data_inicial && $data_final)
         {
             $row = $pedidos
 
-            ->when($escolha, function($query) use ($escolha) {
+            ->when($escolha, function($query) use ($escolha, $max, $min, $search) {
+
+                if($search)
+                    $query->where('clientes.name', 'LIKE', $search .'%');
 
                 if($escolha == 1)
+                {
                     $query->whereNull('pedidos.deleted_at');
+
+                    if($max > 0 || $min > 0)
+                        $query->where('total', '>=', $min)->where('total', '<=', $max);
+                }
                 else
+                {
                     $query->whereNotNull('pedidos.deleted_at');
 
-            })->when($search, function ($query) use ($search) {
-       
-                 $query->where('clientes.name', 'LIKE', $search .'%');
-                
+                    if($max > 0 || $min > 0)
+                        $query->where('total', '>=', $min)->where('total', '<=', $max);
+                }
+
             })->count();
 
             $row_limit = 5;
@@ -278,7 +296,7 @@ class DBPedidosService implements PedidosServiceInterface
             ];  
         }
 
-        return ['array' => $array, 'total_paginas'=> $total_paginas];
+        return ['array' => $array, 'total_paginas'=> $total_paginas, 'maximo_minimo' => $valores];
     }
 
     public function buscarPedido($pedido_id)
