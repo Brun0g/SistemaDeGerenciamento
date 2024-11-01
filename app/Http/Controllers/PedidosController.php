@@ -12,6 +12,8 @@ use \App\Services\EnderecoServiceInterface;
 use \App\Services\EntradasServiceInterface;
 use \App\Services\EstoqueServiceInterface;
 use \App\Services\ClientesServiceInterface;
+use \App\Services\CategoriaServiceInterface;
+
 
 use \App\Services\UserServiceInterface;
 
@@ -52,7 +54,7 @@ class PedidosController extends Controller
     {
         $pedidoEncontrado = $provider_pedidos->buscarPedido($pedido_id);
 
-        $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos);
+        $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id);
         $cliente_id = $pedidoEncontrado['cliente_id'];
         $nome = $provider_cliente->buscarCliente($cliente_id);
         $endereco_id = $pedidoEncontrado['endereco_id'];
@@ -61,7 +63,7 @@ class PedidosController extends Controller
         return view('pedidoFinalizado' , ['nome' => $nome['name'], 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto'], 'data_pedido' =>$pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
     }
 
-    public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente, EstoqueServiceInterface $provider_estoque)
+    public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente, EstoqueServiceInterface $provider_estoque, CategoriaServiceInterface $provider_categoria)
     {
         $escolha = $request->input('pedidos');
         $data_inicial = $request->input('data_inicial');
@@ -79,6 +81,8 @@ class PedidosController extends Controller
         $minimo =  $request->input('valor_minimo');
 
         $search = $request->input('search');
+        $categoria_id = $request->input('categoria');
+
 
         $total_paginas = 0;
         $pagina_atual = 0;
@@ -113,18 +117,20 @@ class PedidosController extends Controller
         }
 
 
-        $pedidos = $provider_pedidos->listarPedidos($search, null, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $provider_user);
+        $pedidos = $provider_pedidos->listarPedidos($search, null, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $provider_user);
+
+        $categorias = $provider_categoria->listarCategoria();
+
 
         $total_paginas = $pedidos['total_paginas'];
         $valores = $pedidos['maximo_minimo'];
         $pedidos = $pedidos['array'];
 
-
         $now = now();
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'valores' => $valores]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'valores' => $valores, 'categorias' => $categorias ]);
     }
 
     public function orders_active(Request $request, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)

@@ -37,7 +37,7 @@
         <div style="display: flex; justify-content: center;">
             <div style="margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Escolha uma opção:</label>
-                <select style="width: 315px;" name="pedidos" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
+                <select style="width: 250px;" name="pedidos" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
                     @if(!$escolha)
                         <option  value="1">Pedidos aprovados</option>
                         <option  value="2">Pedidos aprovados excluidos</option>
@@ -53,44 +53,59 @@
                 </select>
             </div>
             <div style="margin-right: 15px;">
+                <label class="block text-sm font-medium text-gray-700">Escolha uma categoria:</label>
+                <select style="width: 250px;" name="categoria" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
+
+                    <option  value="">Selecione uma categoria</option>
+                    @if($categorias != [])
+                    @foreach($categorias as $categoria_id => $cat_value)
+
+                    <option  value="{{$categoria_id}}">{{strtoupper($cat_value['categoria']) }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+
+
+            <div style="margin-right: 15px;">
 
             <label class="block text-sm font-medium text-gray-700">Escolha um cliente:</label>
-            <input type="search" name="search">
+
+            <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="search" name="search">
 
             
         </div>
-            <div style="margin-right: 15px;">
+            <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Escolha um valor mínimo:</label>
-                <input type="number" name="valor_minimo">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="valor_minimo">
             </div>
-            <div style="margin-right: 15px;">
+            <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Escolha um valor máximo:</label>
-                <input type="number" name="valor_maximo">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="valor_maximo">
             </div>
             <div> 
-                <label class="block text-sm font-medium text-gray-700">Escolha a data inicial e data final:</label>
                 <div style="display: flex; justify-content: center;">
-                    <div style="text-align: left; ">
-                        <label for="data_inicial">Data inicial:</label>
-                        <input type="date" name="data_inicial" value="{{$data_inicial}}" />
+                    <div style="text-align: center; ">
+                        <label class="block text-sm font-medium text-gray-700" for="data_inicial">Data inicial:</label>
+                        <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="date" name="data_inicial" value="{{$data_inicial}}" />
                     </div>
-                    <div style="text-align: right; margin-left: 15px;">
-                        <label for="data_final">Data final:</label>
+                    <div style="text-align: center; margin-left: 15px;">
+                        <label class="block text-sm font-medium text-gray-700" for="data_final">Data final:</label>
                         @if(!$data_final)
-                            <input style="text-align" type="date" name="data_final" value="{{$data_inicial}}" required />
+                            <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" style="text-align" type="date" name="data_final" value="{{$data_inicial}}" required />
                         @else
-                            <input style="text-align" type="date" name="data_final" value="{{$data_final}}" required />
+                            <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" style="text-align" type="date" name="data_final" value="{{$data_final}}" required />
                         @endif
                     </div> 
                 </div> 
             </div>
-
         </div>
         <div style="margin-bottom: 15px; margin-top: 20px;"><button type="submit" class="btn btn-success">Confirmar</button></div>
     </div>
 
         <input type="hidden" name="page" value="0">
 </form>
+                                        
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
         <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
@@ -126,7 +141,6 @@
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
-                                            
                                             <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
                                             <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
                                     </form>

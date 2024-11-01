@@ -6,6 +6,7 @@ use App\Services\PedidosServiceInterface;
 use \App\Services\SessionProdutosService;
 use \App\Services\SessionEstoqueService;
 use \App\Services\SessionClientesService;
+
 use App\Models\Pedido;
 use App\Models\Pedidos_finalizados;
 
@@ -170,79 +171,94 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $provider_user)
+    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $provider_user)
     {
         $array = [];
         $valores = [];
-        
+
         $pedidos = session()->get('Pedido_encerrado',[]);
 
-        $service_produtos = new SessionProdutosService();
+        $provider_produto = new SessionProdutosService();
         $provider_clientes = new SessionClientesService();
+        $provider_pedidos = new SessionPedidosService();
 
-        $max = !$maximo ? 0 : (int)$maximo;
-        $min = !$minimo ? 0 : (int)$minimo;
+        $maximo = !$maximo ? 0 : (int)$maximo;
+        $minimo = !$minimo ? 0 : (int)$minimo;
 
-        $filtro_min_max = null;
+        $filtro_min_max = $maximo > 0 || $minimo > 0 ? true : null;
         $array_pedidos = array_column($pedidos, 'total', 'pedido_id');
         $max_valor =  sizeof($pedidos) > 0 ? max($array_pedidos) : null;
         $valores = ['max' => $maximo, 'min' => $minimo, 'max_valor' => $max_valor];
-       
-        if(!$escolha)
-            $escolha = 1;
+        $escolha = !$escolha ? 1 : $escolha;
+
+        if($minimo > $maximo)
+            $maximo = $max_valor;
+
+        $filtro_categoria = null;
 
         foreach ($pedidos as $key => $value) {
 
             $buscar = false;
             $pedido_id = $key;
 
-            $nome_create = $pedidos[$key]['create_by'];
+            $nome_create = $value['create_by'];
             $nome_create = $provider_user->buscarNome($nome_create);
-            $nome_delete = $pedidos[$key]['delete_by'];
+
+            $nome_delete = $value['delete_by'];
             $nome_delete = $provider_user->buscarNome($nome_delete);
 
-            $nome_restored = $pedidos[$key]['restored_by'];
+            $nome_restored = $value['restored_by'];
             $nome_restored = $provider_user->buscarNome($nome_restored);
 
-            $endereco = $pedidos[$key]['endereco_id'];
-            $total = $pedidos[$key]['total'];
-            $porcentagem = $pedidos[$key]['porcentagem'];
+            $endereco = $value['endereco_id'];
+            $total = $value['total'];
 
-            $created_at = $pedidos[$key]['created_at'];
-            $restored_at = isset($pedidos[$key]['restored_at']) ? date_format($pedidos[$key]['restored_at'], "d/m/Y H:i:s") : null;
-            $nome_cliente = $provider_clientes->buscarCliente($value['cliente_id'])['name'];
+            $porcentagem = $value['porcentagem'];
 
-            $filtro_data = isset($data_inicial, $data_final);
-            $filtro_data_inicial_final = $created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final;
-
+            $created_at = $value['created_at'];
             $deleted_at = $value['deleted_at'];
-            $filtro_carbon = $value['created_at'];
+
+            $restored_at = isset($value['restored_at']) ? date_format($value['restored_at'], "d/m/Y H:i:s") : null;
+
             $nome_do_cliente = $provider_clientes->buscarCliente($value['cliente_id'])['name'];
 
+            $filtro_data_inicial_final = isset($data_inicial, $data_final) ? $created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final : null;
+            $filtro_carbon = $value['created_at'];
             $filtro_not_trashed = $escolha == 1 && $deleted_at == null;
             $filtro_trashed = $escolha == 2 && $deleted_at != null;
-
             $filtro_search = stripos($nome_do_cliente, $search) === 0;
 
-            if($max > 0 || $min > 0)
+            if(isset($categoria_id))
             {
-                $filtro_min_max = true;
+                $ped[$key] = $provider_pedidos->buscarItemPedido($key);
 
-                if($min > $max)
-                    $max = $max_valor;
+                foreach ($ped as $pe) 
+                {
+                    foreach ($pe as $key_pedido => $val_ped) 
+                    {
+                        $arr[$key_pedido] = $val_ped;
+                        $produto_id = $arr[$key_pedido]['produto_id'];
+                        $id_categoria = $provider_produto->buscarProduto($produto_id)['categoria'];
+
+                        if($id_categoria == $categoria_id)
+                            $filtro_categoria = true;
+                        else
+                            $filtro_categoria = null;
+                    }
+                }
             }
 
-            if($filtro_data && $filtro_data_inicial_final)
+            if($filtro_data_inicial_final)
             {
                 if(
-                    !$filtro_min_max && !$search && $filtro_not_trashed 
-                    || !$filtro_min_max && $search && $filtro_search && $filtro_not_trashed 
-                    || $filtro_not_trashed && $total >= $min && $total <= $max )
+                    !$filtro_min_max && !$search && $filtro_not_trashed && $filtro_categoria
+                    || $filtro_search && $filtro_not_trashed 
+                    || $filtro_not_trashed && $total >= $minimo && $total <= $maximo )
                     $buscar = true;
                 elseif(
                     !$filtro_min_max && !$search && $filtro_trashed 
-                    || !$filtro_min_max && $filtro_search && $filtro_trashed 
-                    || $filtro_trashed && $total >= $min && $total <= $max)
+                    || $filtro_search && $filtro_trashed 
+                    || $filtro_trashed && $total >= $minimo && $total <= $maximo)
                 {
                     $buscar = true;
                     $filtro_carbon = $value['deleted_at'];
@@ -250,6 +266,7 @@ class SessionPedidosService implements PedidosServiceInterface
 
             } else
                 $buscar = true;
+
 
             if($buscar)
             {
@@ -261,7 +278,8 @@ class SessionPedidosService implements PedidosServiceInterface
                     'endereco' => $endereco,
                     'total' => $total,
                     'porcentagem' => $porcentagem,
-                    'nome_cliente' => $nome_cliente,
+                    'nome_cliente' => $nome_do_cliente,
+                    
                     'ano' => $filtro_carbon->year,
                     'dia_do_ano' => $filtro_carbon->dayOfYear,
                     'dia_da_semana' => $filtro_carbon->dayOfWeek,
@@ -270,15 +288,16 @@ class SessionPedidosService implements PedidosServiceInterface
                     'segundo' => $filtro_carbon->second,
                     'mes' => $filtro_carbon->month,
 
-                    'created_at' => isset($pedidos[$key]['created_at']) ? date_format($pedidos[$key]['created_at'], "d/m/Y H:i:s") : null,
+                    'created_at' => isset($value['created_at']) ? date_format($value['created_at'], "d/m/Y H:i:s") : null,
                     'restored_at' => $restored_at,
-                    'deleted_at' =>  isset($pedidos[$key]['deleted_at']) ? date_format($pedidos[$key]['deleted_at'], "d/m/Y H:i:s") : null,
+                    'deleted_at' =>  isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
                     'pedido_id' => $pedido_id
                 ]; 
             }  
         }
 
         $total_paginas = 0;
+
 
         if($order_by)
         {
@@ -306,6 +325,8 @@ class SessionPedidosService implements PedidosServiceInterface
             $total_paginas = ceil($row / $row_limit - 1);
 
         }
+
+
         
         return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'maximo_minimo' => $valores];
     }
@@ -379,7 +400,7 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidoEncontrado;
     }
 
-    public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
+    public function buscarItemPedido($pedido_id)
     {
         $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
         $service_produtos = new SessionProdutosService();

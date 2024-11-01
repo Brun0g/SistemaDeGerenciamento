@@ -166,6 +166,7 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $nome_usuario_restored = $service_user->buscarNome($restored_by);
 
                 $image_url_produto = asset("storage/" . $image_url_produto);
+                $categoria_id = $value['categoria'];
 
                 if($value['imagem'] == false)
                     $image_url_produto = false;
@@ -178,7 +179,8 @@ class SessionProdutosService implements ProdutosServiceInterface
                     'delete_by' => $nome_usuario_delete, 
                     'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
                     'restored_by' => $nome_usuario_restored,  
-                    'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
+                    'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
+                    'categoria' => $categoria_id
                 ];
             }
         }

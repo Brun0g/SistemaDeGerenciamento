@@ -155,7 +155,7 @@ class DBPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-    public function buscarItemPedido($pedido_id, $provider_entradas_saidas, $provider_user, $provider_pedidos)
+    public function buscarItemPedido($pedido_id)
     {
         $pedidos = PedidosIndividuais::withTrashed()->where('pedido_id', $pedido_id)->get();
 
@@ -181,7 +181,7 @@ class DBPedidosService implements PedidosServiceInterface
         return $lista;          
     }
 
-    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $provider_user)
+    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $provider_user)
     {
         $array = [];
 
@@ -192,55 +192,48 @@ class DBPedidosService implements PedidosServiceInterface
         if($cliente_id)
             $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
         else
-            $pedidos = Pedidos::withTrashed()->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final)->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')->select('pedidos.*');
-
-        $max = !$maximo ? 0 : (int)$maximo;
-        $min = !$minimo ? 0 : (int)$minimo;
-
-        $filtro_min_max = null;
-        $max_valor =  $pedidos->max('total') != null ? $pedidos->max('total') : 0;
-        $valores = ['max' => $maximo, 'min' => $minimo, 'max_valor' => $max_valor];
-
-        if($min > $max)
-            $max = $max_valor;
-       
+            $pedidos = Pedidos::withTrashed();
+     
         if($data_inicial && $data_final)
         {
-            $row = $pedidos
+            $filtro_min_max = null;
+            $max_valor =  $pedidos->max('total') != null ? $pedidos->max('total') : 0;
 
-            ->when($escolha, function($query) use ($escolha, $max, $min, $search) {
+            $maximo = !$maximo ? 0 : (int)$maximo ? $minimo > $maximo : $max_valor;
+            $minimo = !$minimo ? 0 : (int)$minimo;
+
+            $valores = ['max' => $maximo, 'min' => $minimo, 'max_valor' => $max_valor];
+
+            $pedidos = $pedidos->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final)->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')->select('pedidos.*')->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search) 
+            {
 
                 if($search)
                     $query->where('clientes.name', 'LIKE', $search .'%');
 
-                if($escolha == 1)
-                {
-                    $query->whereNull('pedidos.deleted_at');
+                if($maximo > 0 || $minimo > 0)
+                    $query->where('total', '>=', $minimo)->where('total', '<=', $maximo);
 
-                    if($max > 0 || $min > 0)
-                        $query->where('total', '>=', $min)->where('total', '<=', $max);
-                }
+                if($escolha == 1)
+                    $query->whereNull('pedidos.deleted_at');
                 else
-                {
                     $query->whereNotNull('pedidos.deleted_at');
 
-                    if($max > 0 || $min > 0)
-                        $query->where('total', '>=', $min)->where('total', '<=', $max);
-                }
+            });
 
-            })->count();
-
+            $row = $pedidos->count();
             $row_limit = 5;
             $pagina_atual = $pagina_atual * $row_limit;                
             $total_paginas = ceil($row / $row_limit - 1);
+
+            $pedidos = $pedidos->limit($row_limit)->offset($pagina_atual);
 
             if($order_by)
             {
                 $key = key($order_by);
                 $order = $order_by[$key] == 0 ? 'asc' : 'desc';
-                $pedidos = $pedidos->limit($row_limit)->offset($pagina_atual)->orderBy($key, $order)->get();
+                $pedidos = $pedidos->orderBy($key, $order)->get();
             } else 
-                $pedidos = $pedidos->limit($row_limit)->offset($pagina_atual)->get();
+                $pedidos = $pedidos->get();
         }
 
         foreach ($pedidos as $key => $value) 
@@ -265,7 +258,6 @@ class DBPedidosService implements PedidosServiceInterface
             $deleted_at = Carbon::parse($pedidos[$key]->deleted_at);
             $restored_at = Carbon::parse($pedidos[$key]->restored_at);
 
-
             if($escolha == 2)
                 $filtro_data = $deleted_at;
             else
@@ -288,7 +280,6 @@ class DBPedidosService implements PedidosServiceInterface
                 'minuto' => $filtro_data->minute, 
                 'segundo' => $filtro_data->second, 
                 'mes' => $filtro_data->month,
-
 
                 'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null, 
                 'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
