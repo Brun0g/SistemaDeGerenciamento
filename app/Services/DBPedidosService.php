@@ -189,6 +189,8 @@ class DBPedidosService implements PedidosServiceInterface
 
         $provider_cliente = new DBClientesService;
 
+        $valores = [];
+
         if($cliente_id)
             $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
         else
@@ -204,23 +206,94 @@ class DBPedidosService implements PedidosServiceInterface
 
             $valores = ['max' => $maximo, 'min' => $minimo, 'max_valor' => $max_valor];
 
-            $pedidos = $pedidos->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final)->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')->select('pedidos.*')->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search) 
+
+            // SELECT 
+            //         ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
+            //         ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
+            //         ped.restored_at, ped.deleted_at, ped.created_at, ped.updated_at
+            //         FROM pedidos as ped
+            //         INNER JOIN clientes as cli ON ped.cliente_id = cli.id
+
+            //         WHERE ped.id = (
+                        
+            //         SELECT ped_ind.pedido_id FROM pedidos_individuais
+            //             INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
+            //             INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
+            //             WHERE pro.categoria_id = 5 limit 1
+            //         );
+
+
+
+
+
+
+            $pedidos = $pedidos->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final)->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
+                ->select(
+                'pedidos.id', 
+                'clientes.name', 
+                'pedidos.create_by', 
+                'pedidos.delete_by', 
+                'pedidos.restored_by', 
+                'pedidos.cliente_id', 
+                'pedidos.endereco_id', 
+                'pedidos.total', 
+                'pedidos.totalSemDesconto', 
+                'pedidos.porcentagem',  
+                'pedidos.restored_at', 
+                'pedidos.deleted_at', 
+                'pedidos.created_at', 
+                'pedidos.updated_at')
+
+            ->when($escolha, function($query, $tent) use ($escolha, $maximo, $minimo, $search, $categoria_id) 
             {
 
                 if($search)
                     $query->where('clientes.name', 'LIKE', $search .'%');
 
                 if($maximo > 0 || $minimo > 0)
-                    $query->where('total', '>=', $minimo)->where('total', '<=', $maximo);
+                    $query->where('pedidos.total', '>=', $minimo)->where('pedidos.total', '<=', $maximo);
 
+                if($categoria_id)
+                {
+                    $query
+                        ->where('pedidos.id', '=', function ($query) use ($categoria_id) {
+
+                        $query->select(
+                        'ped_ind.pedido_id')
+                        ->from('pedidos_individuais as ped_ind')
+                        ->join('pedidos_individuais', 'pedidos.id', '=', 'ped_ind.pedido_id')
+                        ->join('produtos', 'ped_ind.produto_id', '=', 'produtos.id')
+                        ->where('produtos.categoria_id', '=', $categoria_id)->limit(1);
+                        
+
+                    });
+
+                    //     SELECT 
+                    // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
+                    // ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
+                    // ped.restored_at, ped.deleted_at, ped.created_at, ped.updated_at
+                    // FROM pedidos as ped
+                    // INNER JOIN clientes as cli ON ped.cliente_id = cli.id
+
+                    // WHERE ped.id = (
+                        
+                    // SELECT ped_ind.pedido_id FROM pedidos_individuais
+                    //     INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
+                    //     INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
+                    //     WHERE pro.categoria_id = 5 limit 1)
+                
+                }
+                    
                 if($escolha == 1)
                     $query->whereNull('pedidos.deleted_at');
                 else
                     $query->whereNotNull('pedidos.deleted_at');
 
             });
-
+            
             $row = $pedidos->count();
+
+
             $row_limit = 5;
             $pagina_atual = $pagina_atual * $row_limit;                
             $total_paginas = ceil($row / $row_limit - 1);

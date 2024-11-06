@@ -13,10 +13,7 @@ class Cliente extends Model
 
 
 
-    public function PedidosClientes()
-    {
-        return $this->hasMany(Pedidos::class);
-    }
+   
 
       /**
      * The attributes that should be cast.

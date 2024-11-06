@@ -12,10 +12,7 @@ class Pedidos extends Model
 
 
 
-    public function clientes()
-    {
-        return $this->belongsTo(Cliente::class);
-    }
+   
      /**
      * The attributes that should be cast.
      *
