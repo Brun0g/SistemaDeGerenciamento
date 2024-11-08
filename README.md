@@ -21,7 +21,16 @@
 
 
 <p align="center">
-  <img src = "https://cdn-icons-png.flaticon.com/512/5578/5578703.png" width=350>
+  <img src = "./imgs/lista_pedidos.png" width=968>
+</p>
+<p align="center">
+  <img src = "./imgs/tabela.png" width=968>
+</p>
+<p align="center">
+  <img src = "./imgs/produtos.png" width=968>
+</p>
+<p align="center">
+  <img src = "./imgs/clientes.png" width=968>
 </p>
 
 ## Features
