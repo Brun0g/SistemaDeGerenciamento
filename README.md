@@ -1,9 +1,4 @@
 <h1 align="center"> Sistema de Gerenciamento</h1> <br>
-<p align="center">
-  <a href="https://gitpoint.co/">
-    <img alt="GitPoint" title="GitPoint" src="https://cdn-icons-png.flaticon.com/512/5578/5578703.png" width="450">
-  </a>
-</p>
 
 ## Table of Contents
 
