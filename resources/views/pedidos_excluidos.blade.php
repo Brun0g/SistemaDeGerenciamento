@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('Pedidos excluidos') }}
+        {{ __('Pedidos') }}
         </h2>
     </x-slot>
 
@@ -54,7 +54,7 @@
             </div>
             <div style="margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Escolha uma categoria:</label>
-                <select style="width: 250px;" name="categoria" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
+                <select style="width: 250px;" name="categoria" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  >
 
                     <option  value="">Selecione uma categoria</option>
                     @if($categorias != [])
@@ -76,12 +76,20 @@
             
         </div>
             <div style="width: 13%; margin-right: 15px;">
-                <label class="block text-sm font-medium text-gray-700">Escolha um valor mínimo:</label>
+                <label class="block text-sm font-medium text-gray-700">Valor mínimo:</label>
                 <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="valor_minimo">
             </div>
             <div style="width: 13%; margin-right: 15px;">
-                <label class="block text-sm font-medium text-gray-700">Escolha um valor máximo:</label>
+                <label class="block text-sm font-medium text-gray-700">Valor máximo:</label>
                 <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="valor_maximo">
+            </div>
+            <div style="width: 13%; margin-right: 15px;">
+                <label class="block text-sm font-medium text-gray-700">Quantidade mínima:</label>
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="quantidade_minima">
+            </div>
+            <div style="width: 13%; margin-right: 15px;">
+                <label class="block text-sm font-medium text-gray-700">Quantidade máxima:</label>
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="quantidade_maxima">
             </div>
             <div> 
                 <div style="display: flex; justify-content: center;">
@@ -130,16 +138,19 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['cliente_id'] ? 'down' : 'up'}}"></i></button>
                                             @endif
+
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
                                             <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="cliente_id" value={{$order_by['cliente_id'] == 0 ? 1 : 0}}>
                                             <input type="hidden" name="ordernar_created_at" value={{null}}>
-                                            <input type="hidden" name="ordernar_deleted_at" value={{null}}>
 
+                                            <input type="hidden" name="ordernar_deleted_at" value={{null}}>
                                             <input type="hidden" name="ordernar_total" value={{null}}>
                                             <input type="hidden" name="ordernar_id" value={{null}}>
-
                                             <input type="hidden" name="pedidos" value="{{$escolha}}">
+
                                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                             <input type="hidden" name="data_final" value="{{$data_final}}">
                                             <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
@@ -156,7 +167,10 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['created_at'] ? 'down' : 'up'}}"></i></button>
                                             @endif
-<input type="hidden" name="categoria" value="{{$categoria}}">
+
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_created_at" value={{$order_by['created_at'] == 0 ? 1 : 0}}>
@@ -182,7 +196,10 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['deleted_at'] ? 'down' : 'up'}}"></i></button>
                                             @endif
-<input type="hidden" name="categoria" value="{{$categoria}}">
+
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_deleted_at" value={{$order_by['deleted_at'] == 0 ? 1 : 0}}>
@@ -207,7 +224,10 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['id'] ? 'down' : 'up'}}"></i></button>
                                             @endif
-<input type="hidden" name="categoria" value="{{$categoria}}">
+
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
@@ -232,7 +252,10 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['total'] ? 'down' : 'up'}}"></i></button>
                                             @endif
-<input type="hidden" name="categoria" value="{{$categoria}}">
+
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_total" value={{$order_by['total'] == 0 ? 1 : 0}}>
@@ -247,9 +270,39 @@
                                     </form>
                                 </th>
                                 <th>
+                                    <form action="/pedidos_excluidos" method="GET">
+                                        <span style="color: white; font-weight: 900;">Quantidade</span>
+
+                                        @csrf
+                                            @if($order_by['quantidade'] != null)
+                                            <button class="btn btn-{{$order_by['quantidade'] == 0 ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['quantidade'] ? 'down' : 'up'}}"></i></button>
+                                            @else
+                                            <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['quantidade'] ? 'down' : 'up'}}"></i></button>
+                                            @endif
+
+                                            <input type="hidden" name="quantidade_total" value={{$order_by['quantidade'] == 0 ? 1 : 0}}>
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
+                                            <input type="hidden" name="search" value="{{$search}}">
+                                            <input type="hidden" name="cliente_id" value={{null}}>
+                                            <input type="hidden" name="ordernar_created_at" value={{null}}>
+                                            <input type="hidden" name="ordernar_deleted_at" value={{null}}>
+                                            <input type="hidden" name="ordernar_total" value={{null}}>
+                                            <input type="hidden" name="ordernar_id" value={{null}}>
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+
+                                    </form>
+                                </th> 
+                                <th>
                                     Data
                                     
                                 </th>
+                                    
+
                         <th>Ação</th>
                     </tr>
                 </thead>
@@ -266,7 +319,10 @@
                                             @else
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['cliente_id'] ? 'down' : 'up'}}"></i></button>
                                             @endif
-<input type="hidden" name="categoria" value="{{$categoria}}">
+
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="cliente_id" value={{$order_by['cliente_id'] == 0 ? 1 : 0}}>
                                             <input type="hidden" name="ordernar_created_at" value={{null}}>
@@ -293,7 +349,9 @@
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['created_at'] ? 'down' : 'up'}}"></i></button>
                                             @endif
 
-<input type="hidden" name="categoria" value="{{$categoria}}">
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="ordernar_created_at" value={{$order_by['created_at'] == 0 ? 1 : 0}}>
                                             <input type="hidden" name="search" value="{{$search}}">
@@ -319,7 +377,9 @@
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['id'] ? 'down' : 'up'}}"></i></button>
                                             @endif
 
-<input type="hidden" name="categoria" value="{{$categoria}}">
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="ordernar_id" value={{$order_by['id'] == 0 ? 1 : 0}}>
@@ -347,7 +407,9 @@
                                             <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['total'] ? 'down' : 'up'}}"></i></button>
                                             @endif
 
-<input type="hidden" name="categoria" value="{{$categoria}}">
+                                            <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
                                             <input type="hidden" name="cliente_id" value={{null}}>
                                             <input type="hidden" name="search" value="{{$search}}">
                                             <input type="hidden" name="ordernar_total" value={{$order_by['total'] == 0 ? 1 : 0}}>
@@ -364,9 +426,35 @@
                                     </form>
                                 </th>
                                 <th>
-                                    Data
-                                    
-                                </th>
+                                    <form action="/pedidos_excluidos" method="GET">
+                                        <span style="color: white; font-weight: 900;">Quantidade</span>
+
+                                        @csrf
+                                            @if($order_by['quantidade'] != null)
+                                            <button class="btn btn-{{$order_by['quantidade'] == 0 ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['quantidade'] ? 'down' : 'up'}}"></i></button>
+                                            @else
+                                            <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['quantidade'] ? 'down' : 'up'}}"></i></button>
+                                            @endif
+
+                                            <input type="hidden" name="quantidade_total" value={{$order_by['quantidade'] == 0 ? 1 : 0}}>
+                                            <input type="hidden" name="categoria" value="{{$categoria}}">
+                                            <input type="hidden" name="search" value="{{$search}}">
+                                            <input type="hidden" name="cliente_id" value={{null}}>
+                                            <input type="hidden" name="ordernar_created_at" value={{null}}>
+                                            <input type="hidden" name="ordernar_deleted_at" value={{null}}>
+                                            <input type="hidden" name="ordernar_total" value={{null}}>
+                                            <input type="hidden" name="ordernar_id" value={{null}}>
+                                            <input type="hidden" name="pedidos" value="{{$escolha}}">
+                                            <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
+                                            <input type="hidden" name="data_final" value="{{$data_final}}">
+
+                                            <input type="hidden" name="valor_maximo" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}">
+                                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+
+                                    </form>
+                                </th> 
+                                <th>Data</th>
+                                
                                 <th>Ação</th>
                             </tr>
                     </thead>
@@ -402,7 +490,10 @@
                             <form action="/Restaurar_pedido" method="POST">
                             @csrf
                                 <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Restaurar</span></button>
-<input type="hidden" name="categoria" value="{{$categoria}}">
+
+                                <input type="hidden" name="quantidade_total" value="{{null}}">
+
+                                <input type="hidden" name="categoria" value="{{$categoria}}">
                                 <input type="hidden" name="cliente_id" value={{$cliente_id}}>
                                 <input type="hidden" name="search" value="{{$search}}">
                                 <input type="hidden" name="pedido_id" value={{isset($value['pedido_id']) ? $value['pedido_id'] : $key}}>
@@ -440,7 +531,7 @@
                         </td>
 
                         <td style="color: green"> R$ {{  number_format($value['total'], 2, ",", ".")}}</td>
-
+                        <td>{{ $value['quantidade_total_pedido'] }}</td>
                         @if($data_atual['dia_do_ano'] > $value['dia_do_ano'] && $data_atual['mes'] == $value['mes'])
                         <td>{{$data_atual['dia_do_ano'] - $value['dia_do_ano']}} dia atrás</td>
                         @elseif($data_atual['mes'] == $value['mes'] && $data_atual['dia_do_ano'] == $value['dia_do_ano'])
@@ -462,6 +553,7 @@
                             <button class="btn btn-danger" type="submit" style="color: white; font-weight: 900;">Excluir</span></button>
                             </form>
                         </td>
+
                     </tr>
                     <tr>
                         <td></td>
@@ -484,7 +576,8 @@
     <div style="display: flex; justify-content: center; ">
         <form action="/pedidos_excluidos" method="GET">
         @csrf
-<input type="hidden" name="categoria" value="{{$categoria}}">
+        <input type="hidden" name="quantidade_total" value="{{null}}">
+        <input type="hidden" name="categoria" value="{{$categoria}}">
         <input type="hidden" name="cliente_id" value={{$cliente_id}}>
         <input type="hidden" name="search" value="{{$search}}">
         <input type="hidden" name="pedidos" value="{{$escolha}}">
@@ -508,7 +601,8 @@
         @for ($i = 0; $i <= $total_paginas; $i++)
             <form action="/pedidos_excluidos" method="GET">
             @csrf
-<input type="hidden" name="categoria" value="{{$categoria}}">
+            <input type="hidden" name="quantidade_total" value="{{null}}">
+            <input type="hidden" name="categoria" value="{{$categoria}}">
             <input type="hidden" name="cliente_id" value={{$cliente_id}}>
             <input type="hidden" name="search" value="{{$search}}">
             <input type="hidden" name="pedidos" value="{{$escolha}}">
@@ -535,6 +629,7 @@
     <div style="display: flex; justify-content: center;">
         <form action="/pedidos_excluidos" method="GET">
             @csrf
+            <input type="hidden" name="quantidade_total" value="{{null}}">
             <input type="hidden" name="categoria" value="{{$categoria}}">
             <input type="hidden" name="cliente_id" value={{$cliente_id}}>
             <input type="hidden" name="search" value="{{$search}}">

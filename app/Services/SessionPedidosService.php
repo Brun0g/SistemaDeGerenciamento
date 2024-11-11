@@ -171,7 +171,7 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $provider_user)
+    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
     {
         $array = [];
         $valores = [];
@@ -185,10 +185,15 @@ class SessionPedidosService implements PedidosServiceInterface
         $maximo = !$maximo ? 0 : (int)$maximo;
         $minimo = !$minimo ? 0 : (int)$minimo;
 
+        $quantidade_maxima = !$quantidade_maxima ? 0 : (int)$quantidade_maxima;
+        $quantidade_minima = !$quantidade_minima ? 0 : (int)$quantidade_minima;
+
         $filtro_min_max = $maximo > 0 || $minimo > 0 ? true : null;
         $array_pedidos = array_column($pedidos, 'total', 'pedido_id');
         $max_valor =  sizeof($pedidos) > 0 ? max($array_pedidos) : null;
-        $valores = ['max' => $maximo, 'min' => $minimo, 'max_valor' => $max_valor];
+
+         $valores = ['max' => $maximo, 'min' => $minimo, 'quantidade_max' => $quantidade_maxima, 'quantidade_min' => $quantidade_minima, 'max_valor' => $max_valor, 'max_quantidade' => $max_quantidade];
+         
         $escolha = !$escolha ? 1 : $escolha;
 
         if($minimo > $maximo)
