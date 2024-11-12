@@ -30,14 +30,16 @@
 
 ## Features
 
-A few of the things you can do with Sistema de gerenciamento:
+Funcionabilidade que você consegue fazer com o Sistema de gerenciamento:
 
+* Clientes Cadastrar/Excluir/Atualizar/Listar
+* Produtos Cadastrar/Excluir/Atualizar/Listar
+* Pedidos  Cadastrar/Excluir/Atualizar/Listar/Filtrar/Tabela de pedidos por clientes
+* Criar conta nativo do laravel
 
 ## Feedback
 
-Feel free to send us feedback on XXX Feature requests are always welcome. If you wish to contribute, please take a quick look at the XXX
-
-If there's anything you'd like to chat about, please feel free to join our XXX!
+Feel free to send us feedback on XXX Feature requests are always welcome.
 
 ## Build Process
 
