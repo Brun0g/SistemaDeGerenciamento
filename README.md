@@ -34,6 +34,8 @@ Funcionabilidade que você consegue fazer com o Sistema de gerenciamento:
 
 * Clientes Cadastrar/Excluir/Atualizar/Listar
 * Produtos Cadastrar/Excluir/Atualizar/Listar
+* Promoções Cadastrar/Excluir/Atualizar/Listar/Ativar/Desativar
+* Categorias Cadastrar/Excluir/Atualizar/Listar
 * Pedidos  Cadastrar/Excluir/Atualizar/Listar/Filtrar/Tabela de pedidos por clientes
 * Criar conta nativo do laravel
 
