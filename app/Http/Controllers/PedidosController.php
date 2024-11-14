@@ -59,6 +59,8 @@ class PedidosController extends Controller
         $endereco_id = $pedidoEncontrado['endereco_id'];
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);
 
+
+
         return view('pedidoFinalizado' , ['nome' => $nome['name'], 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto'], 'data_pedido' =>$pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
     }
 
@@ -72,9 +74,8 @@ class PedidosController extends Controller
         $ordernar_total = $request->input('ordernar_total');
         $ordernar_created_at = $request->input('ordernar_created_at');
         $ordernar_deleted_at = $request->input('ordernar_deleted_at');
-        $ordernar_quantidade = $request->input('quantidade_total');
+        $ordernar_quantidade = $request->input('ordernar_quantidade');
 
-        
         $page = $request->input('page');
         $cliente_id = $request->input('cliente_id');
 
@@ -84,12 +85,11 @@ class PedidosController extends Controller
         $quantidade_maxima = $request->input('quantidade_maxima');
         $quantidade_minima =  $request->input('quantidade_minima');
 
-
         $search = $request->input('search');
         $categoria_id = $request->input('categoria');
 
-        $total_paginas = 0;
-        $pagina_atual = 0;
+        $total_paginas =  0;
+        $pagina_atual  =  0;
 
         if($page)
             $pagina_atual = $page;
@@ -106,7 +106,7 @@ class PedidosController extends Controller
             $order_by = ['deleted_at' => $ordernar_deleted_at];
 
         if(is_numeric($ordernar_quantidade))
-            $order_by = ['quantidade' => $ordernar_quantidade];
+            $order_by = ['total_quantidade' => $ordernar_quantidade];
 
         $array_order = ['id' => $ordernar_id, 'total' => $ordernar_total, 'created_at' => $ordernar_created_at, 'deleted_at' => $ordernar_deleted_at, 'search' => $search, 'cliente_id' => $cliente_id, 'quantidade' => $ordernar_quantidade];
 
@@ -128,14 +128,14 @@ class PedidosController extends Controller
         $categorias = $provider_categoria->listarCategoria();
 
         $total_paginas = $pedidos['total_paginas'];
-        $valores = $pedidos['maximo_minimo'];
+        $valores = $pedidos['valores'];
         $pedidos = $pedidos['array'];
 
         $now = now();
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'valores' => $valores, 'categorias' => $categorias, 'categoria' => $categoria_id, 'quantidade_total' => 0, 'quantidade_maxima' => $quantidade_maxima, 'quantidade_minima' => $quantidade_minima]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'valores' => $valores, 'categorias' => $categorias, 'categoria' => $categoria_id, 'quantidade' => $ordernar_quantidade, 'quantidade_minima' => $quantidade_minima, 'quantidade_maxima' => $quantidade_maxima]);
     }
 
     public function orders_active(Request $request, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)

@@ -202,18 +202,20 @@ class DBPedidosService implements PedidosServiceInterface
 
         if($data_inicial && $data_final)
         {
-            $filtro_min_max = null;
             $max_valor =  $pedidos->max('total') != null ? $pedidos->max('total') : 0;
-            $max_quantidade =  PedidosIndividuais::max('quantidade') != null ? PedidosIndividuais::max('quantidade') : 0;
+            $max_total = PedidosIndividuais::sum('quantidade');
 
             $maximo = !$maximo ? 0 : (int)$maximo ? $minimo > $maximo : $max_valor;
             $minimo = !$minimo ? 0 : (int)$minimo;
 
-            $quantidade_maxima = !$quantidade_maxima ? 1 : (int)$quantidade_maxima;
-            $quantidade_minima = !$quantidade_minima ? 1 : (int)$quantidade_minima;
+            $quantidade_minima = !$quantidade_minima ? 0 : (int)$quantidade_minima;
+            $quantidade_maxima = !$quantidade_maxima || $quantidade_minima > $quantidade_maxima ? $max_total  : (int)$quantidade_maxima;
 
-            $valores = ['max' => $maximo, 'min' => $minimo, 'quantidade_max' => $quantidade_maxima, 'quantidade_min' => $quantidade_minima, 'max_valor' => $max_valor, 'max_quantidade' => $max_quantidade];
+            $valores = ['max' => $maximo, 'min' => $minimo, 'quantidade_max' => $quantidade_maxima, 'quantidade_min' => $quantidade_minima, 'max_valor' => $max_valor, 'max_total' => $max_total];
 
+            // SELECT pedido_id, sum(quantidade) FROM pedidos_individuais
+            // GROUP BY pedido_id  
+            // ORDER BY `sum(quantidade)` ASC
 
             // SELECT 
             // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
@@ -230,6 +232,9 @@ class DBPedidosService implements PedidosServiceInterface
             // WHERE pro.categoria_id = 5 limit 1
             // );
 
+            // SELECT ped.pedido_id, sum(ped.quantidade) FROM pedidos_individuais as ped
+            // group by ped.pedido_id;
+
             // SELECT 
             // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
             // ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
@@ -240,7 +245,10 @@ class DBPedidosService implements PedidosServiceInterface
             // INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
             // WHERE pro.categoria_id = 5
 
-            $pedidos = $pedidos->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final)->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
+            $pedidos = $pedidos->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final)
+            ->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
+            ->join('pedidos_individuais', 'pedidos.id', '=', 'pedidos_individuais.pedido_id')->groupBy('pedidos_individuais.pedido_id')
+
                 ->select(
                 'pedidos.id', 
                 'clientes.name', 
@@ -255,36 +263,41 @@ class DBPedidosService implements PedidosServiceInterface
                 'pedidos.restored_at', 
                 'pedidos.deleted_at', 
                 'pedidos.created_at', 
-                'pedidos.updated_at')
+                'pedidos.updated_at')->selectRaw('sum(quantidade) as total_quantidade')
 
-            ->when($escolha, function($query, $tent) use ($escolha, $maximo, $minimo, $search, $categoria_id) 
+            ->when($escolha, function($query, $tent) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima) 
             {
 
-                if($search)
-                    $query->where('clientes.name', 'LIKE', $search .'%');
-
                 if($maximo > 0 || $minimo > 0)
-                    $query->where('pedidos.total', '>=', $minimo)->where('pedidos.total', '<=', $maximo);
+                    $query->having('pedidos.total', '>=', $minimo)->having('pedidos.total', '<=', $maximo);
+
+                if($quantidade_maxima > 0 || $quantidade_minima > 0)
+                    $query->having('total_quantidade', '>=', $quantidade_minima)->having('total_quantidade', '<=', $quantidade_maxima);
 
                 if($categoria_id)
                 {
-                    $query
-                        ->where('pedidos.id', '=', function ($query) use ($categoria_id) {
-                        $query->select(
-                        'ped_ind.pedido_id')
-                        ->from('pedidos_individuais as ped_ind')
-                        ->join('pedidos_individuais', 'pedidos.id', '=', 'ped_ind.pedido_id')
-                        ->join('produtos', 'ped_ind.produto_id', '=', 'produtos.id')
-                        ->where('produtos.categoria_id', '=', $categoria_id)->limit(1);
-                    });
+                    // $query
+                    //     ->having('pedidos.id', '=', function ($query) use ($categoria_id) {
+                    //     $query->select(
+                    //     'ped_ind.pedido_id')
+                    //     ->from('pedidos_individuais as ped_ind')
+                    //     ->join('pedidos_individuais', 'pedidos.id', '=', 'ped_ind.pedido_id')
+                    //     ->join('produtos', 'ped_ind.produto_id', '=', 'produtos.id')
+                    //     ->having('produtos.categoria_id', '=', $categoria_id)->limit(1);
+                    // });
+
+                    $query->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')
+                    ->where('produtos.categoria_id', '=', $categoria_id);
                 }
-                    
+
+                if($search)
+                    $query->having('clientes.name', 'LIKE', $search .'%');
+                
                 if($escolha == 1)
                     $query->whereNull('pedidos.deleted_at');
                 else
                     $query->whereNotNull('pedidos.deleted_at');
             });
-
 
             $row = $pedidos->count();
 
@@ -303,12 +316,10 @@ class DBPedidosService implements PedidosServiceInterface
                 $pedidos = $pedidos->get();
         }
 
-                    $buscar = false;
-
+        $buscar = false;
 
         foreach ($pedidos as $key => $value) 
         {
-
             $pedido_id = $pedidos[$key]->id;
             $nome_create = $pedidos[$key]->create_by;
             $nome_create = $provider_user->buscarNome($nome_create);
@@ -325,33 +336,30 @@ class DBPedidosService implements PedidosServiceInterface
             $total = $pedidos[$key]->total;
             $porcentagem = $pedidos[$key]->porcentagem;
 
-            $calcular_quantidade_total = $provider_pedidos->buscarItemPedido($pedido_id)['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
+            // $calcular_quantidade_total = $provider_pedidos->buscarItemPedido($pedido_id)['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
+            // $calcular_quantidade_total = $provider_pedidos->quantidadeTotal($pedido_id, $data_inicial, $data_final);
+
+            $calcular_quantidade_total = $value['total_quantidade'];
 
             $created_at = Carbon::parse($pedidos[$key]->created_at);
             $deleted_at = Carbon::parse($pedidos[$key]->deleted_at);
             $restored_at = Carbon::parse($pedidos[$key]->restored_at);
-
-
-
-            if($quantidade_minima <= $calcular_quantidade_total)
-                $buscar = true;
 
             if($escolha == 2)
                 $filtro_data = $deleted_at;
             else
                 $filtro_data = $created_at;
 
-            if($buscar)
-            {
                 $array[$pedido_id] = [
-                    'create_by' => $nome_create, 
-                    'delete_by' => $nome_delete, 
-                    'restored_by' => $nome_restored,
-                    'nome_cliente' => $nome_cliente,   
-                    'cliente_id' => $id_cliente, 
-                    'endereco' => $endereco, 
-                    'total' => $total, 
-                    'porcentagem' => $porcentagem,
+                    'create_by'     => $nome_create, 
+                    'delete_by'     => $nome_delete, 
+                    'restored_by'   => $nome_restored,
+                    'nome_cliente'  => $nome_cliente,   
+                    'cliente_id'    => $id_cliente, 
+                    'endereco'      => $endereco, 
+                    'total'         => $total, 
+                    'porcentagem'   => $porcentagem,
+
                     'quantidade_total_pedido' => $calcular_quantidade_total,
                     'ano' => $filtro_data->year, 
                     'dia_do_ano' => $filtro_data->dayOfYear, 
@@ -366,12 +374,8 @@ class DBPedidosService implements PedidosServiceInterface
                     'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null
                 ];  
             }
-        }
-
-        if($quantidade_minima > 1 || $quantidade_maxima > 1)
-            $total_paginas = sizeof($array);
-
-        return ['array' => $array, 'total_paginas'=> $total_paginas, 'maximo_minimo' => $valores];
+        
+        return ['array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores];
     }
 
     public function buscarPedido($pedido_id)
@@ -429,4 +433,22 @@ class DBPedidosService implements PedidosServiceInterface
 
         return true;
     }
+
+    // public function quantidadeTotal($pedido_id, $data_inicial, $data_final)
+    // {
+    //     $array_valores_total  = PedidosIndividuais::select('pedido_id')->selectRaw('sum(quantidade) as total_quantidade')->groupBy('pedido_id')->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->get();
+
+    //     $pedido = [];
+
+    //     foreach ($array_valores_total as $key => $value) {
+
+    //         if($pedido_id == $array_valores_total[$key]->pedido_id)
+    //         {
+    //             $total = $array_valores_total[$key]->total_quantidade;                
+    //             $pedido_id = $array_valores_total[$key]->pedido_id;
+
+    //             return $total;
+    //         }
+    //     }
+    // }
 }
