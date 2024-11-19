@@ -133,6 +133,7 @@ class PedidosController extends Controller
 
         $now = now();
 
+
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
         return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'valores' => $valores, 'categorias' => $categorias, 'categoria' => $categoria_id, 'quantidade' => $ordernar_quantidade, 'quantidade_minima' => $quantidade_minima, 'quantidade_maxima' => $quantidade_maxima]);

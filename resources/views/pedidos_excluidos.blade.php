@@ -31,13 +31,16 @@
     </div>
     @endif
 
-       
-
-        
 
     <div style="display: flex; justify-content: center;   text-align: center; margin-top: 20px;">
         <form  action="/pedidos_excluidos" method="GET" >
         @csrf
+
+        <input type="hidden" name="ordernar_quantidade" value="{{$quantidade}}">
+        <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
+        <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
+        <input type="hidden" name="ordernar_deleted_at" value={{ $order_by['deleted_at'] }}>
+        <input type="hidden" name="ordernar_created_at" value={{ $order_by['created_at'] }}>
 
         <div style="display: flex; justify-content: center;">
             <div style="margin-right: 15px;">
@@ -59,38 +62,43 @@
             </div>
             <div style="margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Escolha uma categoria:</label>
-                <select style="width: 250px;" name="categoria" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  >
+                <select style="width: 250px;"  name="categoria" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  >
 
-                    <option  value="">Selecione uma categoria</option>
+                    <option value={{null}} >TODAS AS CATEGORIAS</option>
+        
                     @if($categorias != [])
-                    @foreach($categorias as $categoria_id => $cat_value)
+                      @foreach($categorias as $categoria_id => $cat_value)
+                        @if($categoria_id == $categoria && $categoria != null)
+                          <option  value="{{$categoria_id}}" selected>{{strtoupper($cat_value['categoria']) }}</option>
+                          @else
+                            <option  value="{{$categoria_id}}">{{strtoupper($cat_value['categoria']) }}</option>
+                          @endif
 
-                    <option  value="{{$categoria_id}}">{{strtoupper($cat_value['categoria']) }}</option>
-                        @endforeach
+                      @endforeach
                     @endif
                 </select>
             </div>
 
             <div style="margin-right: 15px;">
             <label class="block text-sm font-medium text-gray-700">Escolha um cliente:</label>
-            <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="search" name="search">
+            <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$search}}"  name="search">
 
         </div>
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Valor mínimo:</label>
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="valor_minimo">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{!$valores['min'] ? 0 : $valores['min']}}" type="number" name="valor_minimo">
             </div>
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Valor máximo:</label>
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="valor_maximo">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}" type="number" name="valor_maximo">
             </div>
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Quantidade mínima:</label>
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="quantidade_minima">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{!$valores['quantidade_min'] ? 0 : $valores['quantidade_min']}}" type="number" name="quantidade_minima">
             </div>
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Quantidade máxima:</label>
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="number" name="quantidade_maxima">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{!$valores['quantidade_max'] ? $valores['max_total'] : $valores['quantidade_max']}}" type="number" name="quantidade_maxima">
             </div>
             <div> 
                 <div style="display: flex; justify-content: center;">
@@ -677,7 +685,7 @@
 
             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
             <input type="hidden" name="data_final" value="{{$data_final}}">
-            <input type="hidden" name="page" value="{{$i}}">
+            {{-- <input type="hidden" name="page" value="{{$i}}"> --}}
 
             @if($total_paginas == 0 && $pagina_atual == 0)
             @else

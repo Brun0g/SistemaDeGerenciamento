@@ -171,33 +171,26 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
+
+
     public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
     {
         $array = [];
         $valores = [];
 
         $pedidos = session()->get('Pedido_encerrado',[]);
-
         $provider_produto = new SessionProdutosService();
         $provider_clientes = new SessionClientesService();
         $provider_pedidos = new SessionPedidosService();
 
-        $maximo = !$maximo ? 0 : (int)$maximo;
-        $minimo = !$minimo ? 0 : (int)$minimo;
-
-        $quantidade_maxima = !$quantidade_maxima ? 0 : (int)$quantidade_maxima;
-        $quantidade_minima = !$quantidade_minima ? 0 : (int)$quantidade_minima;
-
-        $filtro_min_max = $maximo > 0 || $minimo > 0 ? true : null;
-        $array_pedidos = array_column($pedidos, 'total', 'pedido_id');
-        $max_valor =  sizeof($pedidos) > 0 ? max($array_pedidos) : null;
-
-         $valores = ['max' => $maximo, 'min' => $minimo, 'quantidade_max' => $quantidade_maxima, 'quantidade_min' => $quantidade_minima, 'max_valor' => $max_valor, 'max_quantidade' => $max_quantidade];
-         
-        $escolha = !$escolha ? 1 : $escolha;
-
-        if($minimo > $maximo)
+        if($minimo >= $maximo)
+        {
+            $array_pedidos = array_column($pedidos, 'total', 'pedido_id');
+            $max_valor =  sizeof($pedidos) > 0 ? max($array_pedidos) : null;
             $maximo = $max_valor;
+        }
+
+        $escolha = !$escolha ? 1 : $escolha;
 
         $filtro_categoria = null;
 
@@ -219,12 +212,10 @@ class SessionPedidosService implements PedidosServiceInterface
             $total = $value['total'];
 
             $porcentagem = $value['porcentagem'];
-
             $created_at = $value['created_at'];
             $deleted_at = $value['deleted_at'];
 
             $restored_at = isset($value['restored_at']) ? date_format($value['restored_at'], "d/m/Y H:i:s") : null;
-
             $nome_do_cliente = $provider_clientes->buscarCliente($value['cliente_id'])['name'];
 
             $filtro_data_inicial_final = isset($data_inicial, $data_final) ? $created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final : null;
@@ -233,9 +224,15 @@ class SessionPedidosService implements PedidosServiceInterface
             $filtro_trashed = $escolha == 2 && $deleted_at != null;
             $filtro_search = stripos($nome_do_cliente, $search) === 0;
 
+            $filtro_item = $provider_pedidos->buscarItemPedido($pedido_id);
+            $calcular_quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
+
+            $max_total[] = $calcular_quantidade_total;
+
+
             if(isset($categoria_id))
             {
-                $ped[$key] = $provider_pedidos->buscarItemPedido($key);
+                $ped[$key] = $filtro_item['lista'];
 
                 foreach ($ped as $pe) 
                 {
@@ -243,9 +240,10 @@ class SessionPedidosService implements PedidosServiceInterface
                     {
                         $arr[$key_pedido] = $val_ped;
                         $produto_id = $arr[$key_pedido]['produto_id'];
+                        $id_pedido = $arr[$key_pedido]['pedido_id'];
                         $id_categoria = $provider_produto->buscarProduto($produto_id)['categoria'];
 
-                        if($id_categoria == $categoria_id)
+                        if($id_categoria == $categoria_id && $id_pedido == $pedido_id)
                             $filtro_categoria = true;
                         else
                             $filtro_categoria = null;
@@ -253,29 +251,79 @@ class SessionPedidosService implements PedidosServiceInterface
                 }
             }
 
+                            // BUG ENCONTRADO:
+
+            /* 1° AO FAZER O PEDIDO E UM PRODUTO DE CATEGORIA 
+                FICAR EM PRIMEIRO E DEPOIS ADICIONAR OUTRO
+                    DE OUTRA CATEGORIA, IRÁ BUGAR O FILTRO */
+
+
+            // data inicial && data final        = INTERLIGADO
+            // filtro_total                      = INTERLIGADO
+            // filtro_not_trashed                = INTERLIGADO
+            // filtro_search                     = INTERLIGADO
+            // TODAS AS CATEGORIAS               = INTERLIGADO
+            // FILTRO QUANTIDADE MINIMA E MAXIMA = INTERLIGADO
+
+            
+
             if($filtro_data_inicial_final)
             {
-                if(
-                    !$filtro_min_max && !$search && $filtro_not_trashed && $filtro_categoria
-                    || $filtro_search && $filtro_not_trashed 
-                    || $filtro_not_trashed && $total >= $minimo && $total <= $maximo )
-                    $buscar = true;
-                elseif(
-                    !$filtro_min_max && !$search && $filtro_trashed 
-                    || $filtro_search && $filtro_trashed 
-                    || $filtro_trashed && $total >= $minimo && $total <= $maximo)
+                if( $total >= $minimo && $total <= $maximo 
+                    && !$quantidade_maxima 
+                    && !$quantidade_minima  
+                    || 
+                    $total >= $minimo && $total <= $maximo 
+                    && $calcular_quantidade_total >= $quantidade_minima 
+                    && $calcular_quantidade_total <= $quantidade_maxima )       
                 {
-                    $buscar = true;
-                    $filtro_carbon = $value['deleted_at'];
+                        if($filtro_not_trashed) 
+                        {
+                            // FILTRO CATEGORIA COM SEARCH
+                            if( $filtro_search && $filtro_categoria )
+                                $buscar = true;
+                    
+                            // FILTRO APENAS CATEGORIA
+                            if( !$search && $filtro_categoria )
+                                $buscar = true;
+
+                            // TODAS CATEGORIAS
+                            if( !isset($categoria_id) && !$search )
+                                $buscar = true;
+
+                            // TODAS CATEGORIAS COM SEARCH
+                            if( !isset($categoria_id) && $filtro_search )
+                                $buscar = true;
+                            
+                        } elseif($filtro_trashed)
+                        {
+                            // FILTRO CATEGORIA COM SEARCH
+                            if( $filtro_search && $filtro_categoria )
+                                $buscar = true;
+                    
+                            // FILTRO APENAS CATEGORIA
+                            if( !$search && $filtro_categoria )
+                                $buscar = true;
+
+                            // TODAS CATEGORIAS
+                            if( !isset($categoria_id) && !$search )
+                                $buscar = true;
+
+                            // TODAS CATEGORIAS COM SEARCH
+                            if( !isset($categoria_id) && $filtro_search )
+                                $buscar = true;
+
+                            $filtro_carbon = $value['deleted_at'];
+                        }
                 }
 
             } else
                 $buscar = true;
 
-
             if($buscar)
             {
                 $array[$pedido_id] = [
+
                     'create_by' => $nome_create,
                     'delete_by' => $nome_delete,
                     'restored_by' => $nome_restored,
@@ -292,26 +340,40 @@ class SessionPedidosService implements PedidosServiceInterface
                     'minuto' => $filtro_carbon->minute,
                     'segundo' => $filtro_carbon->second,
                     'mes' => $filtro_carbon->month,
+                    'quantidade_total_pedido' =>  $calcular_quantidade_total,
 
                     'created_at' => isset($value['created_at']) ? date_format($value['created_at'], "d/m/Y H:i:s") : null,
                     'restored_at' => $restored_at,
                     'deleted_at' =>  isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
                     'pedido_id' => $pedido_id
+
                 ]; 
             }  
         }
 
+
         $total_paginas = 0;
 
+
+        $valores = [
+            'max' => $maximo, 
+            'min' => $minimo, 
+            'quantidade_max' => $quantidade_maxima, 
+            'quantidade_min' => $quantidade_minima, 
+            'max_valor' => $maximo, 
+            'max_total' => max($max_total)
+        ];
 
         if($order_by)
         {
             $key = key($order_by);
-
             $order = $order_by[$key] == 0 ? 'asc' : 'desc';
 
             if($key == 'id')
                 $key = 'pedido_id';
+
+            if($key == 'total_quantidade')
+                $key = 'quantidade_total_pedido';
             
             $sort = array_column($array, $key);
 
@@ -328,12 +390,9 @@ class SessionPedidosService implements PedidosServiceInterface
             $pagina_atual = $pagina_atual * $row_limit;
             $array = array_slice($array, $pagina_atual, $row_limit);
             $total_paginas = ceil($row / $row_limit - 1);
-
         }
 
-
-        
-        return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'maximo_minimo' => $valores];
+        return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores];
     }
 
     public function buscarPedido($pedido_id)
@@ -410,6 +469,7 @@ class SessionPedidosService implements PedidosServiceInterface
         $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
         $service_produtos = new SessionProdutosService();
         $total = 0;
+        $calcular_quantidade_total = 0;
 
         foreach ($Pedido_encerrado_individual as $pedidoKey => $pedido) 
         {
@@ -420,16 +480,19 @@ class SessionPedidosService implements PedidosServiceInterface
                 $quantidade = $pedido['quantidade'];
                 $porcentagem = $pedido['porcentagem'];
                 $valor = $pedido['total'];
+                $calcular_quantidade_total += $quantidade;
                 $produto = $service_produtos->buscarProduto($produto_id)['produto'];
                 $preco_unidade = $pedido['preco_unidade'];
 
                 $total += $valor;
 
                 $lista[$pedidoKey] = ['produto_id' => $produto_id, 'produto' => $produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'porcentagem' => $porcentagem, 'totalComDesconto' => $total];  
+
+                $array_quantidade[$pedido_id] = [ 'calcular_quantidade_total' => $calcular_quantidade_total ];
             } 
         }
-
-        return $lista; 
+           
+        return ['lista' => $lista, 'array_quantidade' => $array_quantidade];  
     }
 
     public function reativarPedido($pedido_id)

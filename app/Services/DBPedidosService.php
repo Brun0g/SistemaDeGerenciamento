@@ -181,7 +181,9 @@ class DBPedidosService implements PedidosServiceInterface
             $array_quantidade[$pedido_id] = [ 'calcular_quantidade_total' => $calcular_quantidade_total ];
         }
 
-        return ['lista' => $lista, 'array_quantidade' => $array_quantidade];          
+        $max_quantidade = max($array_quantidade);
+
+        return ['lista' => $lista, 'array_quantidade' => $array_quantidade, 'max_quantidade' => $max_quantidade];        
     }
 
     public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
@@ -335,10 +337,6 @@ class DBPedidosService implements PedidosServiceInterface
             $endereco = $pedidos[$key]->endereco_id;
             $total = $pedidos[$key]->total;
             $porcentagem = $pedidos[$key]->porcentagem;
-
-            // $calcular_quantidade_total = $provider_pedidos->buscarItemPedido($pedido_id)['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
-            // $calcular_quantidade_total = $provider_pedidos->quantidadeTotal($pedido_id, $data_inicial, $data_final);
-
             $calcular_quantidade_total = $value['total_quantidade'];
 
             $created_at = Carbon::parse($pedidos[$key]->created_at);
@@ -433,22 +431,4 @@ class DBPedidosService implements PedidosServiceInterface
 
         return true;
     }
-
-    // public function quantidadeTotal($pedido_id, $data_inicial, $data_final)
-    // {
-    //     $array_valores_total  = PedidosIndividuais::select('pedido_id')->selectRaw('sum(quantidade) as total_quantidade')->groupBy('pedido_id')->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->get();
-
-    //     $pedido = [];
-
-    //     foreach ($array_valores_total as $key => $value) {
-
-    //         if($pedido_id == $array_valores_total[$key]->pedido_id)
-    //         {
-    //             $total = $array_valores_total[$key]->total_quantidade;                
-    //             $pedido_id = $array_valores_total[$key]->pedido_id;
-
-    //             return $total;
-    //         }
-    //     }
-    // }
 }
