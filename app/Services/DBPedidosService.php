@@ -202,18 +202,17 @@ class DBPedidosService implements PedidosServiceInterface
         else
             $pedidos = Pedidos::withTrashed();
 
+
         if($data_inicial && $data_final)
         {
             $max_valor =  $pedidos->max('total') != null ? $pedidos->max('total') : 0;
             $max_total = PedidosIndividuais::sum('quantidade');
 
-            $maximo = !$maximo ? 0 : (int)$maximo ? $minimo > $maximo : $max_valor;
-            $minimo = !$minimo ? 0 : (int)$minimo;
+            // $maximo = !$maximo ? 0 : (int)$maximo ? $minimo > $maximo : $max_valor;
+            // $minimo = !$minimo ? 0 : (int)$minimo;
 
-            $quantidade_minima = !$quantidade_minima ? 0 : (int)$quantidade_minima;
-            $quantidade_maxima = !$quantidade_maxima || $quantidade_minima > $quantidade_maxima ? $max_total  : (int)$quantidade_maxima;
-
-            $valores = ['max' => $maximo, 'min' => $minimo, 'quantidade_max' => $quantidade_maxima, 'quantidade_min' => $quantidade_minima, 'max_valor' => $max_valor, 'max_total' => $max_total];
+            // $quantidade_minima = !$quantidade_minima ? 0 : (int)$quantidade_minima;
+            // $quantidade_maxima = !$quantidade_maxima || $quantidade_minima > $quantidade_maxima ? $max_total  : (int)$quantidade_maxima;
 
             // SELECT pedido_id, sum(quantidade) FROM pedidos_individuais
             // GROUP BY pedido_id  
@@ -246,6 +245,15 @@ class DBPedidosService implements PedidosServiceInterface
             // INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
             // INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
             // WHERE pro.categoria_id = 5
+
+            $valores = [
+                'max' => (int) $maximo, 
+                'min' => (int) $minimo, 
+                'quantidade_max' => (int) $quantidade_maxima, 
+                'quantidade_min' => (int) $quantidade_minima, 
+                'max_valor' => (int) $max_valor, 
+                'max_total' => (int) $max_total
+            ];
 
             $pedidos = $pedidos->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final)
             ->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')

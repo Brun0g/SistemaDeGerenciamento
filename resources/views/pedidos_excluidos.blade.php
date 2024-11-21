@@ -86,19 +86,19 @@
         </div>
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Valor mínimo:</label>
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{!$valores['min'] ? 0 : $valores['min']}}" type="number" name="valor_minimo">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['min']}}" type="number" name="valor_minimo">
             </div>
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Valor máximo:</label>
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{!$valores['max'] ? $valores['max_valor'] : $valores['max']}}" type="number" name="valor_maximo">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['max']}}" type="number" name="valor_maximo">
             </div>
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Quantidade mínima:</label>
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{!$valores['quantidade_min'] ? 0 : $valores['quantidade_min']}}" type="number" name="quantidade_minima">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['quantidade_min']}}" type="number" name="quantidade_minima">
             </div>
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Quantidade máxima:</label>
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{!$valores['quantidade_max'] ? $valores['max_total'] : $valores['quantidade_max']}}" type="number" name="quantidade_maxima">
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['quantidade_max']}}" type="number" name="quantidade_maxima">
             </div>
             <div> 
                 <div style="display: flex; justify-content: center;">
@@ -142,15 +142,14 @@
                         <form action="/pedidos_excluidos" method="GET">
                             <span style="color: white; font-weight: 900;">Nome do cliente</span>
 
-                            @csrf
+                                @csrf
+
                                 @if($order_by['cliente_id'] != null)
                                 <button class="btn btn-{{$order_by['cliente_id'] == 0 ? 'danger' : 'success'}}" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['cliente_id'] ? 'down' : 'up'}}"></i></button>
                                 @else
                                 <button class="btn btn-secondary" type="submit" style="color: white; font-size: 12px; font-weight: 900;"><i class="las la-angle-{{!$order_by['cliente_id'] ? 'down' : 'up'}}"></i></button>
                                 @endif
 
-                                >
-                      
                                 <input type="hidden" name="ordernar_quantidade" value="{{null}}">
                                 <input type="hidden" name="ordernar_total" value={{null}}>
                                 <input type="hidden" name="ordernar_id" value={{null}}>
@@ -170,6 +169,7 @@
                                 <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                                 <input type="hidden" name="data_final" value="{{$data_final}}">
                                 <input type="hidden" name="page" value="{{$pagina_atual}}">
+
                         </form>
                     </th>   
                     <th>
@@ -521,7 +521,10 @@
                                 <button class="btn btn-success" type="submit" style="color: white; font-weight: 900;">Pedido N°: <span style="color: black; font-weight: 900;">{{isset($value['pedido_id']) ? $value['pedido_id'] : $key}}</span></button>
                             </form>
                         </td>
+
                         <td style="color: green"> R$ {{  number_format($value['total'], 2, ",", ".")}}</td>
+                                                <td>{{ $value['quantidade_total_pedido'] }}</td>
+
                         @if($data_atual['dia_do_ano'] > $value['dia_do_ano'] && $data_atual['mes'] == $value['mes'])
                         <td>{{$data_atual['dia_do_ano'] - $value['dia_do_ano']}} dia atrás</td>
                         @elseif($data_atual['mes'] - $value['mes'] == 1)
