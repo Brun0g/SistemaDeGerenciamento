@@ -14,22 +14,22 @@ class DBCategoriasService implements CategoriaServiceInterface
 		$listarCategoria = [];
 
 		foreach ($categorias as $categoria) 
-        {
-            $nome_categoria = $categoria->categoria;
-       
-            $listarCategoria[$categoria->id] = ['categoria' => $nome_categoria];       
-        }
+		{
+			$nome_categoria = $categoria->categoria;
+			
+			$listarCategoria[$categoria->id] = ['categoria' => $nome_categoria];       
+		}
 
-        return $listarCategoria;
+		return $listarCategoria;
 	}
 
 	function adicionarCategoria($categoria)
 	{
 		$nome_categoria = new Categoria;
 
-        $nome_categoria->categoria = $categoria;
-      
-      	$nome_categoria->save();
+		$nome_categoria->categoria = $categoria;
+		
+		$nome_categoria->save();
 	}
 	
 	function visualizarCategoria($categoria_id)
@@ -40,8 +40,8 @@ class DBCategoriasService implements CategoriaServiceInterface
 
 		foreach ($categorias as $key => $value) {
 			$nome_categoria = $categorias->categoria;
-       
-            $categoria[$categorias->id] = ['categoria' => $nome_categoria];
+			
+			$categoria[$categorias->id] = ['categoria' => $nome_categoria];
 		}
 
 		return $categoria;
@@ -59,7 +59,7 @@ class DBCategoriasService implements CategoriaServiceInterface
 	function deletarCategoria($categoria_id)
 	{
 		$categorias = Categoria::find($categoria_id);
-       
-        $categorias->delete($categoria_id);
+		
+		$categorias->delete($categoria_id);
 	}
 }

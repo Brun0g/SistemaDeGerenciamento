@@ -24,27 +24,12 @@ class ClientesController extends Controller
 {
     public function index(Request $request, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedido, EnderecoServiceInterface $provider_endereco, EstoqueServiceInterface $provider_estoque, UserServiceInterface $provider_user)
     {
-        $buscar_pedido_cliente = [];
-        $valor_total_pedido = [];
-
         $search = $request->input('search');
-
-
 
         $tabela_clientes = $provider_cliente->listarClientes( false, $search);
         $listar_enderecos = $provider_endereco->listarEnderecos();
 
-        foreach ($tabela_clientes as $cliente_id => $valor) {
-            $valor_total_pedido[$cliente_id] = 0;
-            $buscar_pedido_cliente = $provider_pedido->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, null, null, null, $provider_user)['array'];
-
-            foreach ($buscar_pedido_cliente as $value) {
-                if($cliente_id == $value['cliente_id'])
-                $valor_total_pedido[$cliente_id] += $value['total'];
-            }
-        }
-
-        return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'total' => $valor_total_pedido, 'search' => $search]);
+        return view('Clientes', ['listar_enderecos'=> $listar_enderecos, "tabela_clientes" => $tabela_clientes, 'search' => $search]);
     }
 
     public function registerClient(Request $request, ClientesServiceInterface $provider_cliente)

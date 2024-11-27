@@ -29,11 +29,11 @@ class DBProdutosService implements ProdutosServiceInterface
         $produto->valor = $valor;
         $produto->imagem = $imagem;
         $produto->restored_at = null;
-      
+        
         $produto->save();
 
         $provider_entradas_saidas->adicionarEntrada($produto->id, $quantidade, 'Primeira entrada no sistema', null, null, null, null);
-	}
+    }
     
     public function editarProduto($produto_id, $nome, $valor, $imagem)
     {
@@ -45,7 +45,7 @@ class DBProdutosService implements ProdutosServiceInterface
         
         if(isset($imagem))
             $produto->imagem = $imagem;
-   
+        
         $produto->save();
     }
 
@@ -117,7 +117,7 @@ class DBProdutosService implements ProdutosServiceInterface
 
             $listarProdutos[$produto->id] = ['create_by' => $nome_usuario, 'created_at' => date_format($created_at,"d/m/Y H:i:s"), 'update_by' => $nome_usuario_update, 'updated_at' => date_format($updated_at,"d/m/Y H:i:s"), 'restored_by' => $nome_usuario_restored, 'produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo, 'quantidade_estoque' => $quantidade_estoque, 'delete_by' => $nome_usuario_delete, 'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null, $deleted_at, 'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null ];       
         }
-               
+        
         return $listarProdutos;
     }
 
@@ -171,18 +171,18 @@ class DBProdutosService implements ProdutosServiceInterface
             'restored_by' => $nome_usuario_restored,  
             'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
 
-            ];
-        }
-        
-        return $produtoEncontrado;
+        ];
     }
+    
+    return $produtoEncontrado;
+}
 
-    public function deletarImagem($produto_id)
-    {
-        $produto = Produto::find($produto_id);
+public function deletarImagem($produto_id)
+{
+    $produto = Produto::find($produto_id);
 
-        $produto->imagem = false;
+    $produto->imagem = false;
 
-        $produto->save();
-    }
+    $produto->save();
+}
 }

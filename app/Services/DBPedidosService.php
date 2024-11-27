@@ -66,9 +66,9 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido_geral = Pedidos::all()->where('id', $pedido_id);
 
         $provider_pedidos = new DBPedidosService();
-            
+        
         foreach ($pedido_geral as $key => $value) {
-      
+          
             $pedido_geral[$key]->delete_by = Auth::id();
             $pedido_geral[$key]->save();
             $pedido_geral[$key]->delete($pedido_id);
@@ -83,7 +83,7 @@ class DBPedidosService implements PedidosServiceInterface
         $pedidos_individual = PedidosIndividuais::all()->where('pedido_id', $pedido_id);
 
         foreach ($pedidos_individual as $key => $value) {
-        
+            
             $pedidos_individual[$key]->delete_by = Auth::id();
             $pedidos_individual[$key]->save();
             $pedidos_individual[$key]->delete($pedido_id);
@@ -168,7 +168,7 @@ class DBPedidosService implements PedidosServiceInterface
             $produto = $service_produtos->buscarProduto($produto_id);
             $calcular_quantidade_total += $quantidade;
             $total += $valor;
-           
+            
             $lista[] = ['pedido_id' => $pedido_id, 'produto_id' => $produto_id, 'produto' => $produto['produto'], 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'totalComDesconto' => $total, 'porcentagem' => $porcentagem];
 
             $array_quantidade[$pedido_id] = [ 'calcular_quantidade_total' => $calcular_quantidade_total ];
@@ -184,6 +184,7 @@ class DBPedidosService implements PedidosServiceInterface
         $array = [];
         $valores = [];
         $total_paginas = 0;
+        $total_pedido = 0;
 
         $provider_cliente = new DBClientesService;
         $provider_pedidos = new DBPedidosService;
@@ -194,19 +195,19 @@ class DBPedidosService implements PedidosServiceInterface
             $pedidos = Pedidos::withTrashed();
 
         $valores = [
-                'max' => $maximo, 
-                'min' => $minimo, 
-                'quantidade_max' => $quantidade_maxima, 
-                'quantidade_min' => $quantidade_minima
-            ];
+            'max' => $maximo, 
+            'min' => $minimo, 
+            'quantidade_max' => $quantidade_maxima, 
+            'quantidade_min' => $quantidade_minima
+        ];
 
         if($data_inicial && $data_final)
         {
             $pedidos = $pedidos->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final)
             ->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
             ->join('pedidos_individuais', 'pedidos.id', '=', 'pedidos_individuais.pedido_id')->groupBy('pedidos_individuais.pedido_id')
-                ->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')
-                ->select(
+            ->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')
+            ->select(
                 'pedidos.id', 
                 'clientes.name', 
                 'pedidos.create_by', 
@@ -264,7 +265,7 @@ class DBPedidosService implements PedidosServiceInterface
             $order = $order_by[$key] == 0 ? 'asc' : 'desc';
             $pedidos = $pedidos->orderBy($key, $order)->get();
         } else 
-            $pedidos = $pedidos->get();
+        $pedidos = $pedidos->get();
 
         $buscar = false;
 
@@ -291,37 +292,38 @@ class DBPedidosService implements PedidosServiceInterface
             $deleted_at = Carbon::parse($pedidos[$key]->deleted_at);
             $restored_at = Carbon::parse($pedidos[$key]->restored_at);
 
+            $total_pedido += $total;
+
             if($escolha == 2)
                 $filtro_data = $deleted_at;
             else
                 $filtro_data = $created_at;
 
-                $array[$pedido_id] = [
-                    'create_by'     => $nome_create, 
-                    'delete_by'     => $nome_delete, 
-                    'restored_by'   => $nome_restored,
-                    'nome_cliente'  => $nome_cliente,   
-                    'cliente_id'    => $id_cliente, 
-                    'endereco'      => $endereco, 
-                    'total'         => $total, 
-                    'porcentagem'   => $porcentagem,
-
-                    'quantidade_total_pedido' => $calcular_quantidade_total,
-                    'ano' => $filtro_data->year, 
-                    'dia_do_ano' => $filtro_data->dayOfYear, 
-                    'dia_da_semana' => $filtro_data->dayOfWeek, 
-                    'hora' => $filtro_data->hour, 
-                    'minuto' => $filtro_data->minute, 
-                    'segundo' => $filtro_data->second, 
-                    'mes' => $filtro_data->month,
-
-                    'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null, 
-                    'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
-                    'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null
-                ];  
+            $array[$pedido_id] = [
+                'create_by'     => $nome_create, 
+                'delete_by'     => $nome_delete, 
+                'restored_by'   => $nome_restored,
+                'nome_cliente'  => $nome_cliente,   
+                'cliente_id'    => $id_cliente, 
+                'endereco'      => $endereco, 
+                'total'         => $total, 
+                'porcentagem'   => $porcentagem,
+                'total_pedido' => $total_pedido,
+                'quantidade_total_pedido' => $calcular_quantidade_total,
+                'ano' => $filtro_data->year, 
+                'dia_do_ano' => $filtro_data->dayOfYear, 
+                'dia_da_semana' => $filtro_data->dayOfWeek, 
+                'hora' => $filtro_data->hour, 
+                'minuto' => $filtro_data->minute, 
+                'segundo' => $filtro_data->second, 
+                'mes' => $filtro_data->month,
+                'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null, 
+                'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
+                'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null
+            ];  
         }
 
-        return ['array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores];
+        return ['array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores, 'total_pedido' => $total_pedido];
     }
 
     public function buscarPedido($pedido_id)
@@ -330,7 +332,7 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido = Pedidos::withTrashed()->where('id', $pedido_id)->get()[0];
 
         $provider_user = new DBUserService;
- 
+        
         foreach ($pedido as $key => $value) {
 
             $cliente_id = $pedido->cliente_id;

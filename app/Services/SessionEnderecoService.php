@@ -28,7 +28,7 @@ class SessionEnderecoService implements EnderecoServiceInterface
             $rua_endereco = $value['rua'];
             $numero_endereco = $value['numero'];
             $estado_endereco = $value['estado'];
-    
+            
             $listarEnderecos[$key] = ['cliente_id' => $cliente_id, 'cidade' => $cidade_endereco, 'cep' => $cep_endereco, 'rua' => $rua_endereco, 'numero' => $numero_endereco, 'estado' => $estado_endereco];       
         }
 
@@ -57,7 +57,7 @@ class SessionEnderecoService implements EnderecoServiceInterface
                 $endereco[$endereco_id]['rua'] = $rua;
                 $endereco[$endereco_id]['numero'] = $numero;
                 $endereco[$endereco_id]['estado'] = $estado;
-                    
+                
                 session()->put('enderecos', $endereco);
             }
         }

@@ -15,7 +15,7 @@ class DBUserService implements UserServiceInterface
         
         $user = User::find($user);
         $nome = $user->name;
-     
+        
         return $nome;
     }
 }

@@ -5,9 +5,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="py-12 ">
                 <div class="overflow-hidden shadow-sm sm:rounded-lg ">
-                        <div style="display: flex; justify-content: left">
-                            <h4 style="">AJUSTE N°: <span style=" font-weight: 900;color: blue">{{$estoque_id}}</span></h4>
-                        </div>
+                    <div style="display: flex; justify-content: left">
+                        <h4 style="">AJUSTE N°: <span style=" font-weight: 900;color: blue">{{$estoque_id}}</span></h4>
+                    </div>
                     <table id="table" class="bg-white">
                         <thead >
                             <tr>
@@ -29,10 +29,10 @@
                                 @else
                                 <td colspan="5" >Sem dados de registro!</td>
                                 @endif
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</x-app-layout>
+    </x-app-layout>

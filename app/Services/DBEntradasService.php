@@ -26,7 +26,7 @@ class DBEntradasService implements EntradasServiceInterface
         $entrada->pedido_id = $pedido_id;
 
         $entrada->save();
-              
+        
         return $entrada->id;
     }
 
@@ -106,7 +106,7 @@ class DBEntradasService implements EntradasServiceInterface
         $entradas_array = [];
 
         foreach ($entradas as $key => $value) {
-           
+         
             $create_by = $value['create_by'];
             $nome = $provider_user->buscarNome($create_by);
             $produto_id = $value['produto_id'];
@@ -131,7 +131,7 @@ class DBEntradasService implements EntradasServiceInterface
         $entradas_array = [];
 
         foreach ($entradas as $key => $value) {
-           
+         
             $create_by = $value['create_by'];
             $nome = $provider_user->buscarNome($create_by);
             $produto_id = $value['produto_id'];
@@ -155,7 +155,7 @@ class DBEntradasService implements EntradasServiceInterface
         $entradas_array = [];
 
         foreach ($entradas as $key => $value) {
-           
+         
             $create_by = $value['create_by'];
             $nome = $provider_user->buscarNome($create_by);
             $produto_id = $value['produto_id'];

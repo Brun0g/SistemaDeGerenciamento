@@ -86,9 +86,9 @@ class SessionEstoqueService implements EstoqueServiceInterface
     public function atualizarEstoque($produto_id, $quantidade, $entrada_ou_saida, $observacao, $provider_entradas_saidas, $pedido_id,  $ajuste_id, $multiplo_id)
     {
         if($entrada_ou_saida == 'entrada')
-        $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
+            $provider_entradas_saidas->adicionarEntrada($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
         else
-        $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
+            $provider_entradas_saidas->adicionarSaida($produto_id, $quantidade,  $observacao, $ajuste_id, $multiplo_id, $pedido_id);
     }
 
     public function buscarEstoque($produto_id)
@@ -118,8 +118,8 @@ class SessionEstoqueService implements EstoqueServiceInterface
         foreach ($estoque as $key => $value) {
             if($pedido_id == $value['pedido_id'])
                $estoque[$key]['deleted_at'] = now();
-        }
+       }
 
-        session()->put('entradas_saidas', $estoque);
-    }
+       session()->put('entradas_saidas', $estoque);
+   }
 }

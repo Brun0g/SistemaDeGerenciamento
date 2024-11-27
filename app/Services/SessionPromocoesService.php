@@ -29,7 +29,6 @@ class SessionPromocoesService implements PromocoesServiceInterface
             'porcentagem' => (int)$porcentagem, 
             'quantidade'=> (int)$quantidade, 
             'ativo' => 0,
-
             'created_at' => now(), 
             'deleted_at' => null,
             'updated_at' => null,
@@ -39,7 +38,7 @@ class SessionPromocoesService implements PromocoesServiceInterface
         ];
 
         session()->put('promocoes', $promocoes);
-	}
+    }
     
     public function ativarPromocao($promocoes_id, $situacao)
     {
@@ -141,7 +140,7 @@ class SessionPromocoesService implements PromocoesServiceInterface
 
             $preco_original = $buscar['valor'];
             $preco_desconto = $buscar['valor'] - ($buscar['valor'] / 100 * $porcentagem);
-           
+
             $promocoeslist[$key] = ['create_by' => strtoupper($nome_create_by),'restored_by' => strtoupper($nome_restored_by), 'active_by' => strtoupper($nome_active_by), 'deactivate_by' => strtoupper($nome_deactivate_by), 'delete_by' => strtoupper($nome_delete_by), 'produto' => $buscar['produto'], 'produto_id' => $produto_id, 'preco_original' => $preco_original, 'preco_desconto' => $preco_desconto, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade, 'ativo' => $ativo,
 
             'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null, 
@@ -152,77 +151,77 @@ class SessionPromocoesService implements PromocoesServiceInterface
 
 
 
-            ];       
-        }
-
-        return $promocoeslist;
+        ];       
     }
 
-    public function buscarQuantidade($produto_id, $quantidade)
-    {
-        $produto = session()->get('promocoes', []);
-        $produtoEncontrado = [];
-        
-        $quantity = array_column($produto, 'quantidade');
-        array_multisort($quantity, SORT_ASC, $produto);
+    return $promocoeslist;
+}
 
-        foreach ($produto as $key => $value) {
-            if($produto_id == $value['produto_id'])
+public function buscarQuantidade($produto_id, $quantidade)
+{
+    $produto = session()->get('promocoes', []);
+    $produtoEncontrado = [];
+
+    $quantity = array_column($produto, 'quantidade');
+    array_multisort($quantity, SORT_ASC, $produto);
+
+    foreach ($produto as $key => $value) {
+        if($produto_id == $value['produto_id'])
+        {
+            if($value['ativo'] == 1)
             {
-                if($value['ativo'] == 1)
-                {
-                    $id = $value['produto_id'];
-                    $porcentagem = $value['porcentagem'];
-                    $quantidade_promocao = $value['quantidade'];
-                    $ativo = $value['ativo'];
-
-                    if($quantidade >= $quantidade_promocao)
-                    $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
-                
-                }
-            }
-        }
-
-        return $produtoEncontrado;
-    }
-
-    public function buscarPromocao($produto_id)
-    {
-        $produto = session()->get('promocoes', []);
-        $produtoEncontrado = [];
-        $ativo = 0;
-
-        foreach ($produto as $key => $value) {
-            if($produto_id == $value['produto_id'])
-            {
+                $id = $value['produto_id'];
                 $porcentagem = $value['porcentagem'];
                 $quantidade_promocao = $value['quantidade'];
-         
+                $ativo = $value['ativo'];
+
+                if($quantidade >= $quantidade_promocao)
+                    $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
                 
-                if($value['ativo'] == 1)
-                {
-                    $ativo = $value['ativo'];
-                   
-                    $produtoEncontrado[] = ['produto_id' => $produto_id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
-                }
             }
         }
-
-        return ['promocao' => $produtoEncontrado, 'ativo' => $ativo];
     }
 
-    function restaurarPromocao($promocao_id)
-    {
-        $promocao = session()->get('promocoes', []);
+    return $produtoEncontrado;
+}
 
-        foreach ($promocao as $key => $value) {
-                if($promocao_id == $key){
-                    $promocao[$key]['restored_by'] = Auth::id();
-                    $promocao[$key]['restored_at'] = now();
-                    $promocao[$key]['deleted_at'] = null;
-                }
+public function buscarPromocao($produto_id)
+{
+    $produto = session()->get('promocoes', []);
+    $produtoEncontrado = [];
+    $ativo = 0;
+
+    foreach ($produto as $key => $value) {
+        if($produto_id == $value['produto_id'])
+        {
+            $porcentagem = $value['porcentagem'];
+            $quantidade_promocao = $value['quantidade'];
+
+
+            if($value['ativo'] == 1)
+            {
+                $ativo = $value['ativo'];
+
+                $produtoEncontrado[] = ['produto_id' => $produto_id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
+            }
         }
-
-        session()->put('promocoes', $promocao);
     }
+
+    return ['promocao' => $produtoEncontrado, 'ativo' => $ativo];
+}
+
+function restaurarPromocao($promocao_id)
+{
+    $promocao = session()->get('promocoes', []);
+
+    foreach ($promocao as $key => $value) {
+        if($promocao_id == $key){
+            $promocao[$key]['restored_by'] = Auth::id();
+            $promocao[$key]['restored_at'] = now();
+            $promocao[$key]['deleted_at'] = null;
+        }
+    }
+
+    session()->put('promocoes', $promocao);
+}
 }

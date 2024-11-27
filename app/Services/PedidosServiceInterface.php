@@ -10,5 +10,5 @@ interface PedidosServiceInterface
 	function salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total);
 	function buscarItemPedido($pedido_id);
 	function salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade);
-    function excluirPedido($pedido_id, $provider_entradas_saidas);
+	function excluirPedido($pedido_id, $provider_entradas_saidas);
 }

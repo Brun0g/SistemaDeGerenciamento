@@ -2,18 +2,18 @@
   <x-slot name="header">
     <div style="display: flex; justify-content:space-between; ">
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-      {{ __('Pedido de ' . strtoupper($clienteID['name']) ) }}
+        {{ __('Pedido de ' . strtoupper($clienteID['name']) ) }}
       </h2>
       @if($deletedAt == null)
-        <div style=" display: flex; justify-content: right; width: 60%;" >
-          <a href={{'/carrinho/' . $cliente_id }}><i class="fa-solid fa-cart-shopping" style="font-size: 26px;"></i></a>
-        </div>
+      <div style=" display: flex; justify-content: right; width: 60%;" >
+        <a href={{'/carrinho/' . $cliente_id }}><i class="fa-solid fa-cart-shopping" style="font-size: 26px;"></i></a>
+      </div>
       @endif
     </div>
   </x-slot>
 
   <style type="text/css">
-  
+    
   </style>
   <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -90,8 +90,8 @@
               </tr>
             </thead>
             <tbody>
-           
-            
+             
+              
               @if(sizeof($listar_carrinho) > 0)
               
               @foreach ($listar_carrinho as $pedido_id => $value )
@@ -111,7 +111,7 @@
                 @endif
 
               </tbody>
-               @if($deletedAt == null)
+              @if($deletedAt == null)
               <tr style = "border-top: black solid 1px;">
                 <td style="border-bottom: hidden; border-left: hidden;"></td>
                 <td style="border-bottom: hidden"></td>
@@ -133,8 +133,8 @@
           </div>
         </div>
 
-           @endif
-   
+        @endif
+        
         <div style="display: flex; justify-content: center;">
           <h1 style="font-size: 32px; margin-bottom: 10px;">Pedidos concluídos</h1>
         </div>
@@ -146,9 +146,9 @@
               <th>Restaurado por</th>
               <th>Total</th>
               <th>Ação</th>
-         
+              
               <th>Ação</th>
-         
+              
             </tr>
           </thead>
 
@@ -165,7 +165,7 @@
               <div class="modal-header">
                 <h5 class="modal-title" id="TituloModalLongoExemplo">Cadastrar Produto</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                <span aria-hidden="true">&times;</span>
+                  <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
@@ -245,45 +245,45 @@
         </div>
         
         @if($total_paginas >= 0)
-<div style="display: flex; justify-content: center; margin-top: 20px;">
+        <div style="display: flex; justify-content: center; margin-top: 20px;">
 
-    @if($pagina_atual > 0)
-    <div style="display: flex; justify-content: center; ">
-        <form action="/Cliente/{{$cliente_id}}" method="GET">
-        @csrf
-
-        <input type="hidden" name="page" value="{{$pagina_atual - 1}}">
-
-        <div><button class="btn btn-info" type="submit" style="color: white; font-weight: 900;"><</span></button></div>
-        </form>
-    </div>
-    @endif
-
-    <div style="display: flex; justify-content: center; ">
-        @for ($i = 0; $i <= $total_paginas; $i++)
+          @if($pagina_atual > 0)
+          <div style="display: flex; justify-content: center; ">
             <form action="/Cliente/{{$cliente_id}}" method="GET">
-            @csrf
-            
+              @csrf
 
-            @if($total_paginas == 0 && $pagina_atual == 0)
-            @else
-            <button class="btn {{$pagina_atual == $i ? 'btn-secondary' : 'btn-dark'}} " name="page"  value="{{$i}}"type="submit" style="color: white; font-weight: 900;">{{$i}}</span></button>
-            @endif
+              <input type="hidden" name="page" value="{{$pagina_atual - 1}}">
+
+              <div><button class="btn btn-info" type="submit" style="color: white; font-weight: 900;"><</span></button></div>
             </form>
-        @endfor
-    </div>
-  
-    @if($total_paginas  > $pagina_atual)
-    <div style="display: flex; justify-content: center;">
-        <form action="/Cliente/{{$cliente_id}}" method="GET">
-            @csrf
-            
-            <input type="hidden" name="page" value="{{$pagina_atual + 1}}">
+          </div>
+          @endif
 
-            <button class="btn btn-info" type="submit" style="color: white; font-weight: 900;">></span></button>
-        </form>
-    </div>
-    @endif
-</div>
-@endif
-</x-app-layout>
+          <div style="display: flex; justify-content: center; ">
+            @for ($i = 0; $i <= $total_paginas; $i++)
+            <form action="/Cliente/{{$cliente_id}}" method="GET">
+              @csrf
+              
+
+              @if($total_paginas == 0 && $pagina_atual == 0)
+              @else
+              <button class="btn {{$pagina_atual == $i ? 'btn-secondary' : 'btn-dark'}} " name="page"  value="{{$i}}"type="submit" style="color: white; font-weight: 900;">{{$i}}</span></button>
+              @endif
+            </form>
+            @endfor
+          </div>
+          
+          @if($total_paginas  > $pagina_atual)
+          <div style="display: flex; justify-content: center;">
+            <form action="/Cliente/{{$cliente_id}}" method="GET">
+              @csrf
+              
+              <input type="hidden" name="page" value="{{$pagina_atual + 1}}">
+
+              <button class="btn btn-info" type="submit" style="color: white; font-weight: 900;">></span></button>
+            </form>
+          </div>
+          @endif
+        </div>
+        @endif
+      </x-app-layout>

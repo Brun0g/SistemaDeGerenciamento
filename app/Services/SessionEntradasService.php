@@ -14,7 +14,7 @@ class SessionEntradasService implements EntradasServiceInterface
 
         $entradas[] = ['create_by' => Auth::id(), 'delete_by' => null, 'restored_by' => null, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'observacao' => $observacao, 'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'created_at' => now(), 'deleted_at' => null];
 
-    
+        
         session()->put('entradas_saidas', $entradas);
     }
 
@@ -24,7 +24,7 @@ class SessionEntradasService implements EntradasServiceInterface
 
         $saidas[] = ['create_by' => Auth::id(), 'delete_by' => null, 'restored_by' => null, 'produto_id' => $produto_id, 'quantidade' => (int)$quantidade, 'created_at' => now(), 'observacao' => $observacao,  'ajuste_id' => $ajuste_id, 'multiplo_id' => $multiplo_id, 'pedido_id' => $pedido_id, 'created_at' => now(), 'deleted_at' => null];
 
-    
+        
         session()->put('entradas_saidas', $saidas);
     }
 
@@ -52,7 +52,7 @@ class SessionEntradasService implements EntradasServiceInterface
                 $saida[$key]['restored_by'] = Auth::id();
                 $saida[$key]['deleted_at'] = null;
             }
-           
+            
         }
 
         session()->put('entradas_saidas', $saida);
@@ -97,7 +97,7 @@ class SessionEntradasService implements EntradasServiceInterface
         $entradas_array = [];
 
         foreach ($entradas as $key => $value) {
-         
+           
             $deleted_at = $value['deleted_at'];
 
             if($deleted_at  == $tipo)
@@ -111,7 +111,7 @@ class SessionEntradasService implements EntradasServiceInterface
                 $multiplo_id = $value['multiplo_id'];
                 $ajuste_id = $value['ajuste_id'];
                 $pedido_id = $value['pedido_id'];
-              
+                
 
                 $entradas_array[] = ['create_by' => $nome, 'produto_id' => $produto_id, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'multiplo_id' => $multiplo_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month, 'ajuste_id' => $ajuste_id, 'pedido_id' => $pedido_id, 'deleted_at' => $deleted_at];
             }
@@ -139,7 +139,7 @@ class SessionEntradasService implements EntradasServiceInterface
                 $observacao = $value['observacao'];
                 $multiplo_id = $value['multiplo_id'];
 
-            $entradas_array[] = ['create_by' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
+                $entradas_array[] = ['create_by' => $nome, 'produto' => $nome_produto, 'quantidade' => $quantidade, 'data' => $data, 'observacao' => $observacao, 'tipo' => $tipo, 'ajuste_id' => $ajuste_id, 'produto_id' => $produto_id, 'ano' => $data->year, 'dia_do_ano' => $data->dayOfYear, 'dia_da_semana' => $data->dayOfWeek, 'hora' => $data->hour, 'minuto' => $data->minute, 'segundo' => $data->second, 'mes' => $data->month];
             }
         }
 

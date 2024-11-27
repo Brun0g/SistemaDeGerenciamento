@@ -13,22 +13,22 @@ class SessionCategoriaService implements CategoriaServiceInterface
 		$listarCategoria = [];
 
 		foreach ($categorias as $key => $value) 
-        {
-            $nome_categoria = $value['nome'];
-       
-            $listarCategoria[$key] = ['categoria' => $nome_categoria];       
-        }
+		{
+			$nome_categoria = $value['nome'];
+			
+			$listarCategoria[$key] = ['categoria' => $nome_categoria];       
+		}
 
-        return $listarCategoria;
+		return $listarCategoria;
 	}
 
 	function adicionarCategoria($categoria)
 	{
-      	$categorias = session()->get('categorias', []);
+		$categorias = session()->get('categorias', []);
 
-        $categorias[] = ['nome' => $categoria];
+		$categorias[] = ['nome' => $categoria];
 
-        session()->put('categorias', $categorias);
+		session()->put('categorias', $categorias);
 	}
 	
 	function visualizarCategoria($categoria_id)
@@ -39,7 +39,7 @@ class SessionCategoriaService implements CategoriaServiceInterface
 
 		foreach ($categorias as $key => $value) {
 			$nome_categoria = $value['nome'];
-            $categoria[$key] = ['categoria' => $nome_categoria];
+			$categoria[$key] = ['categoria' => $nome_categoria];
 		}
 
 		return $categoria;
@@ -49,23 +49,23 @@ class SessionCategoriaService implements CategoriaServiceInterface
 	{
 		$categorias = session()->get('categorias', []);
 
-   		$categorias[$categoria_id]['nome'] = $categoria;
+		$categorias[$categoria_id]['nome'] = $categoria;
 		
 		session()->put('categorias', $categorias);
 	}
 
 	function deletarCategoria($categoria_id)
 	{
-        if(session()->has('categorias'))
-        {
-            $categorias = session()->get('categorias', []);
+		if(session()->has('categorias'))
+		{
+			$categorias = session()->get('categorias', []);
 
-            if(array_key_exists($categoria_id, $categorias))
-            {
-                unset($categorias[$categoria_id]);
+			if(array_key_exists($categoria_id, $categorias))
+			{
+				unset($categorias[$categoria_id]);
 
-                session()->put('categorias', $categorias);
-            }
-        }
+				session()->put('categorias', $categorias);
+			}
+		}
 	}
 }

@@ -43,7 +43,7 @@ class DBEnderecosService implements EnderecoServiceInterface
         $endereco->rua = $rua;
         $endereco->numero = $numero;
         $endereco->estado = $estado;
-    
+        
         $endereco->save();
     }
     
@@ -67,7 +67,7 @@ class DBEnderecosService implements EnderecoServiceInterface
             $rua_endereco = $endereco->rua;
             $numero_endereco = $endereco->numero;
             $estado_endereco = $endereco->estado;
-      
+            
             $listarEnderecos[$endereco->id] = ['cliente_id' => $cliente_id_endereco, 'cidade' => $cidade_endereco, 'cep' => $cep_endereco, 'rua' => $rua_endereco, 'numero' => $numero_endereco, 'estado' => $estado_endereco];       
         }
 
