@@ -140,8 +140,6 @@ class DBPromocoesService implements PromocoesServiceInterface
         foreach ($produto as $key => $value) {
             if($produto_id == $value['produto_id'])
             {
-
-
                 if($value['ativo'] == 1)
                 {
                     $id = $value['produto_id'];
@@ -149,7 +147,6 @@ class DBPromocoesService implements PromocoesServiceInterface
                     $quantidade_promocao = $value['quantidade'];
                     $ativo = $value['ativo'];
 
-                
                     if($quantidade >= $quantidade_promocao)
                         $produtoEncontrado = ['produto_id' => $id, 'porcentagem' => $porcentagem, 'quantidade' => $quantidade_promocao, 'ativo' => $ativo];
                 }

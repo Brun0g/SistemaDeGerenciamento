@@ -81,28 +81,4 @@
     
 </div>
 </div>
-<script>
-$.ajaxSetup({
-headers: {
-'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-}
-});
-</script>
-<script>
-$(document).ready(function(){
-$(document).on('keyup', function (e){
-e.preventDefault();
-let search_string = $('#search').val();
-console.log(search_string);
-$.ajax({
-url:"{{ route('Clientes') }}",
-method: 'GET',
-data:{search_string:search_string},
-success: function(res){
-$('#table').html(res);
-}
-});
-})
-});
-</script>
 </x-app-layout>

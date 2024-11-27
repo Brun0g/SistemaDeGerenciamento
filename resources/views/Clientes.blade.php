@@ -4,7 +4,6 @@
         {{ __('Clientes') }}
         </h2>
 
-   
     </x-slot>
   
 <div class="py-12 ">
@@ -13,8 +12,7 @@
         <div class="input-group" style="width: 20%">
             <form  action="/Clientes" method="GET" >
                 @csrf
-           
-           
+
             <input value="{{$search}}" class="form-control rounded" placeholder="Procurar clientes" name="search" />
                 <button type="submit" class="btn btn-outline-primary" data-mdb-ripple-init>Procurar</button>
             </form>
@@ -99,30 +97,7 @@
     
 </div>
 </div>
-<script>
-$.ajaxSetup({
-headers: {
-'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-}
-});
-</script>
-<script>
-$(document).ready(function(){
-$(document).on('keyup', function (e){
-e.preventDefault();
-let search_string = $('#search').val();
-console.log(search_string);
-$.ajax({
-url:"{{ route('Clientes') }}",
-method: 'GET',
-data:{search_string:search_string},
-success: function(res){
-$('#table').html(res);
-}
-});
-})
-});
-</script>
+
 </x-app-layout>
 
 

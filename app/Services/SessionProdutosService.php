@@ -122,7 +122,7 @@ class SessionProdutosService implements ProdutosServiceInterface
                 if($image_url_produto != false)
                     $image_url_produto = asset("storage/" . $image_url_produto);
 
-                $listarProdutos[$produto_id] = ['create_by' => $nome_usuario, 'created_at' => $created_at, 'update_by' => $nome_usuario_update, 'updated_at' => $updated_at, 'produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo, 'quantidade_estoque' => $quantidade_estoque, 'delete_by' => $nome_usuario_delete, 'deleted_at' => $deleted_at];     
+                $listarProdutos[$produto_id] = ['create_by' => $nome_usuario, 'created_at' => $created_at, 'update_by' => $nome_usuario_update, 'updated_at' => $updated_at, 'produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo, 'quantidade_estoque' => $quantidade_estoque, 'delete_by' => $nome_usuario_delete, 'deleted_at' => $deleted_at];    
             }
         }
 

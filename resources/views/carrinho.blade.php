@@ -5,8 +5,6 @@
         </h2>
     </x-slot>
     
-
-
 <div class="py-12" >
     <div class="max-w-8xl mx-auto sm:px-8 lg:px-8" >
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" >
@@ -190,6 +188,4 @@
     <div class="alert alert-danger"  type="submit">Não há produtos no carrinho!</div>
 </div>
 @endif
-
-
 </x-app-layout>

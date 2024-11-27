@@ -127,7 +127,6 @@ class SessionClientesService implements ClientesServiceInterface
 
     public function buscarCliente($cliente_id)
     {
-        
         if(session()->has('Clientes'))
         {
             $clientes = session()->get('Clientes');

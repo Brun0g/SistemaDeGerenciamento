@@ -36,8 +36,6 @@
             </div>
         </div>
         @endif
-        
-
         @if ($errors->any())
         <div class="sub-container ">
             <div class="alert alert-danger ">
@@ -49,8 +47,6 @@
             </div>
         </div>
         @endif
-
-
     <div class="sub-container shadow-lg ">
         <table id="table">
             <thead>

@@ -5,9 +5,6 @@
         </h2>
     </x-slot>
 <div>
-
-
-    
     <div class="sub-container">
   
         @if(isset($Produtos))
@@ -68,5 +65,4 @@
         @endif
     </div>
 </div>
-
 </x-app-layout>

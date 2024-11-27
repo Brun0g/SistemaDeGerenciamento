@@ -226,5 +226,3 @@ class SessionPromocoesService implements PromocoesServiceInterface
         session()->put('promocoes', $promocao);
     }
 }
-
-

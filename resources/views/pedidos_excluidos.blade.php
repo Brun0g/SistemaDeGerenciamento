@@ -102,16 +102,8 @@
 
             <div style="width: 13%; margin-right: 15px;">
                 <label class="block text-sm font-medium text-gray-700">Quantidade máxima:</label>
-            
-
-
-               {{--  @if($valores['quantidade_min'] && !$valores['quantidade_max'])
-                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['quantidade_max']}}" type="number" name="quantidade_maxima" required>
-                @else --}}
+    
                 <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['quantidade_max']}}" type="number" name="quantidade_maxima" >
-                {{-- @endif --}}
-                
-
             </div>
             <div> 
                 <div style="display: flex; justify-content: center;">
@@ -132,12 +124,7 @@
         </div>
         <div style="margin-bottom: 15px; margin-top: 20px;"><button type="submit" class="btn btn-success">Confirmar</button></div>
     </div>
-
-        
-
         <input type="hidden" name="page" value="0">
-
-
 </form>                              
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
         <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
@@ -685,23 +672,18 @@
             <input type="hidden" name="ordernar_quantidade" value="{{$quantidade}}">
             <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
             <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
-
             <input type="hidden" name="ordernar_deleted_at" value={{ $order_by['deleted_at'] }}>
             <input type="hidden" name="ordernar_created_at" value={{ $order_by['created_at'] }}>
-
             <input type="hidden" name="categoria" value="{{$categoria}}">
             <input type="hidden" name="cliente_id" value={{$cliente_id}}>
             <input type="hidden" name="search" value="{{$search}}">
             <input type="hidden" name="pedidos" value="{{$escolha}}">
-
             <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
             <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
             <input type="hidden" name="quantidade_maxima" value="{{$quantidade_maxima}}">
             <input type="hidden" name="quantidade_minima" value="{{$quantidade_minima}}">
-
             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
             <input type="hidden" name="data_final" value="{{$data_final}}">
-            {{-- <input type="hidden" name="page" value="{{$i}}"> --}}
 
             @if($total_paginas == 0 && $pagina_atual == 0)
             @else

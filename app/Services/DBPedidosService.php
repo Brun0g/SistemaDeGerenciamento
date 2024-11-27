@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\Services\PedidosServiceInterface;
 use App\Services\ProdutosServiceInterface;
 use \App\Services\DBProdutosService;
@@ -12,15 +11,10 @@ use App\Models\PedidosIndividuais;
 use App\Models\Pedidos;
 use App\Models\Entradas_saidas;
 use App\Models\Cliente;
-
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
-
- use Illuminate\Support\Carbon;
-
- use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DBPedidosService implements PedidosServiceInterface
 {
@@ -43,7 +37,6 @@ class DBPedidosService implements PedidosServiceInterface
         $pedido_id = $pedido->id;
 
         return $pedido_id;
-
     }
 
     function salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade)
@@ -189,20 +182,16 @@ class DBPedidosService implements PedidosServiceInterface
     public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
     {
         $array = [];
-
-
+        $valores = [];
         $total_paginas = 0;
 
         $provider_cliente = new DBClientesService;
         $provider_pedidos = new DBPedidosService;
 
-        $valores = [];
-
         if($cliente_id)
             $pedidos = Pedidos::where('cliente_id', $cliente_id);
         else
             $pedidos = Pedidos::withTrashed();
-
 
         $valores = [
                 'max' => $maximo, 
@@ -391,49 +380,3 @@ class DBPedidosService implements PedidosServiceInterface
         return true;
     }
 }
-
-
-// $max_valor =  $pedidos->max('total') != null ? $pedidos->max('total') : 0;
-            // $max_total = PedidosIndividuais::sum('quantidade');
-
-            // SELECT pedido_id, sum(quantidade) FROM pedidos_individuais
-            // GROUP BY pedido_id  
-            // ORDER BY `sum(quantidade)` ASC
-
-            // SELECT 
-            // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
-            // ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
-            // ped.restored_at, ped.deleted_at, ped.created_at, ped.updated_at
-            // FROM pedidos as ped
-            // INNER JOIN clientes as cli ON ped.cliente_id = cli.id
-
-            // WHERE ped.id = (
-                        
-            // SELECT ped_ind.pedido_id FROM pedidos_individuais
-            // INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
-            // INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
-            // WHERE pro.categoria_id = 5 limit 1
-            // );
-
-            // SELECT ped.pedido_id, sum(ped.quantidade) FROM pedidos_individuais as ped
-            // group by ped.pedido_id;
-
-            // SELECT 
-            // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
-            // ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
-            // ped.restored_at, ped.deleted_at, ped.created_at, ped.updated_at
-            // FROM pedidos as ped
-            // INNER JOIN clientes as cli ON ped.cliente_id = cli.id
-            // INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
-            // INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
-            // WHERE pro.categoria_id = 5
-
-// $query
-                    //     ->having('pedidos.id', '=', function ($query) use ($categoria_id) {
-                    //     $query->select(
-                    //     'ped_ind.pedido_id')
-                    //     ->from('pedidos_individuais as ped_ind')
-                    //     ->join('pedidos_individuais', 'pedidos.id', '=', 'ped_ind.pedido_id')
-                    //     ->join('produtos', 'ped_ind.produto_id', '=', 'produtos.id')
-                    //     ->having('produtos.categoria_id', '=', $categoria_id)->limit(1);
-                    // });

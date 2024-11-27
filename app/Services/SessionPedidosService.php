@@ -333,8 +333,6 @@ class SessionPedidosService implements PedidosServiceInterface
 
         $total_paginas = 0;
 
-        
-
         if($order_by)
         {
             $key = key($order_by);

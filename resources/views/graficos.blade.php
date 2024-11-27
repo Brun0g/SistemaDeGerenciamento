@@ -18,25 +18,4 @@
     </div>
   </div>
 </div>
-<script>
-const ctx = document.getElementById('myChart');
-new Chart(ctx, {
-type: 'bar',
-data: {
-labels: [],
-datasets: [{
-label: 'Número de pedidos por Cliente',
-data: [],
-borderWidth: 1
-}]
-},
-options: {
-scales: {
-y: {
-beginAtZero: true
-}
-}
-}
-});
-</script>
 </x-app-layout>

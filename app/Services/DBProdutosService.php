@@ -80,9 +80,6 @@ class DBProdutosService implements ProdutosServiceInterface
         $service_carrinho = new SessionCarrinhoService();
         $listarProdutos = [];
 
-
-
-
         foreach ($produtos as $produto) 
         {
             $nome_produto = $produto->produto;
@@ -121,7 +118,6 @@ class DBProdutosService implements ProdutosServiceInterface
             $listarProdutos[$produto->id] = ['create_by' => $nome_usuario, 'created_at' => date_format($created_at,"d/m/Y H:i:s"), 'update_by' => $nome_usuario_update, 'updated_at' => date_format($updated_at,"d/m/Y H:i:s"), 'restored_by' => $nome_usuario_restored, 'produto' => $nome_produto, 'valor' => $valor_produto, 'quantidade' => $quantidade, 'image_url' => $image_url_produto, 'promocao' => $array, 'ativo' =>  $ativo, 'quantidade_estoque' => $quantidade_estoque, 'delete_by' => $nome_usuario_delete, 'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null, $deleted_at, 'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null ];       
         }
                
-
         return $listarProdutos;
     }
 

@@ -93,8 +93,6 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
             }       
         }
 
-
-
         return $carrinho; 
     }
 
@@ -246,9 +244,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
             } 
         }
     
-
         $valor_final = $totalComDesconto - ($totalComDesconto / 100 * $porcentagem);
-
         $totalPedido = ['totalSemDesconto' => $totalSemDesconto, 'totalComDesconto' => $totalComDesconto, 'porcentagem' => $porcentagem, 'preco_unidade' => $preco_unidade, 'valor_final' => $valor_final];
 
 
