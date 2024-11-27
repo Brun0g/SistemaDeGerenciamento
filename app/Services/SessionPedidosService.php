@@ -183,14 +183,16 @@ class SessionPedidosService implements PedidosServiceInterface
         $provider_clientes = new SessionClientesService();
         $provider_pedidos = new SessionPedidosService();
 
-        if($minimo >= $maximo)
-        {
-            $array_pedidos = array_column($pedidos, 'total', 'pedido_id');
-            $max_valor =  sizeof($pedidos) > 0 ? max($array_pedidos) : null;
-        }
-
-
         $escolha = !$escolha ? 1 : $escolha;
+      
+        $sem_filtro = true;
+
+        $valores = [
+            'max' => $maximo, 
+            'min' => $minimo, 
+            'quantidade_max' => $quantidade_maxima, 
+            'quantidade_min' => $quantidade_minima
+        ];
 
         foreach ($pedidos as $key => $value) {
 
@@ -223,11 +225,9 @@ class SessionPedidosService implements PedidosServiceInterface
             $filtro_search = stripos($nome_do_cliente, $search) === 0;
 
             $filtro_item = $provider_pedidos->buscarItemPedido($pedido_id);
-            $calcular_quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
+            $quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
 
             $filtro_categoria = null;
-
-            $max_total[] = $calcular_quantidade_total;
 
             if(isset($categoria_id))
             {
@@ -239,59 +239,62 @@ class SessionPedidosService implements PedidosServiceInterface
                     $procurar_categoria_id = $provider_produto->buscarProduto($produto_id)['categoria'];
 
                     if($procurar_categoria_id == $categoria_id)
-                        $filtro_categoria = true;
+                        $filtro_categoria =  true;
                 }
             }
 
             if($filtro_data_inicial_final)
-            {
-                
-                if( $total >= $minimo && $total <= $maximo 
-                    && !$quantidade_maxima 
-                    && !$quantidade_minima  
-                    || 
-                    $total >= $minimo && $total <= $maximo 
-                    && $calcular_quantidade_total >= $quantidade_minima 
-                    && $calcular_quantidade_total <= $quantidade_maxima )       
+            {   
+                $filtro_quantidade = $quantidade_maxima || $quantidade_minima;
+                $filtro_valores = $maximo || $minimo;
+
+                if( !$maximo && $total >= $minimo    && !$filtro_quantidade 
+                    || !$minimo && $total <= $maximo && !$filtro_quantidade
+                    || $total >= $minimo && $total <= $maximo && !$filtro_quantidade
+                    ||
+                    $quantidade_total    >= $quantidade_minima && !$quantidade_maxima && !$filtro_valores
+                    || $quantidade_total <= $quantidade_maxima && !$quantidade_minima && !$filtro_valores
+                    || $quantidade_total >= $quantidade_minima && $quantidade_total   <= $quantidade_maxima & !$filtro_valores
+                    
+                    || !$maximo && $total >= $minimo && $quantidade_total >= $quantidade_minima && $quantidade_total <= $quantidade_maxima
+                    || !$minimo  && $total <= $maximo  && $quantidade_total >= $quantidade_minima && $quantidade_total <= $quantidade_maxima
+                    || $total >= $minimo && $total <= $maximo  && $quantidade_total   >= $quantidade_minima && $quantidade_total <= $quantidade_maxima
+                 )
+                    $com_filtro = true;
+                    else
+                    $com_filtro = false;
+               
+                if($filtro_not_trashed && $com_filtro) 
                 {
-                    if($filtro_not_trashed) 
-                    {
-                        // FILTRO CATEGORIA COM SEARCH
-                        if( $filtro_search && $filtro_categoria )
-                            $buscar = true;
-                
-                        // FILTRO APENAS CATEGORIA
-                        if( !$search && $filtro_categoria )
-                            $buscar = true;
+                    
+                    if( $filtro_search && $filtro_categoria)
+                        $buscar = true;
 
-                        // TODAS CATEGORIAS
-                        if( !isset($categoria_id) && !$search )
-                            $buscar = true;
+                    if( !$search && $filtro_categoria)
+                        $buscar = true;
 
-                        // TODAS CATEGORIAS COM SEARCH
-                        if( !isset($categoria_id) && $filtro_search )
-                            $buscar = true;
-                        
-                    } elseif($filtro_trashed)
-                    {
-                        // FILTRO CATEGORIA COM SEARCH
-                        if( $filtro_search && $filtro_categoria )
-                            $buscar = true;
-                
-                        // FILTRO APENAS CATEGORIA
-                        if( !$search && $filtro_categoria )
-                            $buscar = true;
+                    if( !isset($categoria_id) && !$search)
+                        $buscar = true;
 
-                        // TODAS CATEGORIAS
-                        if( !isset($categoria_id) && !$search )
-                            $buscar = true;
+                    if( !isset($categoria_id) && $filtro_search)
+                        $buscar = true;
+                  
 
-                        // TODAS CATEGORIAS COM SEARCH
-                        if( !isset($categoria_id) && $filtro_search )
-                            $buscar = true;
+                } elseif($filtro_trashed)
+                {
+                    if( $filtro_search && $filtro_categoria)
+                        $buscar = true;
+            
+                    if( !$search && $filtro_categoria)
+                        $buscar = true;
 
-                        $filtro_carbon = $value['deleted_at'];
-                    }
+                    if( !isset($categoria_id) && !$search)
+                        $buscar = true;
+
+                    if( !isset($categoria_id) && $filtro_search)
+                        $buscar = true;
+
+                    $filtro_carbon = $value['deleted_at'];
                 }
 
             } else
@@ -317,7 +320,7 @@ class SessionPedidosService implements PedidosServiceInterface
                     'minuto' => $filtro_carbon->minute,
                     'segundo' => $filtro_carbon->second,
                     'mes' => $filtro_carbon->month,
-                    'quantidade_total_pedido' =>  $calcular_quantidade_total,
+                    'quantidade_total_pedido' =>  $quantidade_total,
 
                     'created_at' => isset($value['created_at']) ? date_format($value['created_at'], "d/m/Y H:i:s") : null,
                     'restored_at' => $restored_at,
@@ -330,14 +333,7 @@ class SessionPedidosService implements PedidosServiceInterface
 
         $total_paginas = 0;
 
-        $valores = [
-            'max' => $maximo, 
-            'min' => $minimo, 
-            'quantidade_max' => $quantidade_maxima, 
-            'quantidade_min' => $quantidade_minima, 
-            'max_valor' => $maximo, 
-            'max_total' => 5000
-        ];
+        
 
         if($order_by)
         {

@@ -11,8 +11,13 @@
     <div class="max-w mx-auto sm:px-6 lg:px-8 " >
        
         <div class="input-group" style="width: 20%">
-            <input   id= "search" type="search" class="form-control rounded" placeholder="Procurar clientes" aria-label="Search" aria-describedby="search-addon" />
-            <button type="button" class="btn btn-outline-primary" data-mdb-ripple-init>Procurar</button>
+            <form  action="/Clientes" method="GET" >
+                @csrf
+           
+           
+            <input value="{{$search}}" class="form-control rounded" placeholder="Procurar clientes" name="search" />
+                <button type="submit" class="btn btn-outline-primary" data-mdb-ripple-init>Procurar</button>
+            </form>
         </div>
         <div style="display: flex; justify-content: center; margin-bottom: 10px;">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CadastrarClienteModal">Adicionar novo cliente</button>

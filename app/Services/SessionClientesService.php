@@ -69,7 +69,7 @@ class SessionClientesService implements ClientesServiceInterface
         }
 	}
 
-    public function listarClientes($softDeletes)
+    public function listarClientes($softDeletes, $search)
     {
         $clientes = session()->get('Clientes', []);
         $listarClientes = [];

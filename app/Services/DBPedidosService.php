@@ -190,6 +190,7 @@ class DBPedidosService implements PedidosServiceInterface
     {
         $array = [];
 
+
         $total_paginas = 0;
 
         $provider_cliente = new DBClientesService;
@@ -198,67 +199,24 @@ class DBPedidosService implements PedidosServiceInterface
         $valores = [];
 
         if($cliente_id)
-            $pedidos = Pedidos::where('cliente_id', $cliente_id)->get();
+            $pedidos = Pedidos::where('cliente_id', $cliente_id);
         else
             $pedidos = Pedidos::withTrashed();
 
 
-        if($data_inicial && $data_final)
-        {
-            $max_valor =  $pedidos->max('total') != null ? $pedidos->max('total') : 0;
-            $max_total = PedidosIndividuais::sum('quantidade');
-
-            // $maximo = !$maximo ? 0 : (int)$maximo ? $minimo > $maximo : $max_valor;
-            // $minimo = !$minimo ? 0 : (int)$minimo;
-
-            // $quantidade_minima = !$quantidade_minima ? 0 : (int)$quantidade_minima;
-            // $quantidade_maxima = !$quantidade_maxima || $quantidade_minima > $quantidade_maxima ? $max_total  : (int)$quantidade_maxima;
-
-            // SELECT pedido_id, sum(quantidade) FROM pedidos_individuais
-            // GROUP BY pedido_id  
-            // ORDER BY `sum(quantidade)` ASC
-
-            // SELECT 
-            // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
-            // ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
-            // ped.restored_at, ped.deleted_at, ped.created_at, ped.updated_at
-            // FROM pedidos as ped
-            // INNER JOIN clientes as cli ON ped.cliente_id = cli.id
-
-            // WHERE ped.id = (
-                        
-            // SELECT ped_ind.pedido_id FROM pedidos_individuais
-            // INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
-            // INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
-            // WHERE pro.categoria_id = 5 limit 1
-            // );
-
-            // SELECT ped.pedido_id, sum(ped.quantidade) FROM pedidos_individuais as ped
-            // group by ped.pedido_id;
-
-            // SELECT 
-            // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
-            // ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
-            // ped.restored_at, ped.deleted_at, ped.created_at, ped.updated_at
-            // FROM pedidos as ped
-            // INNER JOIN clientes as cli ON ped.cliente_id = cli.id
-            // INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
-            // INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
-            // WHERE pro.categoria_id = 5
-
-            $valores = [
-                'max' => (int) $maximo, 
-                'min' => (int) $minimo, 
-                'quantidade_max' => (int) $quantidade_maxima, 
-                'quantidade_min' => (int) $quantidade_minima, 
-                'max_valor' => (int) $max_valor, 
-                'max_total' => (int) $max_total
+        $valores = [
+                'max' => $maximo, 
+                'min' => $minimo, 
+                'quantidade_max' => $quantidade_maxima, 
+                'quantidade_min' => $quantidade_minima
             ];
 
+        if($data_inicial && $data_final)
+        {
             $pedidos = $pedidos->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final)
             ->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
             ->join('pedidos_individuais', 'pedidos.id', '=', 'pedidos_individuais.pedido_id')->groupBy('pedidos_individuais.pedido_id')
-
+                ->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')
                 ->select(
                 'pedidos.id', 
                 'clientes.name', 
@@ -275,31 +233,24 @@ class DBPedidosService implements PedidosServiceInterface
                 'pedidos.created_at', 
                 'pedidos.updated_at')->selectRaw('sum(quantidade) as total_quantidade')
 
-            ->when($escolha, function($query, $tent) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima) 
+            ->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima) 
             {
 
-                if($maximo > 0 || $minimo > 0)
-                    $query->having('pedidos.total', '>=', $minimo)->having('pedidos.total', '<=', $maximo);
+                if($minimo)
+                    $query->having('pedidos.total', '>=', $minimo);
 
-                if($quantidade_maxima > 0 || $quantidade_minima > 0)
-                    $query->having('total_quantidade', '>=', $quantidade_minima)->having('total_quantidade', '<=', $quantidade_maxima);
+                if($maximo)
+                    $query->having('pedidos.total', '<=', $maximo);
+
+                if($quantidade_minima)
+                    $query->having('total_quantidade', '>=', $quantidade_minima);
+
+                if($quantidade_maxima)
+                    $query->having('total_quantidade', '<=', $quantidade_maxima);
 
                 if($categoria_id)
-                {
-                    // $query
-                    //     ->having('pedidos.id', '=', function ($query) use ($categoria_id) {
-                    //     $query->select(
-                    //     'ped_ind.pedido_id')
-                    //     ->from('pedidos_individuais as ped_ind')
-                    //     ->join('pedidos_individuais', 'pedidos.id', '=', 'ped_ind.pedido_id')
-                    //     ->join('produtos', 'ped_ind.produto_id', '=', 'produtos.id')
-                    //     ->having('produtos.categoria_id', '=', $categoria_id)->limit(1);
-                    // });
-
-                    $query->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')
-                    ->where('produtos.categoria_id', '=', $categoria_id);
-                }
-
+                    $query->where('produtos.categoria_id', '=', $categoria_id);
+                
                 if($search)
                     $query->having('clientes.name', 'LIKE', $search .'%');
                 
@@ -308,23 +259,23 @@ class DBPedidosService implements PedidosServiceInterface
                 else
                     $query->whereNotNull('pedidos.deleted_at');
             });
-
-            $row = $pedidos->count();
-
-            $row_limit = 5;
-            $pagina_atual = $pagina_atual * $row_limit;                
-            $total_paginas = ceil($row / $row_limit - 1);
-
-            $pedidos = $pedidos->limit($row_limit)->offset($pagina_atual);
-
-            if($order_by)
-            {
-                $key = key($order_by);
-                $order = $order_by[$key] == 0 ? 'asc' : 'desc';
-                $pedidos = $pedidos->orderBy($key, $order)->get();
-            } else 
-                $pedidos = $pedidos->get();
         }
+
+        $row = $pedidos->count();
+
+        $row_limit = 5;
+        $pagina_atual = $pagina_atual * $row_limit;                
+        $total_paginas = ceil($row / $row_limit - 1);
+
+        $pedidos = $pedidos->limit($row_limit)->offset($pagina_atual);
+
+        if($order_by)
+        {
+            $key = key($order_by);
+            $order = $order_by[$key] == 0 ? 'asc' : 'desc';
+            $pedidos = $pedidos->orderBy($key, $order)->get();
+        } else 
+            $pedidos = $pedidos->get();
 
         $buscar = false;
 
@@ -379,8 +330,8 @@ class DBPedidosService implements PedidosServiceInterface
                     'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
                     'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null
                 ];  
-            }
-        
+        }
+
         return ['array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores];
     }
 
@@ -440,3 +391,49 @@ class DBPedidosService implements PedidosServiceInterface
         return true;
     }
 }
+
+
+// $max_valor =  $pedidos->max('total') != null ? $pedidos->max('total') : 0;
+            // $max_total = PedidosIndividuais::sum('quantidade');
+
+            // SELECT pedido_id, sum(quantidade) FROM pedidos_individuais
+            // GROUP BY pedido_id  
+            // ORDER BY `sum(quantidade)` ASC
+
+            // SELECT 
+            // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
+            // ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
+            // ped.restored_at, ped.deleted_at, ped.created_at, ped.updated_at
+            // FROM pedidos as ped
+            // INNER JOIN clientes as cli ON ped.cliente_id = cli.id
+
+            // WHERE ped.id = (
+                        
+            // SELECT ped_ind.pedido_id FROM pedidos_individuais
+            // INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
+            // INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
+            // WHERE pro.categoria_id = 5 limit 1
+            // );
+
+            // SELECT ped.pedido_id, sum(ped.quantidade) FROM pedidos_individuais as ped
+            // group by ped.pedido_id;
+
+            // SELECT 
+            // ped.id, cli.name,   ped.create_by, ped.delete_by, ped.restored_by, ped.cliente_id, 
+            // ped.endereco_id, ped.total, ped.totalSemDesconto, ped.porcentagem,
+            // ped.restored_at, ped.deleted_at, ped.created_at, ped.updated_at
+            // FROM pedidos as ped
+            // INNER JOIN clientes as cli ON ped.cliente_id = cli.id
+            // INNER JOIN pedidos_individuais as ped_ind ON ped.id = ped_ind.pedido_id
+            // INNER JOIN produtos as pro ON ped_ind.produto_id = pro.id
+            // WHERE pro.categoria_id = 5
+
+// $query
+                    //     ->having('pedidos.id', '=', function ($query) use ($categoria_id) {
+                    //     $query->select(
+                    //     'ped_ind.pedido_id')
+                    //     ->from('pedidos_individuais as ped_ind')
+                    //     ->join('pedidos_individuais', 'pedidos.id', '=', 'ped_ind.pedido_id')
+                    //     ->join('produtos', 'ped_ind.produto_id', '=', 'produtos.id')
+                    //     ->having('produtos.categoria_id', '=', $categoria_id)->limit(1);
+                    // });

@@ -76,12 +76,27 @@ class DBClientesService implements ClientesServiceInterface
 		$cliente->save();
 	}
 
-	function listarClientes($softDeletes)
+	function listarClientes($softDeletes, $search)
 	{
-		$clientes = Cliente::all();
+		
+        $clientes = Cliente::withTrashed()->select(
+                'clientes.id', 
+                'clientes.name', 
+                'clientes.email', 
+                'clientes.contato', 
+                'clientes.idade', 
+                'clientes.cep', 
+                'clientes.deleted_at', 
+                );
 
-        if($softDeletes)
-            $clientes = Cliente::withTrashed()->get();
+        $clientes = $clientes->when($search, function($query) use ($search) 
+        {
+            if($search)
+                $query->where('clientes.name', 'LIKE', $search .'%');
+        });
+
+
+        $clientes =  $clientes->get();
 
 		$listarClientes = [];
 

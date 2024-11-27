@@ -153,9 +153,7 @@
           </thead>
 
           <tbody>
-           
             <x-dynamic :listarPedidosAprovados="$listar_pedidos" :id="$cliente_id" :deletedAt="$deletedAt"></x-dynamic>
-
           </tbody>
         </table>
         
@@ -245,7 +243,47 @@
             </div>
           </div>
         </div>
-        <script>
         
-        </script>
+        @if($total_paginas >= 0)
+<div style="display: flex; justify-content: center; margin-top: 20px;">
+
+    @if($pagina_atual > 0)
+    <div style="display: flex; justify-content: center; ">
+        <form action="/Cliente/{{$cliente_id}}" method="GET">
+        @csrf
+
+        <input type="hidden" name="page" value="{{$pagina_atual - 1}}">
+
+        <div><button class="btn btn-info" type="submit" style="color: white; font-weight: 900;"><</span></button></div>
+        </form>
+    </div>
+    @endif
+
+    <div style="display: flex; justify-content: center; ">
+        @for ($i = 0; $i <= $total_paginas; $i++)
+            <form action="/Cliente/{{$cliente_id}}" method="GET">
+            @csrf
+            
+
+            @if($total_paginas == 0 && $pagina_atual == 0)
+            @else
+            <button class="btn {{$pagina_atual == $i ? 'btn-secondary' : 'btn-dark'}} " name="page"  value="{{$i}}"type="submit" style="color: white; font-weight: 900;">{{$i}}</span></button>
+            @endif
+            </form>
+        @endfor
+    </div>
+  
+    @if($total_paginas  > $pagina_atual)
+    <div style="display: flex; justify-content: center;">
+        <form action="/Cliente/{{$cliente_id}}" method="GET">
+            @csrf
+            
+            <input type="hidden" name="page" value="{{$pagina_atual + 1}}">
+
+            <button class="btn btn-info" type="submit" style="color: white; font-weight: 900;">></span></button>
+        </form>
+    </div>
+    @endif
+</div>
+@endif
 </x-app-layout>

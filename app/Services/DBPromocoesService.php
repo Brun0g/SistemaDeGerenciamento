@@ -122,8 +122,6 @@ class DBPromocoesService implements PromocoesServiceInterface
             'active_at' => isset($active_at) ? date_format($active_at, "d/m/Y H:i:s") : null,
             'deactivate_at' => isset($deactivate_at) ? date_format($deactivate_at, "d/m/Y H:i:s") : null
 
-
-
             ];       
         }
 

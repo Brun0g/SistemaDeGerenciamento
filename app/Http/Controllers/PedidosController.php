@@ -60,7 +60,6 @@ class PedidosController extends Controller
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);
 
 
-
         return view('pedidoFinalizado' , ['nome' => $nome['name'], 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto'], 'data_pedido' =>$pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
     }
 
@@ -132,7 +131,6 @@ class PedidosController extends Controller
         $pedidos = $pedidos['array'];
 
         $now = now();
-
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 

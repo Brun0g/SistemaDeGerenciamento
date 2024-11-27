@@ -25,7 +25,7 @@ class CarrinhoController extends Controller
     public function index(Request $request, $cliente_id, CarrinhoServiceInterface $provider_carrinho, ClientesServiceInterface $provider_cliente, ProdutosServiceInterface $provider_produto, EnderecoServiceInterface $provider_endereco, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
     {
         $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
-        $visualizar_cliente = $provider_cliente->listarClientes(true);
+        $visualizar_cliente = $provider_cliente->listarClientes(true, null);
         
         $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
 
