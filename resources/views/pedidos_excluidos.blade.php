@@ -90,7 +90,7 @@
                 </div>
                 <div style="width: 13%; margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Valor máximo:</label>
-                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['max']}}" type="number" name="valor_maximo">
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['max']}}" type="number" name="valor_maximo" required>
                 </div>
                 <div style="width: 13%; margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Quantidade mínima:</label>
@@ -103,7 +103,7 @@
                 <div style="width: 13%; margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Quantidade máxima:</label>
                     
-                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['quantidade_max']}}" type="number" name="quantidade_maxima" >
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['quantidade_max']}}" type="number" name="quantidade_maxima" required>
                 </div>
                 <div> 
                     <div style="display: flex; justify-content: center;">

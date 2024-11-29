@@ -171,21 +171,14 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-
-
     public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
     {
         $array = [];
-        $valores = [];
-
+      
         $pedidos = session()->get('Pedido_encerrado',[]);
         $provider_produto = new SessionProdutosService();
         $provider_clientes = new SessionClientesService();
         $provider_pedidos = new SessionPedidosService();
-
-        $escolha = !$escolha ? 1 : $escolha;
-        
-        $sem_filtro = true;
 
         $valores = [
             'max' => $maximo, 
@@ -194,7 +187,16 @@ class SessionPedidosService implements PedidosServiceInterface
             'quantidade_min' => $quantidade_minima
         ];
 
-        foreach ($pedidos as $key => $value) {
+        $escolha = !$escolha ? 1 : $escolha;
+        $minimo  = !$minimo ? 0 : $minimo;
+        $maximo  = !$maximo ? 0 : $maximo;
+        $quantidade_maxima  = !$quantidade_maxima ? 0 : $quantidade_maxima;
+        $quantidade_minima  = !$quantidade_minima ? 0 : $quantidade_minima;
+
+        $filtro_categoria =  false;
+
+        foreach ($pedidos as $key => $value) 
+        {
 
             $buscar = false;
             $pedido_id = $key;
@@ -218,270 +220,227 @@ class SessionPedidosService implements PedidosServiceInterface
             $restored_at = isset($value['restored_at']) ? date_format($value['restored_at'], "d/m/Y H:i:s") : null;
             $nome_do_cliente = $provider_clientes->buscarCliente($value['cliente_id'])['name'];
 
-            $filtro_data_inicial_final = isset($data_inicial, $data_final) ? $created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final : null;
             $filtro_carbon = $value['created_at'];
-            $filtro_not_trashed = $escolha == 1 && $deleted_at == null;
-            $filtro_trashed = $escolha == 2 && $deleted_at != null;
-            $filtro_search = stripos($nome_do_cliente, $search) === 0;
-
             $filtro_item = $provider_pedidos->buscarItemPedido($pedido_id);
             $quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
 
             $filtro_categoria = null;
 
-            if(isset($categoria_id))
+            if($escolha == 1)
+                $filtro_escolha = $deleted_at == null;
+            
+            if($escolha == 2)
+                $filtro_escolha = $deleted_at != null;
+
+            if($filtro_escolha)
             {
-                $lista_de_items = $filtro_item['lista'];
-
-                foreach ($lista_de_items as $itens => $value_itens) 
+                if($created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final)
                 {
-                    $produto_id = $value_itens['produto_id'];
-                    $procurar_categoria_id = $provider_produto->buscarProduto($produto_id)['categoria'];
-
-                    if($procurar_categoria_id == $categoria_id)
-                        $filtro_categoria =  true;
-                }
-            }
-
-            if($filtro_data_inicial_final)
-            {   
-                $filtro_quantidade = $quantidade_maxima || $quantidade_minima;
-                $filtro_valores = $maximo || $minimo;
-
-                if( !$maximo && $total >= $minimo    && !$filtro_quantidade 
-                    || !$minimo && $total <= $maximo && !$filtro_quantidade
-                    || $total >= $minimo && $total <= $maximo && !$filtro_quantidade
-                    ||
-                    $quantidade_total    >= $quantidade_minima && !$quantidade_maxima && !$filtro_valores
-                    || $quantidade_total <= $quantidade_maxima && !$quantidade_minima && !$filtro_valores
-                    || $quantidade_total >= $quantidade_minima && $quantidade_total   <= $quantidade_maxima & !$filtro_valores
-                    
-                    || !$maximo && $total >= $minimo && $quantidade_total >= $quantidade_minima && $quantidade_total <= $quantidade_maxima
-                    || !$minimo  && $total <= $maximo  && $quantidade_total >= $quantidade_minima && $quantidade_total <= $quantidade_maxima
-                    || $total >= $minimo && $total <= $maximo  && $quantidade_total   >= $quantidade_minima && $quantidade_total <= $quantidade_maxima
-                )
-                    $com_filtro = true;
-                    else
-                        $com_filtro = false;
-                    
-                    if($filtro_not_trashed && $com_filtro) 
+                    if(isset($categoria_id))
                     {
-                        
-                        if( $filtro_search && $filtro_categoria)
-                            $buscar = true;
+                        $lista_de_items = $filtro_item['lista'];
 
-                        if( !$search && $filtro_categoria)
-                            $buscar = true;
+                        foreach ($lista_de_items as $itens => $value_itens) 
+                        {
+                            $produto_id = $value_itens['produto_id'];
+                            $procurar_categoria_id = $provider_produto->buscarProduto($produto_id)['categoria'];
 
-                        if( !isset($categoria_id) && !$search)
-                            $buscar = true;
-
-                        if( !isset($categoria_id) && $filtro_search)
-                            $buscar = true;
-                        
-
-                    } elseif($filtro_trashed)
-                    {
-                        if( $filtro_search && $filtro_categoria)
-                            $buscar = true;
-                        
-                        if( !$search && $filtro_categoria)
-                            $buscar = true;
-
-                        if( !isset($categoria_id) && !$search)
-                            $buscar = true;
-
-                        if( !isset($categoria_id) && $filtro_search)
-                            $buscar = true;
-
-                        $filtro_carbon = $value['deleted_at'];
+                            if($procurar_categoria_id == $categoria_id)
+                                $filtro_categoria =  true;
+                        }
                     }
 
-                } else
-                $buscar = true;
+                    $filtro_quantidade = ($quantidade_maxima >= $quantidade_total && $quantidade_minima <= $quantidade_total) && ($maximo >= $total && $minimo <= $total);
 
-                if($buscar)
-                {
-                    $array[$pedido_id] = [
+                    $filtro_procurar = stripos($nome_do_cliente, $search) === 0;
 
-                        'create_by' => $nome_create,
-                        'delete_by' => $nome_delete,
-                        'restored_by' => $nome_restored,
-                        'cliente_id' => $value['cliente_id'],
-                        'endereco' => $endereco,
-                        'total' => $total,
-                        'porcentagem' => $porcentagem,
-                        'nome_cliente' => $nome_do_cliente,
-                        
-                        'ano' => $filtro_carbon->year,
-                        'dia_do_ano' => $filtro_carbon->dayOfYear,
-                        'dia_da_semana' => $filtro_carbon->dayOfWeek,
-                        'hora' => $filtro_carbon->hour,
-                        'minuto' => $filtro_carbon->minute,
-                        'segundo' => $filtro_carbon->second,
-                        'mes' => $filtro_carbon->month,
-                        'quantidade_total_pedido' =>  $quantidade_total,
+                    if($filtro_quantidade)
+                    {
+                        if(!$search  &&  !$filtro_categoria
+                        ||  $search  &&  !$filtro_categoria && $filtro_procurar
+                        || !$search  &&   $filtro_categoria && $filtro_procurar)
 
-                        'created_at' => isset($value['created_at']) ? date_format($value['created_at'], "d/m/Y H:i:s") : null,
-                        'restored_at' => $restored_at,
-                        'deleted_at' =>  isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
-                        'pedido_id' => $pedido_id
+                        $array[$pedido_id] = [
 
-                    ]; 
-                }  
-            }
+                            'create_by' => $nome_create,
+                            'delete_by' => $nome_delete,
+                            'restored_by' => $nome_restored,
+                            'cliente_id' => $value['cliente_id'],
+                            'endereco' => $endereco,
+                            'total' => $total,
+                            'porcentagem' => $porcentagem,
+                            'nome_cliente' => $nome_do_cliente,
+                            
+                            'ano' => $filtro_carbon->year,
+                            'dia_do_ano' => $filtro_carbon->dayOfYear,
+                            'dia_da_semana' => $filtro_carbon->dayOfWeek,
+                            'hora' => $filtro_carbon->hour,
+                            'minuto' => $filtro_carbon->minute,
+                            'segundo' => $filtro_carbon->second,
+                            'mes' => $filtro_carbon->month,
+                            'quantidade_total_pedido' =>  $quantidade_total,
 
-            $total_paginas = 0;
-
-            if($order_by)
-            {
-                $key = key($order_by);
-                $order = $order_by[$key] == 0 ? 'asc' : 'desc';
-
-                if($key == 'id')
-                    $key = 'pedido_id';
-
-                if($key == 'total_quantidade')
-                    $key = 'quantidade_total_pedido';
-                
-                $sort = array_column($array, $key);
-
-                if($order == 'asc')
-                    array_multisort($sort, SORT_ASC, $array);
-                else
-                    array_multisort($sort, SORT_DESC, $array);
-            }
-
-            if($data_inicial && $data_final)
-            {
-                $row_limit = 5;
-                $row = sizeof($array);
-                $pagina_atual = $pagina_atual * $row_limit;
-                $array = array_slice($array, $pagina_atual, $row_limit);
-                $total_paginas = ceil($row / $row_limit - 1);
-            }
-
-            return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores];
-        }
-
-        public function buscarPedido($pedido_id)
-        {
-            $pedidoEncontrado = [];
-            $pedidos = session()->get('Pedido_encerrado')[$pedido_id]; 
-
-            $provider_user = new DBUserService;
-            $provider_clientes = new SessionClientesService;
-
-            foreach ($pedidos as $key => $value) {
-
-                $cliente_id = $pedidos['cliente_id'];
-                $endereco_id = $pedidos['endereco_id'];
-                $total = $pedidos['total'];
-                $totalSemDesconto = $pedidos['totalSemDesconto'];
-                $porcentagem = $pedidos['porcentagem'];
-                $created_at = $pedidos['created_at'];
-                $create_by = $pedidos['create_by'];
-                $nome_create_by = $provider_user->buscarNome($create_by);
-
-                $nome_delete = $pedidos['delete_by'];
-                $nome_delete = $provider_user->buscarNome($nome_delete);
-
-                $nome_restored = $pedidos['restored_by'];
-                $nome_restored = $provider_user->buscarNome($nome_restored);
-
-                $nome_cliente = $provider_clientes->buscarCliente($cliente_id)['name'];
-
-                $deleted_at = isset($pedidos['deleted_at']) ? date_format($pedidos['deleted_at'],"d/m/Y H:i:s") : null;
-                $created_at = isset($pedidos['created_at']) ? date_format($pedidos['created_at'], "d/m/Y H:i:s") : null;
-                $restored_at = isset($pedidos['restored_at']) ? date_format($pedidos['restored_at'], "d/m/Y H:i:s") : null;
-
-                $filtro_carbon = $pedidos['created_at'];
-
-
-                $pedidoEncontrado = [
-                    'create_by' => $nome_create_by, 
-                    'delete_by' => $nome_delete,
-                    'restored_by' => $nome_restored,
-
-                    'cliente_id' => $cliente_id, 
-                    'endereco_id' => $endereco_id, 
-                    'total' => $total, 
-                    'totalSemDesconto' => $totalSemDesconto, 
-                    'porcentagem' => $porcentagem,
-                    'created_at' => $created_at, 
-                    'restored_at' => $restored_at,
-                    'deleted_at' => $deleted_at,
-
-                    'nome_cliente' => $nome_cliente,
-
-                    'ano' => $filtro_carbon->year,
-                    'dia_do_ano' => $filtro_carbon->dayOfYear,
-                    'dia_da_semana' => $filtro_carbon->dayOfWeek,
-                    'hora' => $filtro_carbon->hour,
-                    'minuto' => $filtro_carbon->minute,
-                    'segundo' => $filtro_carbon->second,
-                    'mes' => $filtro_carbon->month,
-
-                    'created_at' => isset($pedidos['created_at']) ? date_format($pedidos['created_at'], "d/m/Y H:i:s") : null,
-                    'restored_at' => $restored_at,
-                    'deleted_at' =>  isset($pedidos['deleted_at']) ? date_format($pedidos['deleted_at'], "d/m/Y H:i:s") : null,
-                    'pedido_id' => $pedido_id
-
-                ];
-            }
-
-            return $pedidoEncontrado;
-        }
-
-        public function buscarItemPedido($pedido_id)
-        {
-            $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
-            $service_produtos = new SessionProdutosService();
-            $total = 0;
-            $calcular_quantidade_total = 0;
-
-            foreach ($Pedido_encerrado_individual as $pedidoKey => $pedido) 
-            {
-                if($pedido['pedido_id'] == $pedido_id)
-                {
-                    $pedido_id = $pedido['pedido_id'];
-                    $produto_id = $pedido['produto_id'];
-                    $quantidade = $pedido['quantidade'];
-                    $porcentagem = $pedido['porcentagem'];
-                    $valor = $pedido['total'];
-                    $calcular_quantidade_total += $quantidade;
-                    $produto = $service_produtos->buscarProduto($produto_id)['produto'];
-                    $preco_unidade = $pedido['preco_unidade'];
-
-                    $total += $valor;
-
-                    $lista[$pedidoKey] = ['produto_id' => $produto_id, 'produto' => $produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'porcentagem' => $porcentagem, 'totalComDesconto' => $total];  
-
-                    $array_quantidade[$pedido_id] = [ 'calcular_quantidade_total' => $calcular_quantidade_total ];
-                } 
-            }
-            
-            return ['lista' => $lista, 'array_quantidade' => $array_quantidade];  
-        }
-
-        public function reativarPedido($pedido_id)
-        {
-            $pedidos = session()->get('Pedido_encerrado_individual', []);
-            
-            $service = new SessionEstoqueService;
-
-            foreach ($pedidos as $key => $value) {
-                if($pedido_id == $value['pedido_id'])
-                {
-                    $produto_id = $value['produto_id'];
-                    $estoque_atual = $service->buscarEstoque($produto_id);
-                    $quantidade_pedido = $value['quantidade'];
-                    
-                    if($estoque_atual < $quantidade_pedido)
-                        return false;
+                            'created_at' => isset($value['created_at']) ? date_format($value['created_at'], "d/m/Y H:i:s") : null,
+                            'restored_at' => $restored_at,
+                            'deleted_at' =>  isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
+                            'pedido_id' => $pedido_id
+                        ];   
+                    }
                 }
             }
-
-            return true;
         }
+
+        $total_paginas = 0;
+
+        if($order_by)
+        {
+            $key = key($order_by);
+            $order = $order_by[$key] == 0 ? 'asc' : 'desc';
+
+            if($key == 'id')
+                $key = 'pedido_id';
+
+            if($key == 'total_quantidade')
+                $key = 'quantidade_total_pedido';
+            
+            $sort = array_column($array, $key);
+
+            if($order == 'asc')
+                array_multisort($sort, SORT_ASC, $array);
+            else
+                array_multisort($sort, SORT_DESC, $array);
+        }
+
+        if($data_inicial && $data_final)
+        {
+            $row_limit = 5;
+            $row = sizeof($array);
+            $pagina_atual = $pagina_atual * $row_limit;
+            $array = array_slice($array, $pagina_atual, $row_limit);
+            $total_paginas = ceil($row / $row_limit - 1);
+        }
+
+        return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores];
     }
+
+    public function buscarPedido($pedido_id)
+    {
+        $pedidoEncontrado = [];
+        $pedidos = session()->get('Pedido_encerrado')[$pedido_id]; 
+
+        $provider_user = new DBUserService;
+        $provider_clientes = new SessionClientesService;
+
+        foreach ($pedidos as $key => $value) {
+
+            $cliente_id = $pedidos['cliente_id'];
+            $endereco_id = $pedidos['endereco_id'];
+            $total = $pedidos['total'];
+            $totalSemDesconto = $pedidos['totalSemDesconto'];
+            $porcentagem = $pedidos['porcentagem'];
+            $created_at = $pedidos['created_at'];
+            $create_by = $pedidos['create_by'];
+            $nome_create_by = $provider_user->buscarNome($create_by);
+
+            $nome_delete = $pedidos['delete_by'];
+            $nome_delete = $provider_user->buscarNome($nome_delete);
+
+            $nome_restored = $pedidos['restored_by'];
+            $nome_restored = $provider_user->buscarNome($nome_restored);
+
+            $nome_cliente = $provider_clientes->buscarCliente($cliente_id)['name'];
+
+            $deleted_at = isset($pedidos['deleted_at']) ? date_format($pedidos['deleted_at'],"d/m/Y H:i:s") : null;
+            $created_at = isset($pedidos['created_at']) ? date_format($pedidos['created_at'], "d/m/Y H:i:s") : null;
+            $restored_at = isset($pedidos['restored_at']) ? date_format($pedidos['restored_at'], "d/m/Y H:i:s") : null;
+
+            $filtro_carbon = $pedidos['created_at'];
+
+
+            $pedidoEncontrado = [
+                'create_by' => $nome_create_by, 
+                'delete_by' => $nome_delete,
+                'restored_by' => $nome_restored,
+
+                'cliente_id' => $cliente_id, 
+                'endereco_id' => $endereco_id, 
+                'total' => $total, 
+                'totalSemDesconto' => $totalSemDesconto, 
+                'porcentagem' => $porcentagem,
+                'created_at' => $created_at, 
+                'restored_at' => $restored_at,
+                'deleted_at' => $deleted_at,
+
+                'nome_cliente' => $nome_cliente,
+
+                'ano' => $filtro_carbon->year,
+                'dia_do_ano' => $filtro_carbon->dayOfYear,
+                'dia_da_semana' => $filtro_carbon->dayOfWeek,
+                'hora' => $filtro_carbon->hour,
+                'minuto' => $filtro_carbon->minute,
+                'segundo' => $filtro_carbon->second,
+                'mes' => $filtro_carbon->month,
+
+                'created_at' => isset($pedidos['created_at']) ? date_format($pedidos['created_at'], "d/m/Y H:i:s") : null,
+                'restored_at' => $restored_at,
+                'deleted_at' =>  isset($pedidos['deleted_at']) ? date_format($pedidos['deleted_at'], "d/m/Y H:i:s") : null,
+                'pedido_id' => $pedido_id
+
+            ];
+        }
+
+        return $pedidoEncontrado;
+    }
+
+    public function buscarItemPedido($pedido_id)
+    {
+        $Pedido_encerrado_individual = session()->get('Pedido_encerrado_individual', []);
+        $service_produtos = new SessionProdutosService();
+        $total = 0;
+        $calcular_quantidade_total = 0;
+
+        foreach ($Pedido_encerrado_individual as $pedidoKey => $pedido) 
+        {
+            if($pedido['pedido_id'] == $pedido_id)
+            {
+                $pedido_id = $pedido['pedido_id'];
+                $produto_id = $pedido['produto_id'];
+                $quantidade = $pedido['quantidade'];
+                $porcentagem = $pedido['porcentagem'];
+                $valor = $pedido['total'];
+                $calcular_quantidade_total += $quantidade;
+                $produto = $service_produtos->buscarProduto($produto_id)['produto'];
+                $preco_unidade = $pedido['preco_unidade'];
+
+                $total += $valor;
+
+                $lista[$pedidoKey] = ['produto_id' => $produto_id, 'produto' => $produto, 'pedido_id' => $pedido_id, 'quantidade' => $quantidade, 'total' => $valor, 'preco_unidade' => $preco_unidade, 'porcentagem' => $porcentagem, 'totalComDesconto' => $total];  
+
+                $array_quantidade[$pedido_id] = [ 'calcular_quantidade_total' => $calcular_quantidade_total ];
+            } 
+        }
+        
+        return ['lista' => $lista, 'array_quantidade' => $array_quantidade];  
+    }
+
+    public function reativarPedido($pedido_id)
+    {
+        $pedidos = session()->get('Pedido_encerrado_individual', []);
+        
+        $service = new SessionEstoqueService;
+
+        foreach ($pedidos as $key => $value) {
+            if($pedido_id == $value['pedido_id'])
+            {
+                $produto_id = $value['produto_id'];
+                $estoque_atual = $service->buscarEstoque($produto_id);
+                $quantidade_pedido = $value['quantidade'];
+                
+                if($estoque_atual < $quantidade_pedido)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+}

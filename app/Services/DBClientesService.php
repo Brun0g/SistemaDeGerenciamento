@@ -50,7 +50,6 @@ class DBClientesService implements ClientesServiceInterface
             $endereco->estado = $estado;
 
             $endereco->save();
-
         }
     }
 
@@ -62,173 +61,173 @@ class DBClientesService implements ClientesServiceInterface
       $cliente->save();
 
       $cliente->delete($cliente_id);
-  }
+    }
 
-  function editarCliente($cliente_id,$name,$email,$idade, $contato)
-  {
-      $cliente = Cliente::find($cliente_id);
+    function editarCliente($cliente_id,$name,$email,$idade, $contato)
+    {
+        $cliente = Cliente::find($cliente_id);
 
-      $cliente->update_by = Auth::id();
-      
-      $cliente->name = $name;
-      $cliente->email = $email;
-      $cliente->idade = $idade;
-      $cliente->contato = $contato;
-      
-      $cliente->save();
-  }
+        $cliente->update_by = Auth::id();
 
-  function listarClientes($softDeletes, $search)
-  {
-      
-    $clientes = Cliente::withTrashed()->select(
+        $cliente->name = $name;
+        $cliente->email = $email;
+        $cliente->idade = $idade;
+        $cliente->contato = $contato;
+
+        $cliente->save();
+    }
+
+    function listarClientes($softDeletes, $search)
+    {
+        $listarClientes = [];
+
+        $clientes = Cliente::withTrashed()->select(
         'clientes.id', 
         'clientes.name', 
         'clientes.email', 
         'clientes.contato', 
         'clientes.idade', 
         'clientes.cep', 
-        'clientes.deleted_at', 
-    );
+        'clientes.deleted_at',
+        'clientes.delete_by' 
+        );
 
-    $clientes = $clientes->when($search, function($query) use ($search) 
-    {
-        if($search)
-            $query->where('clientes.name', 'LIKE', $search .'%');
-    });
+        $clientes = $clientes->when(!$softDeletes, function($query) use ($search, $softDeletes) 
+        {
+            if($search)
+                $query->where('clientes.name', 'LIKE', $search .'%');
 
-    $clientes =  $clientes->get();
+            if(!$softDeletes)
+                $query->whereNull('clientes.deleted_at');
+             else
+                $query->whereNotNull('clientes.deleted_at');
+        });
 
-    $listarClientes = [];
-   
-
-    $provider_pedidos = new DBPedidosService;
-    $provider_user = new DBUserService;
-
-    foreach ($clientes as $cliente) 
-    {
-        $nome_cliente = $cliente->name;
-        $email_cliente = $cliente->email;
-        $idade_cliente = $cliente->idade;
-        $cidade_cliente = $cliente->cidade;
-        $cep_cliente = $cliente->cep;
-        $rua_cliente = $cliente->rua;
-        $numero_cliente = $cliente->numero;
-        $estado_cliente = $cliente->estado;
-        $contato_cliente = $cliente->contato;
-        $cliente_id = $cliente->id;
-
-
-        $total_pedido = $provider_pedidos->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, null, null, null, $provider_user)['total_pedido'];
-
-        $deleted_at = isset($cliente->deleted_at) ? date_format($cliente->deleted_at,"d/m/Y H:i:s") : null;
-        $delete_by = $cliente->delete_by;
-        $nome_delete_by = $provider_user->buscarNome($delete_by);
-
-        $created_at = isset($cliente->created_at) ? date_format($cliente->created_at, "d/m/Y H:i:s") : null;
-        $create_by = $cliente->create_by;
-        $nome_create_by = $provider_user->buscarNome($create_by);
-
-        $restored_at = isset($cliente->restored_at) ? date_format($cliente->restored_at, "d/m/Y H:i:s") : null;
-        $restored_by = $cliente->restored_by;
-        $nome_restored_by = $provider_user->buscarNome($restored_by);
-
-        $updated_at = isset($cliente->updated_at) ? date_format($cliente->updated_at, "d/m/Y H:i:s") : null;
-        $update_by = $cliente->update_by;
-        $nome_update_by = $provider_user->buscarNome($update_by);
+        $clientes =  $clientes->get();
         
-        $listarClientes[$cliente->id] = [
-            'create_by' => $nome_create_by,
-            'update_by' => $nome_update_by,
-            'restored_by' => $nome_restored_by,
-            'deleted_by' => $nome_delete_by,
-            'name' => $nome_cliente,
-            'email' => $email_cliente,
-            'idade' => $idade_cliente,
-            'cidade' => $cidade_cliente,
-            'cep' => $cep_cliente,
-            'rua' => $rua_cliente,
-            'numero' => $numero_cliente,
-            'estado' => $estado_cliente,
-            'contato' => $contato_cliente,
-            'deleted_at' => $deleted_at,
-            'restored_at' => $restored_at,
-            'created_at' => $created_at,
-            'updated_at' => $updated_at,
-            'total_pedido' => $total_pedido
-        ];       
+        $provider_pedidos = new DBPedidosService;
+        $provider_user = new DBUserService;
+
+        foreach ($clientes as $cliente) 
+        {
+            $nome_cliente = $cliente->name;
+            $email_cliente = $cliente->email;
+            $idade_cliente = $cliente->idade;
+            $cidade_cliente = $cliente->cidade;
+            $cep_cliente = $cliente->cep;
+            $rua_cliente = $cliente->rua;
+            $numero_cliente = $cliente->numero;
+            $estado_cliente = $cliente->estado;
+            $contato_cliente = $cliente->contato;
+            $cliente_id = $cliente->id;
+
+            $deleted_at = isset($cliente->deleted_at) ? date_format($cliente->deleted_at,"d/m/Y H:i:s") : null;
+            $delete_by = $cliente->delete_by;
+            $nome_delete_by = $provider_user->buscarNome($delete_by);
+
+            $created_at = isset($cliente->created_at) ? date_format($cliente->created_at, "d/m/Y H:i:s") : null;
+            $create_by = $cliente->create_by;
+            $nome_create_by = $provider_user->buscarNome($create_by);
+
+            $restored_at = isset($cliente->restored_at) ? date_format($cliente->restored_at, "d/m/Y H:i:s") : null;
+            $restored_by = $cliente->restored_by;
+            $nome_restored_by = $provider_user->buscarNome($restored_by);
+
+            $updated_at = isset($cliente->updated_at) ? date_format($cliente->updated_at, "d/m/Y H:i:s") : null;
+            $update_by = $cliente->update_by;
+            $nome_update_by = $provider_user->buscarNome($update_by);
+
+            $listarClientes[$cliente->id] = [
+                'create_by' => $nome_create_by,
+                'update_by' => $nome_update_by,
+                'restored_by' => $nome_restored_by,
+                'deleted_by' => $nome_delete_by,
+                'name' => $nome_cliente,
+                'email' => $email_cliente,
+                'idade' => $idade_cliente,
+                'cidade' => $cidade_cliente,
+                'cep' => $cep_cliente,
+                'rua' => $rua_cliente,
+                'numero' => $numero_cliente,
+                'estado' => $estado_cliente,
+                'contato' => $contato_cliente,
+                'deleted_at' => $deleted_at,
+                'restored_at' => $restored_at,
+                'created_at' => $created_at,
+                'updated_at' => $updated_at            
+            ];       
+        }
+
+        return $listarClientes;
     }
 
-    return $listarClientes;
-}
+    function buscarCliente($cliente_id)
+    {
 
-function buscarCliente($cliente_id)
-{
-  
-    $cliente = Cliente::withTrashed()->where('id', $cliente_id)->get()[0];
+        $cliente = Cliente::withTrashed()->where('id', $cliente_id)->get()[0];
 
-    $provider_user = new DBUserService;
+        $provider_user = new DBUserService;
 
-    foreach ($cliente as $clientes) {
+        foreach ($cliente as $clientes) {
 
-     $nome_cliente = $cliente->name;
-     $email_cliente = $cliente->email;
-     $idade_cliente = $cliente->idade;
-     $cidade_cliente = $cliente->cidade;
-     $cep_cliente = $cliente->cep;
-     $rua_cliente = $cliente->rua;
-     $numero_cliente = $cliente->numero;
-     $estado_cliente = $cliente->estado;
-     $contato_cliente = $cliente->contato;
+            $nome_cliente = $cliente->name;
+            $email_cliente = $cliente->email;
+            $idade_cliente = $cliente->idade;
+            $cidade_cliente = $cliente->cidade;
+            $cep_cliente = $cliente->cep;
+            $rua_cliente = $cliente->rua;
+            $numero_cliente = $cliente->numero;
+            $estado_cliente = $cliente->estado;
+            $contato_cliente = $cliente->contato;
 
-     $deleted_at = isset($cliente->deleted_at) ? date_format($cliente->deleted_at,"d/m/Y H:i:s") : null;
-     $delete_by = $cliente->delete_by;
-     $nome_delete_by = $provider_user->buscarNome($delete_by);
+            $deleted_at = isset($cliente->deleted_at) ? date_format($cliente->deleted_at,"d/m/Y H:i:s") : null;
+            $delete_by = $cliente->delete_by;
+            $nome_delete_by = $provider_user->buscarNome($delete_by);
 
-     $created_at = isset($cliente->created_at) ? date_format($cliente->created_at, "d/m/Y H:i:s") : null;
-     $create_by = $cliente->create_by;
-     $nome_create_by = $provider_user->buscarNome($create_by);
+            $created_at = isset($cliente->created_at) ? date_format($cliente->created_at, "d/m/Y H:i:s") : null;
+            $create_by = $cliente->create_by;
+            $nome_create_by = $provider_user->buscarNome($create_by);
 
-     $restored_at = isset($cliente->restored_at) ? date_format($cliente->restored_at, "d/m/Y H:i:s") : null;
-     $restored_by = $cliente->restored_by;
-     $nome_restored_by = $provider_user->buscarNome($restored_by);
+            $restored_at = isset($cliente->restored_at) ? date_format($cliente->restored_at, "d/m/Y H:i:s") : null;
+            $restored_by = $cliente->restored_by;
+            $nome_restored_by = $provider_user->buscarNome($restored_by);
 
-     $updated_at = isset($cliente->updated_at) ? date_format($cliente->updated_at, "d/m/Y H:i:s") : null;
-     $update_by = $cliente->update_by;
-     $nome_update_by = $provider_user->buscarNome($update_by);
+            $updated_at = isset($cliente->updated_at) ? date_format($cliente->updated_at, "d/m/Y H:i:s") : null;
+            $update_by = $cliente->update_by;
+            $nome_update_by = $provider_user->buscarNome($update_by);
 
-     return [ 
-        'create_by' => $nome_create_by, 
-        'update_by' => $nome_update_by, 
-        'restored_by' => $nome_restored_by, 
-        'deleted_by' => $nome_delete_by, 
-        'name' => $nome_cliente, 
-        'email' => $email_cliente, 
-        'idade' => $idade_cliente, 
-        'cidade' => $cidade_cliente, 
-        'cep' => $cep_cliente, 
-        'rua' => $rua_cliente, 
-        'numero' => $numero_cliente, 
-        'estado' => $estado_cliente, 
-        'contato' => $contato_cliente, 
-        'deleted_at' => $deleted_at, 
-        'restored_at' => $restored_at, 
-        'created_at' => $created_at, 
-        'updated_at' => $updated_at
-    ];
-}
+            return [ 
+                'create_by' => $nome_create_by, 
+                'update_by' => $nome_update_by, 
+                'restored_by' => $nome_restored_by, 
+                'deleted_by' => $nome_delete_by, 
+                'name' => $nome_cliente, 
+                'email' => $email_cliente, 
+                'idade' => $idade_cliente, 
+                'cidade' => $cidade_cliente, 
+                'cep' => $cep_cliente, 
+                'rua' => $rua_cliente, 
+                'numero' => $numero_cliente, 
+                'estado' => $estado_cliente, 
+                'contato' => $contato_cliente, 
+                'deleted_at' => $deleted_at, 
+                'restored_at' => $restored_at, 
+                'created_at' => $created_at, 
+                'updated_at' => $updated_at
+            ];
+        }
 
-return [];
-}
+        return [];
+    }
 
-function restaurarCliente($cliente_id)
-{
-    $cliente = Cliente::withTrashed()->where('id', $cliente_id)->get()[0];
+    function restaurarCliente($cliente_id)
+    {
+        $cliente = Cliente::withTrashed()->where('id', $cliente_id)->get()[0];
 
-    $cliente->restored_by = Auth::id();
-    $cliente->restored_at = now();
-    $cliente->deleted_at = null;
-    
-    $cliente->save();
-}
+        $cliente->restored_by = Auth::id();
+        $cliente->restored_at = now();
+        $cliente->deleted_at = null;
+        
+        $cliente->save();
+    }
 }

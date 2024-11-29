@@ -3,12 +3,10 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Clientes') }}
         </h2>
-
     </x-slot>
     
     <div class="py-12 ">
         <div class="max-w mx-auto sm:px-6 lg:px-8 " >
-         
             <div class="input-group" style="width: 20%">
                 <form  action="/Clientes" method="GET" >
                     @csrf
@@ -23,31 +21,29 @@
             <table id="table" class="rounded shadow-lg ">
                 <thead class="thead ">
                     <tr>
-                        <th  style="width: 3%;">ID</th>
-                        <th  style="width: 15%;">Cliente</th>
-                        <th  style="width: 1%;">Email</th>
-                        <th  style="width: 2%;">Idade</th>
+                        <th  style="width: 3%; ">ID      </th>
+                        <th  style="width: 15%;">Cliente </th>
+                        <th  style="width: 1%; ">Email   </th>
+                        <th  style="width: 2%; ">Idade   </th>
                         <th  style="width: 30%;">Endereço</th>
-                        <th>Contato</th>
-                        <th  style="width: 10%;">Total</th>
-                        <th  style="width: 4%;">Ação</th>
-                        <th  style="width: 10%;">Ação</th>
-                        <th  style="width: 4%;">Ação</th>
+                        <th  style="width: 1%; ">Contato </th>
+                        <th  style="width: 10%;">Total   </th>
+                        <th  style="width: 4%; ">Ação    </th>
+                        <th  style="width: 10%;">Ação    </th>
+                        <th  style="width: 4%; ">Ação    </th>
                     </tr>
                 </thead>
                 <tbody>
-
-                    @if(isset($tabela_clientes))
-
+                    @if( isset($tabela_clientes) )
                     @foreach ($tabela_clientes as $cliente_id => $value )
-                    @if( $value['deleted_at'] == null)
+                   
                     <tr style="background: white;">
                         <td style="font-size: 16px;  color:white; background: black; font-weight: 900; border: 1px solid">{{  $cliente_id }}</td>
                         <td style ="width: 15%; border: 1px solid; ">{{  strtoupper($value['name']) }}</td>
                         <td style ="width: 15%; border: 1px solid;">{{  $value['email'] }}</td>
-                        <td style ="width: 2%; border: 1px solid;">{{  $value['idade'] }}</td>
-                        <td style="width: 28%;  text-align: left; border: 1px solid; border-right: none;">
-                            <ol style="list-style-type: decimal; list-style-position: inside; ">
+                        <td style ="width: 2%;  border: 1px solid;">{{  $value['idade'] }}</td>
+                        <td style ="width: 28%; text-align: left; border: 1px solid; border-right: none;">
+                        <ol style ="list-style-type: decimal; list-style-position: inside;">
                                 
                                 @if($listar_enderecos != [])
                                 @foreach ($listar_enderecos as $id_endereco => $endereco)
@@ -62,9 +58,8 @@
                             </ol>
                             @endif
                         </td>
-                        
                         <td style ="border: 1px solid;">{{  $value['contato'] }}</td>
-                        <td style="border: 1px solid; color:green;"> R$ {{$value['total_pedido']}}</td>
+                        <td style="border: 1px solid; color:green;"> R$ {{isset($total[$cliente_id])  ? $total[$cliente_id]  : 0}}</td>
                         <td style="width: 2%; border: 1px solid;">
                             <form  action="/DeletarCliente/{{$cliente_id}}" method="POST" >
                                 @csrf
@@ -85,7 +80,6 @@
                             </form>
                         </td>
                     </tr>
-                    @endif
                     @endforeach
                     @else
                     <td colspan="10">Sem dados de registro!</td>
@@ -93,12 +87,9 @@
                 </tbody>
             </table>
         </div>
-        
     </div>
 </div>
-
 </x-app-layout>
-
 
 <div class="modal fade" id="CadastrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -158,8 +149,6 @@
                                 <label>Número:</label>
                                 <input type="text" class="form-control" placeholder="Número" name="numero">
                             </div>
-                            
-                            
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-5">
