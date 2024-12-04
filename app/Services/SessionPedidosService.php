@@ -179,14 +179,11 @@ class SessionPedidosService implements PedidosServiceInterface
         $provider_clientes = new SessionClientesService();
         $provider_pedidos = new SessionPedidosService();
 
-        $filtro_categoria = false;
-
-
         foreach ($pedidos as $key => $value) 
         {
             $buscar = true;
+            $filtro_categoria = false;
            
-
             $pedido_id = $key;
             $nome_create = $value['create_by'];
             $nome_create = $provider_user->buscarNome($nome_create);
@@ -234,62 +231,49 @@ class SessionPedidosService implements PedidosServiceInterface
                                     $filtro_categoria = true;
 
                                 if($filtro_categoria)
-                                        $buscar = true;
-                                    else
-                                        $buscar = false; 
+                                    $buscar = true;
+                                else
+                                    $buscar = false; 
+
                             } 
                         }
 
-                        if(isset($maximo))
-                        {
-                            if($total <= $maximo)
-                            {
-                                if(isset($categoria_id))
-                                {
-                                    if($filtro_categoria)
-                                    {
-                                         $buscar = true;
-                                         $filtro_valor = true;
-                                    }
-                                    else
-                                        $buscar = false; 
-                                }
-                            }
-                            else
-                                $buscar = false;  
+                        if(isset($maximo)){
+                            if($total >= $maximo)
+                                $buscar = false;      
                         }
+                        
 
-                        if(isset($quantidade_maxima))
-                        {
-                    
+                        if(isset($quantidade_maxima)){
                             if($quantidade_total <= $quantidade_maxima)
-                            {   
-                                if(isset($categoria_id))
-                                {
-                                    if($filtro_categoria)
-                                        $buscar = true;
-                                    else
-                                        $buscar = false; 
-                                }
-                            }
+                                $buscar = true;
                             else
-                                $buscar = false;  
+                                $buscar = false;    
                         }
+                        
 
-                        if(isset($search))
-                        {
+                        if(isset($search)){
                             if(stripos($nome_do_cliente, $search) !== 0)
                                 $buscar = false;
                         }
-
+                        
                         if(isset($maximo) && isset($quantidade_maxima))
                         {
-                            if($total <= $maximo && $quantidade_total <= $quantidade_maxima)
-                                $buscar = true;
-                            else
-                                $buscar = false;
+                            if(isset($filtro_categoria))
+                            {
+                                if($total <= $maximo && $quantidade_total <= $quantidade_maxima  && $filtro_categoria)
+                                    $buscar = true;
+                                else
+                                    $buscar = false;
+                            } else {
+
+                                if($total <= $maximo && $quantidade_total <= $quantidade_maxima)
+                                    $buscar = true;
+                                else
+                                    $buscar = false;
+                            }
                         }
-                        
+
                     } else
                         $buscar = false;
                 }
