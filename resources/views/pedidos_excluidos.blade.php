@@ -86,24 +86,24 @@
                 </div>
                 <div style="width: 13%; margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Valor mínimo:</label>
-                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['min']}}" type="number" name="valor_minimo">
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['min']}}" type="number" name="valor_minimo">
                 </div>
                 <div style="width: 13%; margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Valor máximo:</label>
-                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['max']}}" type="number" name="valor_maximo" required>
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['max']}}" type="number" name="valor_maximo" >
                 </div>
                 <div style="width: 13%; margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Quantidade mínima:</label>
 
 
-                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['quantidade_min']}}" type="number" name="quantidade_minima">
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['quantidade_min']}}" type="number" name="quantidade_minima">
                     
                 </div>
 
                 <div style="width: 13%; margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Quantidade máxima:</label>
                     
-                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$valores['quantidade_max']}}" type="number" name="quantidade_maxima" required>
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['quantidade_max']}}" type="number" name="quantidade_maxima" >
                 </div>
                 <div> 
                     <div style="display: flex; justify-content: center;">
@@ -161,10 +161,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{$order_by['cliente_id'] == 0 ? 1 : 0}}>
 
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -194,10 +194,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{null}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -227,10 +227,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{null}}>
 
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -258,10 +258,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{null}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -290,10 +290,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{null}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -322,10 +322,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{null}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -361,10 +361,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{$order_by['cliente_id'] == 0 ? 1 : 0}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{!$valores['quantidade_max'] ? 0 : $valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{!$filtros['quantidade_max'] ? 0 : $filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -393,10 +393,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{null}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -425,10 +425,10 @@
                             <input type="hidden" name="search" value="{{$search}}">
                             <input type="hidden" name="cliente_id" value={{null}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -458,10 +458,10 @@
                             <input type="hidden" name="search"      value="{{$search}}">
                             <input type="hidden" name="cliente_id"  value={{null}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -490,10 +490,10 @@
                             <input type="hidden" name="search"              value="{{$search}}">
                             <input type="hidden" name="cliente_id"          value={{null}}>
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -551,10 +551,10 @@
                             <input type="hidden" name="pedido_id" value={{isset($value['pedido_id']) ? $value['pedido_id'] : $key}}>
                             <input type="hidden" name="pedidos" value="{{$escolha}}">
                             
-                            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-                            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
-                            <input type="hidden" name="quantidade_max" value="{{$valores['quantidade_max']}}">
-                            <input type="hidden" name="quantidade_min" value="{{$valores['quantidade_min']}}">
+                            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+                            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
+                            <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
+                            <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -650,8 +650,8 @@
             <input type="hidden" name="search" value="{{$search}}">
             <input type="hidden" name="pedidos" value="{{$escolha}}">
             
-            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
             <input type="hidden" name="quantidade_maxima" value="{{$quantidade_maxima}}">
             <input type="hidden" name="quantidade_minima" value="{{$quantidade_minima}}">
 
@@ -678,8 +678,8 @@
             <input type="hidden" name="cliente_id" value={{$cliente_id}}>
             <input type="hidden" name="search" value="{{$search}}">
             <input type="hidden" name="pedidos" value="{{$escolha}}">
-            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
             <input type="hidden" name="quantidade_maxima" value="{{$quantidade_maxima}}">
             <input type="hidden" name="quantidade_minima" value="{{$quantidade_minima}}">
             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
@@ -709,8 +709,8 @@
             <input type="hidden" name="search" value="{{$search}}">
             <input type="hidden" name="pedidos" value="{{$escolha}}">
 
-            <input type="hidden" name="valor_maximo" value="{{$valores['max']}}">
-            <input type="hidden" name="valor_minimo" value="{{$valores['min']}}">
+            <input type="hidden" name="valor_maximo" value="{{$filtros['max']}}">
+            <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
 
             <input type="hidden" name="quantidade_maxima" value="{{$quantidade_maxima}}">
             <input type="hidden" name="quantidade_minima" value="{{$quantidade_minima}}">

@@ -182,7 +182,7 @@ class DBPedidosService implements PedidosServiceInterface
     public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
     {
         $array = [];
-        $valores = [];
+      
         $total_paginas = 0;
         $total_pedido = 0;
 
@@ -193,13 +193,6 @@ class DBPedidosService implements PedidosServiceInterface
             $pedidos = Pedidos::where('cliente_id', $cliente_id);
         else
             $pedidos = Pedidos::withTrashed();
-
-        $valores = [
-            'max' => $maximo, 
-            'min' => $minimo, 
-            'quantidade_max' => $quantidade_maxima, 
-            'quantidade_min' => $quantidade_minima
-        ];
 
         if($data_inicial && $data_final)
         {
@@ -323,7 +316,14 @@ class DBPedidosService implements PedidosServiceInterface
             ];  
         }
 
-        return ['array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores, 'total_pedido' => $total_pedido];
+        $filtros = [
+            'max' => $maximo, 
+            'min' => $minimo, 
+            'quantidade_max' => $quantidade_maxima, 
+            'quantidade_min' => $quantidade_minima
+        ];
+
+        return ['array' => $array, 'total_paginas'=> $total_paginas, 'filtros' => $filtros, 'total_pedido' => $total_pedido];
     }
 
     public function buscarPedido($pedido_id)

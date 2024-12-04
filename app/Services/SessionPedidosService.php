@@ -174,59 +174,39 @@ class SessionPedidosService implements PedidosServiceInterface
     public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
     {
         $array = [];
-      
         $pedidos = session()->get('Pedido_encerrado',[]);
         $provider_produto = new SessionProdutosService();
         $provider_clientes = new SessionClientesService();
         $provider_pedidos = new SessionPedidosService();
 
-        $valores = [
-            'max' => $maximo, 
-            'min' => $minimo, 
-            'quantidade_max' => $quantidade_maxima, 
-            'quantidade_min' => $quantidade_minima
-        ];
-
-        $escolha = !$escolha ? 1 : $escolha;
-        $minimo  = !$minimo ? 0 : $minimo;
-        $maximo  = !$maximo ? 0 : $maximo;
-        $quantidade_maxima  = !$quantidade_maxima ? 0 : $quantidade_maxima;
-        $quantidade_minima  = !$quantidade_minima ? 0 : $quantidade_minima;
-
-        $filtro_categoria =  false;
+        $filtro_categoria = false;
 
         foreach ($pedidos as $key => $value) 
         {
+            $buscar = true;
 
-            $buscar = false;
             $pedido_id = $key;
-
             $nome_create = $value['create_by'];
             $nome_create = $provider_user->buscarNome($nome_create);
-
             $nome_delete = $value['delete_by'];
             $nome_delete = $provider_user->buscarNome($nome_delete);
-
             $nome_restored = $value['restored_by'];
             $nome_restored = $provider_user->buscarNome($nome_restored);
-
             $endereco = $value['endereco_id'];
             $total = $value['total'];
-
             $porcentagem = $value['porcentagem'];
             $created_at = $value['created_at'];
             $deleted_at = $value['deleted_at'];
-
             $restored_at = isset($value['restored_at']) ? date_format($value['restored_at'], "d/m/Y H:i:s") : null;
             $nome_do_cliente = $provider_clientes->buscarCliente($value['cliente_id'])['name'];
-
             $filtro_carbon = $value['created_at'];
+
+
             $filtro_item = $provider_pedidos->buscarItemPedido($pedido_id);
             $quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
 
-            $filtro_categoria = null;
-
-            if($escolha == 1)
+            
+            if($escolha == 1 || isset($cliente_id))
                 $filtro_escolha = $deleted_at == null;
             
             if($escolha == 2)
@@ -236,57 +216,96 @@ class SessionPedidosService implements PedidosServiceInterface
             {
                 if($created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final)
                 {
-                    if(isset($categoria_id))
+                    if($total >= $minimo && $quantidade_total >= $quantidade_minima)     
                     {
-                        $lista_de_items = $filtro_item['lista'];
-
-                        foreach ($lista_de_items as $itens => $value_itens) 
+                        if(isset($categoria_id))
                         {
-                            $produto_id = $value_itens['produto_id'];
-                            $procurar_categoria_id = $provider_produto->buscarProduto($produto_id)['categoria'];
+                            $lista_de_items = $filtro_item['lista'];
+                            $filtro_categoria = false;
 
-                            if($procurar_categoria_id == $categoria_id)
-                                $filtro_categoria =  true;
+                            foreach ($lista_de_items as $itens => $value_itens) 
+                            {
+                                $produto_id = $value_itens['produto_id'];
+                                $procurar_categoria_id = $provider_produto->buscarProduto($produto_id)['categoria'];
+                                
+                                if($procurar_categoria_id == $categoria_id)
+                                    $filtro_categoria = true;
+
+                                if($filtro_categoria)
+                                        $buscar = true;
+                                    else
+                                        $buscar = false; 
+                            } 
                         }
-                    }
 
-                    $filtro_quantidade = ($quantidade_maxima >= $quantidade_total && $quantidade_minima <= $quantidade_total) && ($maximo >= $total && $minimo <= $total);
+                        if(isset($maximo))
+                        {
+                            if($total <= $maximo)
+                            {
+                                if(isset($categoria_id))
+                                {
+                                    if($filtro_categoria)
+                                        $buscar = true;
+                                    else
+                                        $buscar = false; 
+                                }
+                            }
+                            else
+                                $buscar = false;  
+                        }
 
-                    $filtro_procurar = stripos($nome_do_cliente, $search) === 0;
+                        if(isset($quantidade_maxima))
+                        {
+                            if($quantidade_total <= $quantidade_maxima)
+                            {
+                                if(isset($categoria_id))
+                                {
+                                    if($filtro_categoria)
+                                        $buscar = true;
+                                    else
+                                        $buscar = false; 
+                                }
+                            }
+                            else
+                                $buscar = false;
+                        }
 
-                    if($filtro_quantidade)
-                    {
-                        if(!$search  &&  !$filtro_categoria
-                        ||  $search  &&  !$filtro_categoria && $filtro_procurar
-                        || !$search  &&   $filtro_categoria && $filtro_procurar)
+                        if(isset($search))
+                        {
+                            if(stripos($nome_do_cliente, $search) !== 0)
+                                $buscar = false;
+                        }
 
-                        $array[$pedido_id] = [
-
-                            'create_by' => $nome_create,
-                            'delete_by' => $nome_delete,
-                            'restored_by' => $nome_restored,
-                            'cliente_id' => $value['cliente_id'],
-                            'endereco' => $endereco,
-                            'total' => $total,
-                            'porcentagem' => $porcentagem,
-                            'nome_cliente' => $nome_do_cliente,
-                            
-                            'ano' => $filtro_carbon->year,
-                            'dia_do_ano' => $filtro_carbon->dayOfYear,
-                            'dia_da_semana' => $filtro_carbon->dayOfWeek,
-                            'hora' => $filtro_carbon->hour,
-                            'minuto' => $filtro_carbon->minute,
-                            'segundo' => $filtro_carbon->second,
-                            'mes' => $filtro_carbon->month,
-                            'quantidade_total_pedido' =>  $quantidade_total,
-
-                            'created_at' => isset($value['created_at']) ? date_format($value['created_at'], "d/m/Y H:i:s") : null,
-                            'restored_at' => $restored_at,
-                            'deleted_at' =>  isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
-                            'pedido_id' => $pedido_id
-                        ];   
-                    }
+                    } else
+                        $buscar = false;
                 }
+               
+            }
+
+            if($buscar)
+            {
+                $array[$pedido_id] = [
+                    'create_by' => $nome_create,
+                    'delete_by' => $nome_delete,
+                    'restored_by' => $nome_restored,
+                    'cliente_id' => $value['cliente_id'],
+                    'endereco' => $endereco,
+                    'total' => $total,
+                    'porcentagem' => $porcentagem,
+                    'nome_cliente' => $nome_do_cliente,
+                    'ano' => $filtro_carbon->year,
+                    'dia_do_ano' => $filtro_carbon->dayOfYear,
+                    'dia_da_semana' => $filtro_carbon->dayOfWeek,
+                    'hora' => $filtro_carbon->hour,
+                    'minuto' => $filtro_carbon->minute,
+                    'segundo' => $filtro_carbon->second,
+                    'mes' => $filtro_carbon->month,
+                    'quantidade_total_pedido' =>  $quantidade_total,
+                    'created_at' => isset($value['created_at']) ? date_format($value['created_at'], "d/m/Y H:i:s") : null,
+                    'restored_at' => $restored_at,
+                    'deleted_at' =>  isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
+                    'pedido_id' => $pedido_id
+                ];
             }
         }
 
@@ -320,7 +339,15 @@ class SessionPedidosService implements PedidosServiceInterface
             $total_paginas = ceil($row / $row_limit - 1);
         }
 
-        return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'valores' => $valores];
+
+        $filtros = [
+            'max' => $maximo, 
+            'min' => $minimo, 
+            'quantidade_max' => $quantidade_maxima, 
+            'quantidade_min' => $quantidade_minima
+        ];
+
+        return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'filtros' => $filtros];
     }
 
     public function buscarPedido($pedido_id)
@@ -355,7 +382,6 @@ class SessionPedidosService implements PedidosServiceInterface
             $restored_at = isset($pedidos['restored_at']) ? date_format($pedidos['restored_at'], "d/m/Y H:i:s") : null;
 
             $filtro_carbon = $pedidos['created_at'];
-
 
             $pedidoEncontrado = [
                 'create_by' => $nome_create_by, 
