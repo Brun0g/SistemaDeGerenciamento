@@ -243,7 +243,6 @@ class SessionPedidosService implements PedidosServiceInterface
                                 $buscar = false;      
                         }
                         
-
                         if(isset($quantidade_maxima)){
                             if($quantidade_total <= $quantidade_maxima)
                                 $buscar = true;
@@ -251,7 +250,6 @@ class SessionPedidosService implements PedidosServiceInterface
                                 $buscar = false;    
                         }
                         
-
                         if(isset($search)){
                             if(stripos($nome_do_cliente, $search) !== 0)
                                 $buscar = false;
@@ -259,19 +257,14 @@ class SessionPedidosService implements PedidosServiceInterface
                         
                         if(isset($maximo) && isset($quantidade_maxima))
                         {
-                            if(isset($filtro_categoria))
-                            {
-                                if($total <= $maximo && $quantidade_total <= $quantidade_maxima  && $filtro_categoria)
-                                    $buscar = true;
-                                else
-                                    $buscar = false;
-                            } else {
+                            $filtro_maximo = isset($categoria_id) 
+                            ? $total <= $maximo && $quantidade_total <= $quantidade_maxima  && $filtro_categoria 
+                            : $total <= $maximo && $quantidade_total <= $quantidade_maxima;
 
-                                if($total <= $maximo && $quantidade_total <= $quantidade_maxima)
-                                    $buscar = true;
-                                else
-                                    $buscar = false;
-                            }
+                            if($filtro_maximo)
+                                $buscar = true;
+                            else
+                                $buscar = false;
                         }
 
                     } else
