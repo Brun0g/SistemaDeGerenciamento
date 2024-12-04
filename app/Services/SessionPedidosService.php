@@ -181,9 +181,11 @@ class SessionPedidosService implements PedidosServiceInterface
 
         $filtro_categoria = false;
 
+
         foreach ($pedidos as $key => $value) 
         {
             $buscar = true;
+           
 
             $pedido_id = $key;
             $nome_create = $value['create_by'];
@@ -245,7 +247,10 @@ class SessionPedidosService implements PedidosServiceInterface
                                 if(isset($categoria_id))
                                 {
                                     if($filtro_categoria)
-                                        $buscar = true;
+                                    {
+                                         $buscar = true;
+                                         $filtro_valor = true;
+                                    }
                                     else
                                         $buscar = false; 
                                 }
@@ -256,8 +261,9 @@ class SessionPedidosService implements PedidosServiceInterface
 
                         if(isset($quantidade_maxima))
                         {
+                    
                             if($quantidade_total <= $quantidade_maxima)
-                            {
+                            {   
                                 if(isset($categoria_id))
                                 {
                                     if($filtro_categoria)
@@ -267,7 +273,7 @@ class SessionPedidosService implements PedidosServiceInterface
                                 }
                             }
                             else
-                                $buscar = false;
+                                $buscar = false;  
                         }
 
                         if(isset($search))
@@ -276,6 +282,14 @@ class SessionPedidosService implements PedidosServiceInterface
                                 $buscar = false;
                         }
 
+                        if(isset($maximo) && isset($quantidade_maxima))
+                        {
+                            if($total <= $maximo && $quantidade_total <= $quantidade_maxima)
+                                $buscar = true;
+                            else
+                                $buscar = false;
+                        }
+                        
                     } else
                         $buscar = false;
                 }
