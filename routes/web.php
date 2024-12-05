@@ -39,10 +39,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 
-
 // VISUALIZAÇÃO DE QUANTIDADE DE PRODUTOS POR CLIENTES
 Route::GET('/produtos_vendidos',[VendasController::class,'index'])->middleware(['auth'])->name('produtos_vendidos');
-
 
 
 // CLIENTE
@@ -83,13 +81,9 @@ Route::POST('/aprovarPedido/{pedido_id}/{id}',[PedidosController::class,'finish'
 Route::DELETE('/excluirPedido/{id}',[PedidosController::class,'delete'])->middleware(['auth']);
 Route::GET('/pedidofinalizado/{id}', [PedidosController::class, 'showFinishOrder'])->middleware(['auth']);
 Route::GET('/pedidos_excluidos', [PedidosController::class, 'orders_deleted'])->middleware(['auth'])->name('pedidos_excluidos');
-
 Route::GET('/pedidos_clientes', [PedidosController::class, 'orders_client'])->middleware(['auth'])->name('pedidos_clientes');
-
-
 Route::POST('/RestaurarPedido/{id}', [PedidosController::class, 'orders_active'])->middleware(['auth']);
-// Route::GET('/trocar_pagina/{page}', [PedidosController::class, 'switch_page'])->middleware(['auth']);
-// Route::GET('/trocar_pagina_link{page}', [PedidosController::class, 'switch_page_link'])->middleware(['auth']);
+
 
 
 //CARRINHO
@@ -130,7 +124,6 @@ Route::GET('/detalhes_ajuste/{id}',[AjusteEstoqueController::class,'detail_adjus
 Route::GET('/detalhes_multiplos/{id}',[AjusteEstoqueController::class,'detail_multiple'])->middleware(['auth']);
 Route::POST('/adicionarMultiplos', [AjusteEstoqueController::class, 'storeMultiple'])->middleware(['auth'])->middleware(['cors']);
 Route::PATCH('/ajustar', [AjusteEstoqueController::class, 'storeAdjustment'])->middleware(['auth'])->middleware(['cors']);
-
 
 
 require __DIR__.'/auth.php';

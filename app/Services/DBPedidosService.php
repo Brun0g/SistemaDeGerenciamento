@@ -189,13 +189,17 @@ class DBPedidosService implements PedidosServiceInterface
         $provider_cliente = new DBClientesService;
         $provider_pedidos = new DBPedidosService;
 
-        if($cliente_id)
+        if(isset($cliente_id))
             $pedidos = Pedidos::where('cliente_id', $cliente_id);
         else
             $pedidos = Pedidos::withTrashed();
 
+
+
+
         if($data_inicial && $data_final)
         {
+
             $pedidos = $pedidos->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final)
             ->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
             ->join('pedidos_individuais', 'pedidos.id', '=', 'pedidos_individuais.pedido_id')->groupBy('pedidos_individuais.pedido_id')
@@ -214,7 +218,7 @@ class DBPedidosService implements PedidosServiceInterface
                 'pedidos.restored_at', 
                 'pedidos.deleted_at', 
                 'pedidos.created_at', 
-                'pedidos.updated_at')->selectRaw('sum(quantidade) as total_quantidade')
+                'pedidos.updated_at')->selectRaw('sum(quantidade) as total_quantidade, pedidos.totalSemDesconto - pedidos.total as desconto')
 
             ->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima) 
             {
@@ -244,6 +248,8 @@ class DBPedidosService implements PedidosServiceInterface
             });
         }
 
+
+
         $row = $pedidos->count();
 
         $row_limit = 5;
@@ -254,36 +260,39 @@ class DBPedidosService implements PedidosServiceInterface
 
         if($order_by)
         {
+
             $key = key($order_by);
+
+       
+
             $order = $order_by[$key] == 0 ? 'asc' : 'desc';
             $pedidos = $pedidos->orderBy($key, $order)->get();
         } else 
-        $pedidos = $pedidos->get();
+            $pedidos = $pedidos->get();
 
-        $buscar = false;
 
         foreach ($pedidos as $key => $value) 
         {
-            $pedido_id = $pedidos[$key]->id;
-            $nome_create = $pedidos[$key]->create_by;
+            $pedido_id = $value->id;
+            $nome_create = $value->create_by;
             $nome_create = $provider_user->buscarNome($nome_create);
 
-            $nome_delete = $pedidos[$key]->delete_by;
+            $nome_delete = $value->delete_by;
             $nome_delete = $provider_user->buscarNome($nome_delete);
 
-            $nome_restored = $pedidos[$key]->restored_by;
+            $nome_restored = $value->restored_by;
             $nome_restored = $provider_user->buscarNome($nome_restored);
 
-            $id_cliente = $pedidos[$key]->cliente_id;
+            $id_cliente = $value->cliente_id;
             $nome_cliente = $provider_cliente->buscarCliente($id_cliente)['name'];
-            $endereco = $pedidos[$key]->endereco_id;
-            $total = $pedidos[$key]->total;
-            $porcentagem = $pedidos[$key]->porcentagem;
+            $endereco = $value->endereco_id;
+            $total = $value->total;
+            $porcentagem = $value->porcentagem;
             $calcular_quantidade_total = $value['total_quantidade'];
 
-            $created_at = Carbon::parse($pedidos[$key]->created_at);
-            $deleted_at = Carbon::parse($pedidos[$key]->deleted_at);
-            $restored_at = Carbon::parse($pedidos[$key]->restored_at);
+            $created_at = Carbon::parse($value->created_at);
+            $deleted_at = Carbon::parse($value->deleted_at);
+            $restored_at = Carbon::parse($value->restored_at);
 
             $total_pedido += $total;
 
@@ -291,6 +300,8 @@ class DBPedidosService implements PedidosServiceInterface
                 $filtro_data = $deleted_at;
             else
                 $filtro_data = $created_at;
+
+            $desconto = $value->desconto;
 
             $array[$pedido_id] = [
                 'create_by'     => $nome_create, 
@@ -312,7 +323,8 @@ class DBPedidosService implements PedidosServiceInterface
                 'mes' => $filtro_data->month,
                 'created_at' => isset($created_at) ? date_format($created_at, "d/m/Y H:i:s") : null, 
                 'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null,
-                'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null
+                'deleted_at' => isset($deleted_at) ? date_format($deleted_at,"d/m/Y H:i:s") : null,
+                'desconto' => $desconto
             ];  
         }
 
