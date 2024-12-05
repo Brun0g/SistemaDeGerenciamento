@@ -5,7 +5,7 @@
 @if(sizeof($listarPedidosAprovados) > 0)
 @foreach ($listarPedidosAprovados as $pedido_id => $value)
 
-@if ($value['cliente_id'] == $id )
+
 
 <tr class="bg-white">
     <td style="color:white; background: black; font-weight: 900; ">{{  $pedido_id }}</td>
@@ -49,7 +49,7 @@
          @endif
     </tr>
   
-    @endif
+
     @endforeach
     @else
     <td style="background: white;" colspan="6" >Sem dados de registro!</td>

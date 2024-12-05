@@ -179,10 +179,13 @@ class SessionPedidosService implements PedidosServiceInterface
         $provider_clientes = new SessionClientesService();
         $provider_pedidos = new SessionPedidosService();
 
+       $filtro_escolha = false;
+
+
         foreach ($pedidos as $key => $value) 
         {
-            $buscar = true;
             $filtro_categoria = false;
+             $buscar = false;
            
             $pedido_id = $key;
             $nome_create = $value['create_by'];
@@ -204,13 +207,27 @@ class SessionPedidosService implements PedidosServiceInterface
             $filtro_item = $provider_pedidos->buscarItemPedido($pedido_id);
             $quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
 
+            if($escolha == 1 && $deleted_at == null)
+            {
+                $filtro_escolha = true;
+                $buscar = true;
+            }
             
-            if($escolha == 1 || isset($cliente_id))
-                $filtro_escolha = $deleted_at == null;
             
-            if($escolha == 2)
-                $filtro_escolha = $deleted_at != null;
+            if($escolha == 2 && $deleted_at != null)
+            {
+                $filtro_escolha = true;
+                $buscar = true;
+            }
 
+            if(isset($cliente_id))
+            {
+                if($cliente_id == $value['cliente_id'])
+                    $buscar = true;
+                else
+                    $buscar = false;
+            }
+            
             if($filtro_escolha)
             {
                 if($created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final)
@@ -237,7 +254,6 @@ class SessionPedidosService implements PedidosServiceInterface
 
                             } 
                         }
-
                         if(isset($maximo)){
                             if($total >= $maximo)
                                 $buscar = false;      
@@ -250,11 +266,6 @@ class SessionPedidosService implements PedidosServiceInterface
                                 $buscar = false;    
                         }
                         
-                        if(isset($search)){
-                            if(stripos($nome_do_cliente, $search) !== 0)
-                                $buscar = false;
-                        }
-                        
                         if(isset($maximo) && isset($quantidade_maxima))
                         {
                             $filtro_maximo = isset($categoria_id) 
@@ -264,6 +275,11 @@ class SessionPedidosService implements PedidosServiceInterface
                             if($filtro_maximo)
                                 $buscar = true;
                             else
+                                $buscar = false;
+                        }
+
+                        if(isset($search)){
+                            if(stripos($nome_do_cliente, $search) !== 0)
                                 $buscar = false;
                         }
 
@@ -300,6 +316,7 @@ class SessionPedidosService implements PedidosServiceInterface
             }
         }
 
+
         $total_paginas = 0;
 
         if($order_by)
@@ -321,14 +338,16 @@ class SessionPedidosService implements PedidosServiceInterface
                 array_multisort($sort, SORT_DESC, $array);
         }
 
-        if($data_inicial && $data_final)
+
+        if($data_inicial && $data_final || isset($cliente_id))
         {
             $row_limit = 5;
             $row = sizeof($array);
             $pagina_atual = $pagina_atual * $row_limit;
-            $array = array_slice($array, $pagina_atual, $row_limit);
+            $array = array_slice($array, $pagina_atual, $row_limit, true);
             $total_paginas = ceil($row / $row_limit - 1);
         }
+
 
 
         $filtros = [

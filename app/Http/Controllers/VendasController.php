@@ -67,8 +67,6 @@ class VendasController extends Controller
             }
         }
 
-        
-        
         return view('produtos_vendidos', [ 'Clientes' => $nomeDoClientPorID,  'produtos_vendidos' => $produtos_vendidos, 'produtos' => $produtos, 'clientes_produtos' => $array, 'search' => $cliente, 'data_inicial' => $data_inicial, 'data_final' => $data_final ]);
     }
 }

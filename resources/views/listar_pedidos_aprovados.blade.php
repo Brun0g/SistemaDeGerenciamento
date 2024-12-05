@@ -90,7 +90,6 @@
               </tr>
             </thead>
             <tbody>
-             
               
               @if(sizeof($listar_carrinho) > 0)
               
