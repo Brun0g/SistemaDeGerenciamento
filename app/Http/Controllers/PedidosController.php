@@ -29,7 +29,8 @@ class PedidosController extends Controller
         return redirect('Cliente/' . $cliente_id);
     }
 
-    public function delete(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas){
+    public function delete(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)
+    {
 
         $provider_pedidos->excluirPedido($pedido_id, $provider_entradas_saidas);
 
@@ -74,6 +75,7 @@ class PedidosController extends Controller
         $ordernar_created_at = $request->input('ordernar_created_at');
         $ordernar_deleted_at = $request->input('ordernar_deleted_at');
         $ordernar_quantidade = $request->input('ordernar_quantidade');
+        $ordernar_desconto = $request->input('ordernar_desconto');
 
         $page = $request->input('page');
         $cliente_id = $request->input('cliente_id');
@@ -97,6 +99,9 @@ class PedidosController extends Controller
 
         if(is_numeric($ordernar_total))
             $order_by = ['total' => $ordernar_total];
+
+        if(is_numeric($ordernar_desconto))
+            $order_by = ['desconto' => $ordernar_desconto];
         
         if(is_numeric($ordernar_created_at))
             $order_by = ['created_at' => $ordernar_created_at];
@@ -107,7 +112,7 @@ class PedidosController extends Controller
         if(is_numeric($ordernar_quantidade))
             $order_by = ['total_quantidade' => $ordernar_quantidade];
 
-        $array_order = ['id' => $ordernar_id, 'total' => $ordernar_total, 'created_at' => $ordernar_created_at, 'deleted_at' => $ordernar_deleted_at, 'search' => $search, 'cliente_id' => $cliente_id, 'quantidade' => $ordernar_quantidade];
+        $array_order = ['id' => $ordernar_id, 'total' => $ordernar_total, 'created_at' => $ordernar_created_at, 'deleted_at' => $ordernar_deleted_at, 'search' => $search, 'cliente_id' => $cliente_id, 'quantidade' => $ordernar_quantidade, 'desconto' => $ordernar_desconto];
 
         if( !isset($data_inicial, $data_final, $escolha) )
         {
@@ -137,10 +142,9 @@ class PedidosController extends Controller
         return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'filtros' => $filtros, 'categorias' => $categorias, 'categoria' => $categoria_id, 'quantidade' => $ordernar_quantidade, 'quantidade_minima' => $quantidade_minima, 'quantidade_maxima' => $quantidade_maxima]);
     }
 
-    public function orders_active(Request $request, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)
+    public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)
     {
         $pagina_atual = $request->input('pagina_atual');
-        $pedido_id = $request->input('pedido_id');
         $tem_estoque = $provider_pedidos->reativarPedido($pedido_id);
         
         $escolha = $request->input('pedidos');
@@ -149,6 +153,8 @@ class PedidosController extends Controller
         $page = $request->input('page');
 
         $url = url()->previous();
+
+
 
         if(!$tem_estoque)
             session()->flash('error_estoque', 'Não há estoque para Restaurar o pedido!');

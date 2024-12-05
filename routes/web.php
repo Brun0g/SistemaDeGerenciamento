@@ -87,7 +87,7 @@ Route::GET('/pedidos_excluidos', [PedidosController::class, 'orders_deleted'])->
 Route::GET('/pedidos_clientes', [PedidosController::class, 'orders_client'])->middleware(['auth'])->name('pedidos_clientes');
 
 
-Route::POST('/Restaurar_pedido', [PedidosController::class, 'orders_active'])->middleware(['auth']);
+Route::POST('/RestaurarPedido/{id}', [PedidosController::class, 'orders_active'])->middleware(['auth']);
 // Route::GET('/trocar_pagina/{page}', [PedidosController::class, 'switch_page'])->middleware(['auth']);
 // Route::GET('/trocar_pagina_link{page}', [PedidosController::class, 'switch_page_link'])->middleware(['auth']);
 

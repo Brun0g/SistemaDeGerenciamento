@@ -185,7 +185,7 @@ class SessionPedidosService implements PedidosServiceInterface
         foreach ($pedidos as $key => $value) 
         {
             $filtro_categoria = false;
-             $buscar = false;
+            $buscar = false;
            
             $pedido_id = $key;
             $nome_create = $value['create_by'];
@@ -207,6 +207,8 @@ class SessionPedidosService implements PedidosServiceInterface
             $filtro_item = $provider_pedidos->buscarItemPedido($pedido_id);
             $quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
 
+            $desconto = $total - $value['totalSemDesconto'];
+
             if($escolha == 1 && $deleted_at == null)
             {
                 $filtro_escolha = true;
@@ -227,6 +229,7 @@ class SessionPedidosService implements PedidosServiceInterface
                 else
                     $buscar = false;
             }
+
             
             if($filtro_escolha)
             {
@@ -311,7 +314,8 @@ class SessionPedidosService implements PedidosServiceInterface
                     'created_at' => isset($value['created_at']) ? date_format($value['created_at'], "d/m/Y H:i:s") : null,
                     'restored_at' => $restored_at,
                     'deleted_at' =>  isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
-                    'pedido_id' => $pedido_id
+                    'pedido_id' => $pedido_id,
+                    'desconto' => $desconto
                 ];
             }
         }
@@ -347,7 +351,6 @@ class SessionPedidosService implements PedidosServiceInterface
             $array = array_slice($array, $pagina_atual, $row_limit, true);
             $total_paginas = ceil($row / $row_limit - 1);
         }
-
 
 
         $filtros = [
