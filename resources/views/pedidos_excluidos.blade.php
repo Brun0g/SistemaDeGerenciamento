@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Pedidos') }}
-        </h2>
+        </h2> --}}
     </x-slot>
 
     @if (session('status'))
@@ -31,99 +31,114 @@
     </div>
     @endif
 
-    <div style="display: flex; justify-content: center;   text-align: center; margin-top: 20px;">
+    <div style="display: flex; justify-content: center;   text-align: center; margin-top: 10px;">
         <form  action="/pedidos_excluidos" method="GET" >
             @csrf
+        <div style="display:flex; justify-content: center; text-align:center; margin-top: 10px;">
+            <div style="display: flex; justify-content: center;">
+                <div style="text-align: center; ">
+                    <label class="block text-sm font-medium text-gray-700" for="data_inicial">Data inicial:</label>
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="date" name="data_inicial" value="{{$data_inicial}}" />
+                </div>
+                <div style="text-align: center; margin-left: 15px;">
+                    <label class="block text-sm font-medium text-gray-700" for="data_final">Data final:</label>
+                    @if(!$data_final)
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" style="text-align" type="date" name="data_final" value="{{$data_inicial}}" required />
+                    @else
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" style="text-align" type="date" name="data_final" value="{{$data_final}}" required />
+                    @endif
+                </div> 
+            </div>
+        </div>
 
+        <div style="display:flex; justify-content: center; text-align:center; margin-top: 10px;">
             <input type="hidden" name="ordernar_quantidade" value="{{$quantidade}}">
             <input type="hidden" name="ordernar_total" value={{$order_by['total']}}>
             <input type="hidden" name="ordernar_id" value={{$order_by['id']}}>
             <input type="hidden" name="ordernar_deleted_at" value={{ $order_by['deleted_at'] }}>
             <input type="hidden" name="ordernar_created_at" value={{ $order_by['created_at'] }}>
 
-            <div style="display: flex; justify-content: center;">
-                <div style="margin-right: 15px;">
-                    <label class="block text-sm font-medium text-gray-700">Escolha uma opção:</label>
-                    <select style="width: 250px;" name="pedidos" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
-                        @if(!$escolha)
-                        <option  value="1">Pedidos aprovados</option>
-                        <option  value="2">Pedidos aprovados excluidos</option>
-                        @else
-                        @if($escolha == 1)
-                        <option  selected value="1">Pedidos aprovados</option>
-                        <option  value="2">Pedidos aprovados excluidos</option>
-                        @else
-                        <option  value="1">Pedidos aprovados</option>
-                        <option  selected value="2">Pedidos aprovados excluidos</option>
-                        @endif
-                        @endif
-                    </select>
-                </div>
-                <div style="margin-right: 15px;">
-                    <label class="block text-sm font-medium text-gray-700">Escolha uma categoria:</label>
-                    <select style="width: 250px;"  name="categoria" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  >
+            <div style="margin-right: 15px;">
+                <label class="block text-sm font-medium text-gray-700">Escolha uma opção:</label>
+                <select style="width: 250px;" name="pedidos" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
+                    @if(!$escolha)
+                    <option  value="1">Pedidos aprovados</option>
+                    <option  value="2">Pedidos aprovados excluidos</option>
+                    @else
+                    @if($escolha == 1)
+                    <option  selected value="1">Pedidos aprovados</option>
+                    <option  value="2">Pedidos aprovados excluidos</option>
+                    @else
+                    <option  value="1">Pedidos aprovados</option>
+                    <option  selected value="2">Pedidos aprovados excluidos</option>
+                    @endif
+                    @endif
+                </select>
+            </div>
+            <div style="margin-right: 15px;">
+                <label class="block text-sm font-medium text-gray-700">Escolha uma categoria:</label>
+                <select style="width: 250px;"  name="categoria" id="cliente-select" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  >
 
-                        <option value={{null}} >TODAS AS CATEGORIAS</option>
-                        
-                        @if($categorias != [])
-                            @foreach($categorias as $categoria_id => $cat_value)
-                        @if($categoria_id == $categoria && $categoria != null)
-                            <option  value="{{$categoria_id}}" selected>{{strtoupper($cat_value['categoria']) }}</option>
-                        @else
-                            <option  value="{{$categoria_id}}">{{strtoupper($cat_value['categoria']) }}</option>
-                        @endif
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
+                    <option value={{null}} >TODAS AS CATEGORIAS</option>
+                    
+                    @if($categorias != [])
+                        @foreach($categorias as $categoria_id => $cat_value)
+                    @if($categoria_id == $categoria && $categoria != null)
+                        <option  value="{{$categoria_id}}" selected>{{strtoupper($cat_value['categoria']) }}</option>
+                    @else
+                        <option  value="{{$categoria_id}}">{{strtoupper($cat_value['categoria']) }}</option>
+                    @endif
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+            <div style="margin-right: 15px;">
+                <label class="block text-sm font-medium text-gray-700">Escolha um cliente:</label>
+                <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$search}}"  name="search">
+            </div>
+        </div>
 
-                <div style="margin-right: 15px;">
-                    <label class="block text-sm font-medium text-gray-700">Escolha um cliente:</label>
-                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$search}}"  name="search">
-
-                </div>
-                <div style="width: 13%; margin-right: 15px;">
+            <div style="display:flex; justify-content: center; text-align:center; margin-top: 10px;">
+                <div style=" margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Valor mínimo:</label>
                     <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['min']}}" type="number" name="valor_minimo">
                 </div>
-                <div style="width: 13%; margin-right: 15px;">
+                <div style=" margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Valor máximo:</label>
                     <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['max']}}" type="number" name="valor_maximo" >
                 </div>
-                <div style="width: 13%; margin-right: 15px;">
+                <div style=" margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Quantidade mínima:</label>
-
-
                     <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['quantidade_min']}}" type="number" name="quantidade_minima">
-                    
                 </div>
 
-                <div style="width: 13%; margin-right: 15px;">
+                <div style=" margin-right: 15px;">
                     <label class="block text-sm font-medium text-gray-700">Quantidade máxima:</label>
                     
                     <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['quantidade_max']}}" type="number" name="quantidade_maxima" >
                 </div>
-                <div> 
-                    <div style="display: flex; justify-content: center;">
-                        <div style="text-align: center; ">
-                            <label class="block text-sm font-medium text-gray-700" for="data_inicial">Data inicial:</label>
-                            <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" type="date" name="data_inicial" value="{{$data_inicial}}" />
-                        </div>
-                        <div style="text-align: center; margin-left: 15px;">
-                            <label class="block text-sm font-medium text-gray-700" for="data_final">Data final:</label>
-                            @if(!$data_final)
-                            <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" style="text-align" type="date" name="data_final" value="{{$data_inicial}}" required />
-                            @else
-                            <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" style="text-align" type="date" name="data_final" value="{{$data_final}}" required />
-                            @endif
-                        </div> 
-                    </div> 
+                <div style=" margin-right: 15px;">
+                    <label class="block text-sm font-medium text-gray-700">Desconto mínimo:</label>
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['desconto_min']}}" type="number" name="desconto_minimo">
+                </div>
+
+                <div style=" margin-right: 15px;">
+                    <label class="block text-sm font-medium text-gray-700">Desconto máximo:</label>
+                    <input class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{$filtros['desconto_max']}}" type="number" name="desconto_maximo" >
                 </div>
             </div>
-            <div style="margin-bottom: 15px; margin-top: 20px;"><button type="submit" class="btn btn-success">Confirmar</button></div>
-        </div>
+
+            <div style="display:flex; justify-content: center; text-align:center; margin-top: 10px;">
+                
+            </div>
+
+                <div style="margin-bottom: 15px; margin-top: 10px;">
+                    <button type="submit" class="btn btn-success">Confirmar</button>
+                </div>
+            </div>
+       
         <input type="hidden" name="page" value="0">
-    </form>  
+    </form> 
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 ">
         <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
@@ -165,6 +180,9 @@
                             <input type="hidden" name="quantidade_max" value="{{!$filtros['quantidade_max'] ? 0 : $filtros['quantidade_max']}}">
                             <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
+                            <input type="hidden" name="desconto_maximo" value="{{$filtros['desconto_max']}}">
+                            <input type="hidden" name="desconto_minimo" value="{{$filtros['desconto_min']}}">
+
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
                             <input type="hidden" name="page" value="{{$pagina_atual}}">
@@ -197,6 +215,9 @@
                             <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
                             <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
                             <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
+
+                            <input type="hidden" name="desconto_maximo" value="{{$filtros['desconto_max']}}">
+                            <input type="hidden" name="desconto_minimo" value="{{$filtros['desconto_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -234,6 +255,9 @@
                             <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
                             <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
 
+                            <input type="hidden" name="desconto_maximo" value="{{$filtros['desconto_max']}}">
+                            <input type="hidden" name="desconto_minimo" value="{{$filtros['desconto_min']}}">
+
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
                             <input type="hidden" name="page" value="{{$pagina_atual}}">
@@ -268,6 +292,8 @@
                             <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
                             <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
                             <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
+                            <input type="hidden" name="desconto_maximo" value="{{$filtros['desconto_max']}}">
+                            <input type="hidden" name="desconto_minimo" value="{{$filtros['desconto_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -301,6 +327,8 @@
                             <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
                             <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
                             <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
+                            <input type="hidden" name="desconto_maximo" value="{{$filtros['desconto_max']}}">
+                            <input type="hidden" name="desconto_minimo" value="{{$filtros['desconto_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -336,6 +364,8 @@
                             <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
                             <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
                             <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
+                            <input type="hidden" name="desconto_maximo" value="{{$filtros['desconto_max']}}">
+                            <input type="hidden" name="desconto_minimo" value="{{$filtros['desconto_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -370,6 +400,8 @@
                             <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
                             <input type="hidden" name="quantidade_max" value="{{$filtros['quantidade_max']}}">
                             <input type="hidden" name="quantidade_min" value="{{$filtros['quantidade_min']}}">
+                            <input type="hidden" name="desconto_maximo" value="{{$filtros['desconto_max']}}">
+                            <input type="hidden" name="desconto_minimo" value="{{$filtros['desconto_min']}}">
 
                             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
                             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -457,7 +489,7 @@
 </div>
 
 @if($total_paginas >= 0)
-<div style="display: flex; justify-content: center; margin-top: 20px;">
+<div style="display: flex; justify-content: center; margin-top: 10px;">
     @if($pagina_atual > 0)
     <div style="display: flex; justify-content: center; ">
         <form action="/pedidos_excluidos" method="GET">
@@ -476,6 +508,10 @@
             <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
             <input type="hidden" name="quantidade_maxima" value="{{$quantidade_maxima}}">
             <input type="hidden" name="quantidade_minima" value="{{$quantidade_minima}}">
+
+            <input type="hidden" name="desconto_maximo" value="{{$desconto_maximo}}">
+            <input type="hidden" name="desconto_minimo" value="{{$desconto_minimo}}">
+
             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
             <input type="hidden" name="data_final" value="{{$data_final}}">
             <input type="hidden" name="page" value="{{$pagina_atual - 1}}">
@@ -504,6 +540,9 @@
             <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
             <input type="hidden" name="quantidade_maxima" value="{{$quantidade_maxima}}">
             <input type="hidden" name="quantidade_minima" value="{{$quantidade_minima}}">
+
+            <input type="hidden" name="desconto_maximo" value="{{$desconto_maximo}}">
+            <input type="hidden" name="desconto_minimo" value="{{$desconto_minimo}}">
 
             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
             <input type="hidden" name="data_final" value="{{$data_final}}">
@@ -536,6 +575,9 @@
             <input type="hidden" name="valor_minimo" value="{{$filtros['min']}}">
             <input type="hidden" name="quantidade_maxima" value="{{$quantidade_maxima}}">
             <input type="hidden" name="quantidade_minima" value="{{$quantidade_minima}}">
+
+            <input type="hidden" name="desconto_maximo" value="{{$desconto_maximo}}">
+            <input type="hidden" name="desconto_minimo" value="{{$desconto_minimo}}">
 
             <input type="hidden" name="data_inicial" value="{{$data_inicial}}">
             <input type="hidden" name="data_final" value="{{$data_final}}">

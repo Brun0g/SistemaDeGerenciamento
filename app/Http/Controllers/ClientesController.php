@@ -33,7 +33,7 @@ class ClientesController extends Controller
 
         foreach ($tabela_clientes as $cliente_id => $valor) {
             $valor_total_pedido[$cliente_id] = 0;
-            $buscar_pedido_cliente = $provider_pedido->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, null, null, null, $provider_user)['array'];
+            $buscar_pedido_cliente = $provider_pedido->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, null, null, null, null, null, $provider_user)['array'];
 
             foreach ($buscar_pedido_cliente as $value) {
                 if($cliente_id == $value['cliente_id'])
@@ -84,7 +84,7 @@ class ClientesController extends Controller
 
         foreach ($tabela_clientes as $cliente_id => $value) {
             $valor_total_pedido[$cliente_id] = 0;
-            $buscar_pedido_cliente = $provider_pedido->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, null, null, null, $provider_user)['array'];
+            $buscar_pedido_cliente = $provider_pedido->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, null, null, null, null, null, $provider_user)['array'];
 
             foreach ($buscar_pedido_cliente as $value) {
                 if($cliente_id == $value['cliente_id'])
@@ -121,7 +121,7 @@ class ClientesController extends Controller
         if($page)
             $pagina_atual = $page;
 
-        $listar_pedidos = $provider_pedidos->listarPedidos(null, $cliente_id, null, null, $pagina_atual, null, null, null, null, null, null, null, $provider_user);
+        $listar_pedidos = $provider_pedidos->listarPedidos(null, $cliente_id, null, null, $pagina_atual, null, null, null, null, null, null, null, null, null, $provider_user);
 
         $total_paginas = $listar_pedidos['total_paginas'];
         $listar_pedidos = $listar_pedidos['array'];

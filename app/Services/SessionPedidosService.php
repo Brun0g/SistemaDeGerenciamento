@@ -171,7 +171,7 @@ class SessionPedidosService implements PedidosServiceInterface
         return $pedidos_por_data; 
     }
 
-    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
+    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $desconto_minimo, $desconto_maximo, $provider_user)
     {
         $array = [];
         $pedidos = session()->get('Pedido_encerrado',[]);
@@ -230,7 +230,7 @@ class SessionPedidosService implements PedidosServiceInterface
                     $buscar = false;
             }
 
-            
+
             if($filtro_escolha)
             {
                 if($created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final)

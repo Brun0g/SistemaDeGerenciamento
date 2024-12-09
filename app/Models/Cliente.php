@@ -11,11 +11,7 @@ class Cliente extends Model
 {
     use HasFactory, softDeletes;
 
-
-
-   
-
-      /**
+    /**
      * The attributes that should be cast.
      *
      * @var array
@@ -24,6 +20,3 @@ class Cliente extends Model
         'restored_at' => 'datetime:Y-m-d',
     ];
 }
-
-
-

@@ -179,7 +179,7 @@ class DBPedidosService implements PedidosServiceInterface
         return ['lista' => $lista, 'array_quantidade' => $array_quantidade, 'max_quantidade' => $max_quantidade];        
     }
 
-    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user)
+    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $desconto_minimo, $desconto_maximo, $provider_user)
     {
         $array = [];
       
@@ -194,17 +194,20 @@ class DBPedidosService implements PedidosServiceInterface
         else
             $pedidos = Pedidos::withTrashed();
 
+        if(!$cliente_id)
+        {
+            $pedidos = $pedidos->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final);
 
+            if( isset($categoria_id))
+            $pedidos = $pedidos->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final);
+        }
 
 
         if($data_inicial && $data_final)
         {
-
-            $pedidos = $pedidos->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final)
-            ->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
+            $pedidos = $pedidos->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
             ->join('pedidos_individuais', 'pedidos.id', '=', 'pedidos_individuais.pedido_id')->groupBy('pedidos_individuais.pedido_id')
-            ->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')
-            ->select(
+                ->select(
                 'pedidos.id', 
                 'clientes.name', 
                 'pedidos.create_by', 
@@ -218,11 +221,10 @@ class DBPedidosService implements PedidosServiceInterface
                 'pedidos.restored_at', 
                 'pedidos.deleted_at', 
                 'pedidos.created_at', 
-                'pedidos.updated_at')->selectRaw('sum(quantidade) as total_quantidade, pedidos.totalSemDesconto - pedidos.total as desconto')
+                'pedidos.updated_at')->selectRaw('sum(pedidos_individuais.quantidade) as total_quantidade, pedidos.totalSemDesconto - pedidos.total as desconto')
 
-            ->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima) 
+            ->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima, $desconto_minimo, $desconto_maximo) 
             {
-
                 if($minimo)
                     $query->having('pedidos.total', '>=', $minimo);
 
@@ -235,9 +237,12 @@ class DBPedidosService implements PedidosServiceInterface
                 if($quantidade_maxima)
                     $query->having('total_quantidade', '<=', $quantidade_maxima);
 
-                if($categoria_id)
-                    $query->where('produtos.categoria_id', '=', $categoria_id);
+                if($desconto_minimo)
+                    $query->having('desconto', '>=', (int)$desconto_minimo);
                 
+                if($desconto_maximo)
+                    $query->having('desconto', '<=', (int)$desconto_maximo);
+
                 if($search)
                     $query->having('clientes.name', 'LIKE', $search .'%');
                 
@@ -248,28 +253,22 @@ class DBPedidosService implements PedidosServiceInterface
             });
         }
 
-
+        if(isset($categoria_id))
+            $pedidos = $pedidos->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')->where('produtos.categoria_id', '=', $categoria_id);
 
         $row = $pedidos->count();
-
         $row_limit = 5;
         $pagina_atual = $pagina_atual * $row_limit;                
-        $total_paginas = ceil($row / $row_limit - 1);
-
+        $total_paginas = ceil($row / $row_limit - 1);        
         $pedidos = $pedidos->limit($row_limit)->offset($pagina_atual);
 
         if($order_by)
         {
-
             $key = key($order_by);
-
-       
-
             $order = $order_by[$key] == 0 ? 'asc' : 'desc';
             $pedidos = $pedidos->orderBy($key, $order)->get();
         } else 
             $pedidos = $pedidos->get();
-
 
         foreach ($pedidos as $key => $value) 
         {
@@ -332,7 +331,9 @@ class DBPedidosService implements PedidosServiceInterface
             'max' => $maximo, 
             'min' => $minimo, 
             'quantidade_max' => $quantidade_maxima, 
-            'quantidade_min' => $quantidade_minima
+            'quantidade_min' => $quantidade_minima,
+            'desconto_max' => $desconto_maximo, 
+            'desconto_min' => $desconto_minimo
         ];
 
         return ['array' => $array, 'total_paginas'=> $total_paginas, 'filtros' => $filtros, 'total_pedido' => $total_pedido];

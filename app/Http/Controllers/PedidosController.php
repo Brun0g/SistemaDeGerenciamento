@@ -70,6 +70,7 @@ class PedidosController extends Controller
         $data_inicial = $request->input('data_inicial');
         $data_final = $request->input('data_final');
         $ordernar_id = $request->input('ordernar_id');
+        
 
         $ordernar_total = $request->input('ordernar_total');
         $ordernar_created_at = $request->input('ordernar_created_at');
@@ -85,6 +86,9 @@ class PedidosController extends Controller
 
         $quantidade_maxima = $request->input('quantidade_maxima');
         $quantidade_minima =  $request->input('quantidade_minima');
+
+        $desconto_minimo = $request->input('desconto_minimo');
+        $desconto_maximo = $request->input('desconto_maximo');
 
         $search = $request->input('search');
         $categoria_id = $request->input('categoria');
@@ -121,16 +125,15 @@ class PedidosController extends Controller
             $escolha = 1;
         }
 
+
         if( Carbon::parse($data_inicial) > Carbon::parse($data_final) )
         {
             session()->flash('date_error', 'A data inicial deve ser menor ou igual a data final!');
             $data_inicial = now()->toDateString();
         }
 
-        $pedidos = $provider_pedidos->listarPedidos($search, null, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $provider_user);
-
+        $pedidos = $provider_pedidos->listarPedidos($search, null, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $desconto_minimo, $desconto_maximo, $provider_user);
         $categorias = $provider_categoria->listarCategoria();
-
         $total_paginas = $pedidos['total_paginas'];
         $filtros = $pedidos['filtros'];
         $pedidos = $pedidos['array'];
@@ -139,7 +142,7 @@ class PedidosController extends Controller
 
         $data = ['ano' => $now->year, 'dia_do_ano' => $now->dayOfYear, 'dia_da_semana' => $now->dayOfWeek, 'hora' => $now->hour, 'minuto' => $now->minute, 'segundo' => $now->second, 'mes' => $now->month];
 
-        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'filtros' => $filtros, 'categorias' => $categorias, 'categoria' => $categoria_id, 'quantidade' => $ordernar_quantidade, 'quantidade_minima' => $quantidade_minima, 'quantidade_maxima' => $quantidade_maxima]);
+        return view('pedidos_excluidos' , ['excluidos' => $pedidos, 'data_atual' => $data, 'data_inicial' => $data_inicial, 'data_final' => $data_final, 'escolha' => $escolha, 'pagina_atual' => $pagina_atual, 'total_paginas' => $total_paginas, 'order_by' => $array_order, 'search' => $search, 'cliente_id' => $cliente_id, 'filtros' => $filtros, 'categorias' => $categorias, 'categoria' => $categoria_id, 'quantidade' => $ordernar_quantidade, 'quantidade_minima' => $quantidade_minima, 'quantidade_maxima' => $quantidade_maxima, 'desconto_minimo' => $desconto_minimo, 'desconto_maximo' => $desconto_maximo]);
     }
 
     public function orders_active(Request $request, $pedido_id, PedidosServiceInterface $provider_pedidos, EntradasServiceInterface $provider_entradas_saidas)

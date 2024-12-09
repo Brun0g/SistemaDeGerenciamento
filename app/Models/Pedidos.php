@@ -13,12 +13,19 @@ class Pedidos extends Model
 
 
    
-     /**
+    /**
+
      * The attributes that should be cast.
      *
      * @var array
-     */
+     
+    */
+
     protected $casts = [
-        'restored_at' => 'datetime:Y-m-d',
+    
+        'created_at' => 'datetime:Y-m-d',
+        'deleted_at' => 'datetime:Y-m-d',
+        'restored_at' => 'datetime:Y-m-d'
+        
     ];
 }
