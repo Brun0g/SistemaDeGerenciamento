@@ -179,7 +179,7 @@ class DBPedidosService implements PedidosServiceInterface
         return ['lista' => $lista, 'array_quantidade' => $array_quantidade, 'max_quantidade' => $max_quantidade];        
     }
 
-    public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $desconto_minimo, $desconto_maximo, $provider_user)
+     public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $desconto_minimo, $desconto_maximo, $provider_user)
     {
         $array = [];
       
@@ -196,18 +196,17 @@ class DBPedidosService implements PedidosServiceInterface
 
         if(!$cliente_id)
         {
-            $pedidos = $pedidos->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final);
-
-            if( isset($categoria_id))
-            $pedidos = $pedidos->whereDate('pedidos.created_at', '>=', $data_inicial)->whereDate('pedidos.created_at', '<=', $data_final);
+            /* AGRUPANDO TODAS AS LINHAS QUE CONTEM A COLUNA **PEDIDOS_INDIVIDUAIS.PEDIDO_ID** IGUAIS */
+            $pedidos = $pedidos
+            ->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
+            ->join('pedidos_individuais', 'pedidos.id', '=', 'pedidos_individuais.pedido_id')
+            ->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')->groupBy('pedidos_individuais.pedido_id')->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final);
         }
-
 
         if($data_inicial && $data_final)
         {
-            $pedidos = $pedidos->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
-            ->join('pedidos_individuais', 'pedidos.id', '=', 'pedidos_individuais.pedido_id')->groupBy('pedidos_individuais.pedido_id')
-                ->select(
+            $pedidos = $pedidos->
+                select(
                 'pedidos.id', 
                 'clientes.name', 
                 'pedidos.create_by', 
@@ -221,10 +220,16 @@ class DBPedidosService implements PedidosServiceInterface
                 'pedidos.restored_at', 
                 'pedidos.deleted_at', 
                 'pedidos.created_at', 
-                'pedidos.updated_at')->selectRaw('sum(pedidos_individuais.quantidade) as total_quantidade, pedidos.totalSemDesconto - pedidos.total as desconto')
+                'pedidos.updated_at')
+                ->selectRaw('sum(pedidos_individuais.quantidade) as total_quantidade, pedidos.totalSemDesconto - pedidos.total as desconto')
 
             ->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima, $desconto_minimo, $desconto_maximo) 
             {
+                
+                /* NÃO EXISTE COLUNA PRODUTOS.CATEGORIA_ID NO AGRUPAMENTO ACIMA */
+                if(isset($categoria_id))
+                    $query->where('produtos.categoria_id', '=', $categoria_id);
+
                 if($minimo)
                     $query->having('pedidos.total', '>=', $minimo);
 
@@ -253,8 +258,7 @@ class DBPedidosService implements PedidosServiceInterface
             });
         }
 
-        if(isset($categoria_id))
-            $pedidos = $pedidos->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')->where('produtos.categoria_id', '=', $categoria_id);
+        
 
         $row = $pedidos->count();
         $row_limit = 5;

@@ -179,9 +179,6 @@ class SessionPedidosService implements PedidosServiceInterface
         $provider_clientes = new SessionClientesService();
         $provider_pedidos = new SessionPedidosService();
 
-       $filtro_escolha = false;
-
-
         foreach ($pedidos as $key => $value) 
         {
             $filtro_categoria = false;
@@ -207,20 +204,22 @@ class SessionPedidosService implements PedidosServiceInterface
             $filtro_item = $provider_pedidos->buscarItemPedido($pedido_id);
             $quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
 
-            $desconto = $total - $value['totalSemDesconto'];
+            $desconto_total = abs($total - $value['totalSemDesconto']);
 
             if($escolha == 1 && $deleted_at == null)
             {
-                $filtro_escolha = true;
+                $pedidos_nao_excluidos = true;
                 $buscar = true;
-            }
+            } else
+                $pedidos_nao_excluidos = false;
             
             
             if($escolha == 2 && $deleted_at != null)
             {
-                $filtro_escolha = true;
+                $pedidos_excluidos = true;
                 $buscar = true;
-            }
+            } else
+             $pedidos_excluidos = false;
 
             if(isset($cliente_id))
             {
@@ -230,12 +229,11 @@ class SessionPedidosService implements PedidosServiceInterface
                     $buscar = false;
             }
 
-
-            if($filtro_escolha)
+            if($pedidos_excluidos || $pedidos_nao_excluidos)
             {
                 if($created_at->toDateString() >= $data_inicial && $created_at->toDateString() <= $data_final)
                 {
-                    if($total >= $minimo && $quantidade_total >= $quantidade_minima)     
+                    if($total >= $minimo && $quantidade_total >= $quantidade_minima && $desconto_total >= $desconto_minimo)     
                     {
                         if(isset($categoria_id))
                         {
@@ -257,6 +255,7 @@ class SessionPedidosService implements PedidosServiceInterface
 
                             } 
                         }
+
                         if(isset($maximo)){
                             if($total >= $maximo)
                                 $buscar = false;      
@@ -268,9 +267,19 @@ class SessionPedidosService implements PedidosServiceInterface
                             else
                                 $buscar = false;    
                         }
+
+                        if(isset($desconto_maximo)){
+                            if($desconto_total >= $desconto_maximo)
+                                $buscar = false;      
+                        }
                         
-                        if(isset($maximo) && isset($quantidade_maxima))
+                
+                        $filtro_maximo_valor =  isset($desconto_maximo) && isset($maximo) && isset($quantidade_maxima);
+                     
+
+                        if($filtro_maximo_valor)
                         {
+        
                             $filtro_maximo = isset($categoria_id) 
                             ? $total <= $maximo && $quantidade_total <= $quantidade_maxima  && $filtro_categoria 
                             : $total <= $maximo && $quantidade_total <= $quantidade_maxima;
@@ -315,7 +324,7 @@ class SessionPedidosService implements PedidosServiceInterface
                     'restored_at' => $restored_at,
                     'deleted_at' =>  isset($value['deleted_at']) ? date_format($value['deleted_at'], "d/m/Y H:i:s") : null,
                     'pedido_id' => $pedido_id,
-                    'desconto' => $desconto
+                    'desconto' => $desconto_total
                 ];
             }
         }
@@ -357,7 +366,9 @@ class SessionPedidosService implements PedidosServiceInterface
             'max' => $maximo, 
             'min' => $minimo, 
             'quantidade_max' => $quantidade_maxima, 
-            'quantidade_min' => $quantidade_minima
+            'quantidade_min' => $quantidade_minima,
+            'desconto_max' => $desconto_maximo, 
+            'desconto_min' => $desconto_minimo
         ];
 
         return [ 'array' => $array, 'total_paginas'=> $total_paginas, 'filtros' => $filtros];
