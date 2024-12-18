@@ -9,6 +9,7 @@ use \App\Services\DBClientesService;
 use \App\Services\DBUserService;
 use App\Models\PedidosIndividuais;
 use App\Models\Pedidos;
+use App\Models\Produto;
 use App\Models\Entradas_saidas;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Auth;
@@ -179,7 +180,7 @@ class DBPedidosService implements PedidosServiceInterface
         return ['lista' => $lista, 'array_quantidade' => $array_quantidade, 'max_quantidade' => $max_quantidade];        
     }
 
-     public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $desconto_minimo, $desconto_maximo, $provider_user)
+      public function listarPedidos($search, $cliente_id, $data_inicial, $data_final, $pagina_atual, $order_by, $escolha, $maximo, $minimo, $categoria_id, $quantidade_maxima, $quantidade_minima, $desconto_minimo, $desconto_maximo, $provider_user)
     {
         $array = [];
       
@@ -196,51 +197,65 @@ class DBPedidosService implements PedidosServiceInterface
 
         if(!$cliente_id)
         {
-            /* AGRUPANDO TODAS AS LINHAS QUE CONTEM A COLUNA **PEDIDOS_INDIVIDUAIS.PEDIDO_ID** IGUAIS */
-            $pedidos = $pedidos
+            $pedidos = $pedidos->select(
+            'pedidos.id', 
+            'clientes.name', 
+            'pedidos.create_by', 
+            'pedidos.delete_by', 
+            'pedidos.restored_by', 
+            'pedidos.cliente_id', 
+            'pedidos.endereco_id', 
+            'pedidos.total', 
+            'pedidos.totalSemDesconto', 
+            'pedidos.porcentagem',  
+            'pedidos.restored_at', 
+            'pedidos.deleted_at', 
+            'pedidos.created_at', 
+            'pedidos.updated_at')
             ->join('clientes', 'pedidos.cliente_id', '=', 'clientes.id')
-            ->join('pedidos_individuais', 'pedidos.id', '=', 'pedidos_individuais.pedido_id')
-            ->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')->groupBy('pedidos_individuais.pedido_id')->having('pedidos.created_at', '>=', $data_inicial)->having('pedidos.created_at', '<=', $data_final);
+            ->whereDate('pedidos.created_at', '>=', $data_inicial)
+            ->whereDate('pedidos.created_at', '<=', $data_final);
+
+            
+            $segunda_query = PedidosIndividuais::selectRaw('pedidos_individuais.pedido_id as id_segunda')
+            ->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')
+            ->when($categoria_id, function ($query) use ($categoria_id) {
+                    
+                $query->where('produtos.categoria_id', '=', $categoria_id);
+            });
+                
+            $segunda_query = $segunda_query->groupBy('id_segunda');
+
+            $pedidos = $pedidos
+            ->joinSub($segunda_query, 'segunda_query', function ($join) {
+                $join->on('pedidos.id', '=', 'segunda_query.id_segunda');
+            });
+
+            $buscar_total_quantidade_e_desconto = PedidosIndividuais::selectRaw('pedidos_individuais.pedido_id as id_terceira, sum(pedidos_individuais.quantidade) as total_quantidade')
+                ->groupBy('id_terceira');
+
+            $pedidos = $pedidos
+            ->joinSub($buscar_total_quantidade_e_desconto, 'terceira_query', function ($join) {
+                $join->on('pedidos.id', '=', 'terceira_query.id_terceira');
+            })->selectRaw('pedidos.totalSemDesconto - pedidos.total as desconto, total_quantidade');
+
         }
 
         if($data_inicial && $data_final)
         {
-            $pedidos = $pedidos->
-                select(
-                'pedidos.id', 
-                'clientes.name', 
-                'pedidos.create_by', 
-                'pedidos.delete_by', 
-                'pedidos.restored_by', 
-                'pedidos.cliente_id', 
-                'pedidos.endereco_id', 
-                'pedidos.total', 
-                'pedidos.totalSemDesconto', 
-                'pedidos.porcentagem',  
-                'pedidos.restored_at', 
-                'pedidos.deleted_at', 
-                'pedidos.created_at', 
-                'pedidos.updated_at')
-                ->selectRaw('sum(pedidos_individuais.quantidade) as total_quantidade, pedidos.totalSemDesconto - pedidos.total as desconto')
-
-            ->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima, $desconto_minimo, $desconto_maximo) 
+            $pedidos = $pedidos->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima, $desconto_minimo, $desconto_maximo) 
             {
-                
-                /* NÃO EXISTE COLUNA PRODUTOS.CATEGORIA_ID NO AGRUPAMENTO ACIMA */
-                if(isset($categoria_id))
-                    $query->where('produtos.categoria_id', '=', $categoria_id);
-
                 if($minimo)
-                    $query->having('pedidos.total', '>=', $minimo);
+                    $query->where('pedidos.total', '>=', $minimo);
 
                 if($maximo)
-                    $query->having('pedidos.total', '<=', $maximo);
+                    $query->where('pedidos.total', '<=', $maximo);
 
                 if($quantidade_minima)
-                    $query->having('total_quantidade', '>=', $quantidade_minima);
+                    $query->where('total_quantidade', '>=', $quantidade_minima);
 
                 if($quantidade_maxima)
-                    $query->having('total_quantidade', '<=', $quantidade_maxima);
+                    $query->where('total_quantidade', '<=', $quantidade_maxima);
 
                 if($desconto_minimo)
                     $query->having('desconto', '>=', (int)$desconto_minimo);
@@ -249,7 +264,7 @@ class DBPedidosService implements PedidosServiceInterface
                     $query->having('desconto', '<=', (int)$desconto_maximo);
 
                 if($search)
-                    $query->having('clientes.name', 'LIKE', $search .'%');
+                    $query->where('clientes.name', 'LIKE', $search .'%');
                 
                 if($escolha == 1)
                     $query->whereNull('pedidos.deleted_at');
@@ -258,8 +273,7 @@ class DBPedidosService implements PedidosServiceInterface
             });
         }
 
-        
-
+       
         $row = $pedidos->count();
         $row_limit = 5;
         $pagina_atual = $pagina_atual * $row_limit;                
@@ -276,6 +290,7 @@ class DBPedidosService implements PedidosServiceInterface
 
         foreach ($pedidos as $key => $value) 
         {
+        
             $pedido_id = $value->id;
             $nome_create = $value->create_by;
             $nome_create = $provider_user->buscarNome($nome_create);
