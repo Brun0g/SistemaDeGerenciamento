@@ -59,7 +59,8 @@
                             @endif
                         </td>
                         <td style ="border: 1px solid;">{{  $value['contato'] }}</td>
-                        <td style="border: 1px solid; color:green;"> R$ {{isset($total[$cliente_id])  ? $total[$cliente_id]  : 0}}</td>
+                        <td style="border: 1px solid; color:green;"> R$ {{isset($total[$cliente_id])  ? 
+                            number_format($total[$cliente_id], 2, ",", ".") : 0}}</td>
                         <td style="width: 2%; border: 1px solid;">
                             <form  action="/DeletarCliente/{{$cliente_id}}" method="POST" >
                                 @csrf

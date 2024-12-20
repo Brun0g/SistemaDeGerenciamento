@@ -5,24 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Cliente;
-use App\Models\Pedido;
+use App\Models\Pedidos;
 
 class GraficosController extends Controller
 {
     public function index (Request $request)
     {
 
-        $totalClientes = Cliente::all();
-
-        $nomesArray = [];
-
-        foreach ($totalClientes as $key => $value) {
-                $name = $value['name'];
-                $nomesArray['nome'] = $name;
-        }
+        $data = Pedidos::selectRaw("date_format(created_at, '%d/%m/%Y') as date, count(*) as aggregate")
+    ->whereDate('created_at', '<=', now())
+    ->groupBy('date')
+    ->get();
 
   
       
-        return view('graficos', ['totalClientes' => $nomesArray]);
+        return view('graficos', ['data' => $data]);
     }
 }

@@ -54,14 +54,17 @@ class PedidosController extends Controller
     {
         $pedidoEncontrado = $provider_pedidos->buscarPedido($pedido_id);
 
+
         $pedidosIndividuais = $provider_pedidos->buscarItemPedido($pedido_id)['lista'];
         $cliente_id = $pedidoEncontrado['cliente_id'];
         $nome = $provider_cliente->buscarCliente($cliente_id);
         $endereco_id = $pedidoEncontrado['endereco_id'];
         $enderecoEntrega = $provider_endereco->buscarEndereco($endereco_id);
 
+        $totalSemDesconto = $pedidoEncontrado['totalSemDesconto'];
 
-        return view('pedidoFinalizado' , ['nome' => $nome['name'], 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $pedidoEncontrado['totalSemDesconto'], 'data_pedido' =>$pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
+
+        return view('pedidoFinalizado' , ['nome' => $nome['name'], 'pedido_id' => $pedido_id, 'array' => $pedidosIndividuais, 'endereco' => $enderecoEntrega, 'total' => $pedidoEncontrado['total'], 'diferenca' => 0, 'porcentagem' => $pedidoEncontrado['porcentagem'], 'totalSemDesconto' => $totalSemDesconto, 'data_pedido' => $pedidoEncontrado['created_at'], 'create_by' => $pedidoEncontrado['create_by'] ]);
     }
 
     public function orders_deleted(Request $request, PedidosServiceInterface $provider_pedidos, UserServiceInterface $provider_user, ClientesServiceInterface $provider_cliente, EstoqueServiceInterface $provider_estoque, CategoriaServiceInterface $provider_categoria)
@@ -71,7 +74,6 @@ class PedidosController extends Controller
         $data_final = $request->input('data_final');
         $ordernar_id = $request->input('ordernar_id');
         
-
         $ordernar_total = $request->input('ordernar_total');
         $ordernar_created_at = $request->input('ordernar_created_at');
         $ordernar_deleted_at = $request->input('ordernar_deleted_at');
@@ -156,8 +158,6 @@ class PedidosController extends Controller
         $page = $request->input('page');
 
         $url = url()->previous();
-
-
 
         if(!$tem_estoque)
             session()->flash('error_estoque', 'Não há estoque para Restaurar o pedido!');

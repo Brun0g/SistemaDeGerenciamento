@@ -99,19 +99,28 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
     public function atualizar($pedido_id, $cliente_id, $quantidade, $provider_produto, $provider_carrinho, $provider_promocoes)
     {
         $pedidos = session()->get('Pedidos', []);
-        
+
+
         foreach ($pedidos as $key => $value) 
         {
             if($pedido_id == $key)
             {
                 $produto_id = $value['produto_id'];
                 $produto = $provider_produto->buscarProduto($produto_id);
+
+
+                $porcentagem_promocao = $provider_promocoes->buscarQuantidade($produto_id, $quantidade);
+
                 $total = $produto['valor'] * $quantidade;
-                
+
+        
+                if($porcentagem_promocao != [])
+                    $pedidos[$key]['unidade_desconto'] = $produto['valor'] - ($produto['valor'] / 100 *  $porcentagem_promocao['porcentagem']);
+
+                $pedidos[$key]['promocao_porcentagem'] = $porcentagem_promocao;
                 $pedidos[$key]['total'] = $total;
                 $pedidos[$key]['total_final'] = $total;
                 $pedidos[$key]['quantidade'] = $quantidade;
-
             }
         }
 
@@ -151,7 +160,8 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
         $porcentagem = $buscarValores['porcentagem'];
         $valor_total = $buscarValores['totalSemDesconto'];
-        $valor_final = $buscarValores['valor_final'];
+        $valor_final = $buscarValores['totalComDesconto'];
+        
         
         $pedido_id = $provider_pedidos->salvarPedido($cliente_id, $endereco_id, $valor_final, $porcentagem, $valor_total, null, null);
 
@@ -166,6 +176,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
                 $porcentagem_unidade = $value['promocao_porcentagem'];
 
                 $preco_unidade = $provider_produto->buscarProduto($produto_id)['valor'];
+
 
                 $provider_pedidos->salvarItemPedido($pedido_id, $produto_id, $quantidade, $porcentagem_unidade, $valor_total, $valor_final, $preco_unidade, null, null);
 
@@ -197,6 +208,7 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
         $totalSemDesconto = 0;
         $preco_unidade = 0;
         $totalComDesconto = 0;
+        $desconto_total_promocao = 0;
         $totalPedido = [];
 
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
@@ -218,12 +230,13 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                     if($quantidade > 0)
                         $preco_unidade = $total / $quantidade;
-                    
+
+                    $total_sem_desconto_unidade = $preco_unidade * $quantidade;
+
                     $totalComDesconto += $value['total_final'];
                     $pedidos[$key]['total_final'] = $total;
 
                     $promocao = $provider_promocoes->buscarQuantidade($produto_id, $quantidade);
-                    $pedidos[$key]['promocao_porcentagem'] = 0;
 
                     if(isset($promocao['produto_id']))
                     {
@@ -233,6 +246,9 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
 
                         if($promocao['ativo'] == 1)
                         {
+                            $desconto_total_promocao += $total_sem_desconto_unidade - $total;
+                            $pedidos[$key]['desconto_total_promocao'] = $desconto_total_promocao;
+
                             if($promocao['quantidade'] >= $quantidade)
                             {
                                 $pedidos[$key]['promocao_porcentagem'] = $promocao['porcentagem'];
@@ -243,9 +259,17 @@ class SessionCarrinhoService implements CarrinhoServiceInterface
                 }
             } 
         }
+
+
+        $valor_final = $totalComDesconto - ($totalComDesconto / 100 * $porcentagem) + $desconto_total_promocao;
         
-        $valor_final = $totalComDesconto - ($totalComDesconto / 100 * $porcentagem);
-        $totalPedido = ['totalSemDesconto' => $totalSemDesconto, 'totalComDesconto' => $totalComDesconto, 'porcentagem' => $porcentagem, 'preco_unidade' => $preco_unidade, 'valor_final' => $valor_final];
+        $totalPedido = [
+        'totalSemDesconto' => $totalSemDesconto, 
+        'totalComDesconto' => $totalComDesconto, 
+        'porcentagem' => $porcentagem, 
+        'preco_unidade' => $preco_unidade, 
+        'valor_final' => $valor_final,
+        'desconto_total_promocao' => $desconto_total_promocao];
 
 
         session()->put('Pedidos', $pedidos);

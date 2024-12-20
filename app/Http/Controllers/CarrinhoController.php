@@ -31,11 +31,12 @@ class CarrinhoController extends Controller
 
         $enderecos = $provider_endereco->listarEnderecos();
 
+        $desconto_total_promocao = $buscar['desconto_total_promocao'];
         $porcentagem = $buscar['porcentagem'];
         $totalSemDesconto = $buscar['totalSemDesconto'];
         $totalComDesconto = $buscar['totalComDesconto'];
         
-        return view('carrinho', ['pedidosSession' => $pedidos_no_carrinho, 'id' => $cliente_id, 'visualizarCliente' => $visualizar_cliente, 'totalComDesconto' =>  $totalComDesconto, 'enderecos' => $enderecos, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem]);
+        return view('carrinho', ['pedidosSession' => $pedidos_no_carrinho, 'id' => $cliente_id, 'visualizarCliente' => $visualizar_cliente, 'totalComDesconto' =>  $totalComDesconto, 'enderecos' => $enderecos, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem, 'desconto_total_promocao' => $desconto_total_promocao]);
     }
 
     public function store(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
@@ -103,6 +104,7 @@ class CarrinhoController extends Controller
             $produto = $provider_produto->buscarProduto($produto_id);
 
             $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
+
        
             if($quantidade <= $quantidade_estoque && $quantidade != $quantidade_carrinho)
             {

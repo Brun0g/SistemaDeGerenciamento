@@ -23,6 +23,8 @@ class DBPedidosService implements PedidosServiceInterface
     {
         $pedido = new Pedidos;
 
+        //dd(['total' => $valor_final, 'totalSemDesconto' => $valor_total]);
+
         $pedido->create_by = Auth::id();
         $pedido->delete_by = null;
         $pedido->restored_by = null;
@@ -216,29 +218,26 @@ class DBPedidosService implements PedidosServiceInterface
             ->whereDate('pedidos.created_at', '>=', $data_inicial)
             ->whereDate('pedidos.created_at', '<=', $data_final);
 
-            
             $segunda_query = PedidosIndividuais::selectRaw('pedidos_individuais.pedido_id as id_segunda')
             ->join('produtos', 'pedidos_individuais.produto_id', '=', 'produtos.id')
             ->when($categoria_id, function ($query) use ($categoria_id) {
                     
                 $query->where('produtos.categoria_id', '=', $categoria_id);
-            });
-                
-            $segunda_query = $segunda_query->groupBy('id_segunda');
 
+            })->groupBy('id_segunda');
+                
             $pedidos = $pedidos
             ->joinSub($segunda_query, 'segunda_query', function ($join) {
                 $join->on('pedidos.id', '=', 'segunda_query.id_segunda');
             });
 
-            $buscar_total_quantidade_e_desconto = PedidosIndividuais::selectRaw('pedidos_individuais.pedido_id as id_terceira, sum(pedidos_individuais.quantidade) as total_quantidade')
+            $buscar_total_quantidade = PedidosIndividuais::selectRaw('pedidos_individuais.pedido_id as id_terceira, sum(pedidos_individuais.quantidade) as total_quantidade')
                 ->groupBy('id_terceira');
 
             $pedidos = $pedidos
-            ->joinSub($buscar_total_quantidade_e_desconto, 'terceira_query', function ($join) {
+            ->joinSub($buscar_total_quantidade, 'terceira_query', function ($join) {
                 $join->on('pedidos.id', '=', 'terceira_query.id_terceira');
             })->selectRaw('pedidos.totalSemDesconto - pedidos.total as desconto, total_quantidade');
-
         }
 
         if($data_inicial && $data_final)

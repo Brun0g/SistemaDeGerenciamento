@@ -22,7 +22,7 @@ class CreatePedidosIndividuaisTable extends Migration
             $table->foreignId('produto_id')->constrained('produtos');
             $table->integer('quantidade');
             $table->integer('porcentagem');
-            $table->integer('preco_unidade');
+            $table->double('preco_unidade', 8, 2);
             $table->double('total', 8 , 2);
             $table->double('totalSemDesconto', 8 , 2);
             $table->timestamp('restored_at')->nullable();
