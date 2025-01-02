@@ -109,7 +109,7 @@ class DBProdutosService implements ProdutosServiceInterface
             $array[$produto_id] = $promocao['promocao'];
 
             
-            $quantidade_carrinho = $service_carrinho->buscarQuantidade($produto_id)['quantidade'];
+            $quantidade_carrinho = $service_carrinho->buscarQuantidade($produto_id);
             $quantidade = $quantidade_estoque - $quantidade_carrinho;
 
             if($image_url_produto != false)
@@ -124,7 +124,7 @@ class DBProdutosService implements ProdutosServiceInterface
     public function buscarProduto($produto_id)
     {
         $produtos = Produto::withTrashed()->where('id', $produto_id)->get()[0];
-
+       // dd($produtos);
         $service_user= new DBUserService();
 
         foreach ($produtos as $produto) 
@@ -172,6 +172,7 @@ class DBProdutosService implements ProdutosServiceInterface
             'restored_at' => isset($restored_at) ? date_format($restored_at, "d/m/Y H:i:s") : null
 
         ];
+       // var_dump($produtos->valor);die();
     }
     
     return $produtoEncontrado;

@@ -14,7 +14,10 @@ class SessionProdutosService implements ProdutosServiceInterface
 	{
         $estoque = session()->get('Produtos', []);
 
-        $estoque[] = ['create_by' => Auth::id(), 'created_at' => now(), 'restored_by' => null, 'update_by' => null, 'updated_at' => null, 'produto' => $nome, 'categoria' => $categoria, 'valor'=> (int)$valor, 'imagem' => $imagem, 'delete_by' => null, 'deleted_at' => null, 'restored_at' => null];
+        $valor = floatval($valor);
+
+
+        $estoque[] = ['create_by' => Auth::id(), 'created_at' => now(), 'restored_by' => null, 'update_by' => null, 'updated_at' => null, 'produto' => $nome, 'categoria' => $categoria, 'valor'=> $valor, 'imagem' => $imagem, 'delete_by' => null, 'deleted_at' => null, 'restored_at' => null];
 
         session()->put('Produtos', $estoque);
 
@@ -116,7 +119,7 @@ class SessionProdutosService implements ProdutosServiceInterface
                 $array[$produto_id] = $promocao['promocao'];
 
                 
-                $quantidade_carrinho = $service_carrinho->buscarQuantidade($produto_id)['quantidade'];
+                $quantidade_carrinho = $service_carrinho->buscarQuantidade($produto_id);
                 $quantidade = $quantidade_estoque - $quantidade_carrinho;
 
                 if($image_url_produto != false)

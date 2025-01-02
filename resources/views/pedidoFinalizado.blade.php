@@ -51,14 +51,14 @@
                                     <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden; "></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden; "></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden; border-top: black solid 1px;"></td>
-                                    <td style="border: black solid 1px; font-weight: 900; text-align: right; background: #e5e7eb;">TOTAL</td>
+                                    <td style="border: black solid 1px; font-weight: 900; text-align: right; background: #e5e7eb;">TOTAL BRUTO:</td>
                                     <td style="border-top: solid 1px black;  color: green; ">R$ {{  number_format($totalSemDesconto, 2, ",", ".") }}</td>
                                 </tr>
                                     <tr style = "border-top: black solid 1px; border-bottom: black solid 1px;">
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
-                                    <td style=" font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; ">TOTAL PROMOCIONAL</td>
+                                    <td style=" font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; ">DESCONTO PROMOCIONAL</td>
                                     <td style="border: black solid 1px; color:indianred; ; border-top: hidden;">R$ {{  number_format($totalSemDesconto - $value['totalComDesconto'], 2, ",", ".") }}</td>
                                 </tr>
                                 <tr style = "border-top: black solid 1px; border-bottom: black solid 1px;">

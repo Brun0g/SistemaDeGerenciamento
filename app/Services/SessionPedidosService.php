@@ -167,7 +167,6 @@ class SessionPedidosService implements PedidosServiceInterface
 
         } 
 
-        
         return $pedidos_por_data; 
     }
 
@@ -199,12 +198,13 @@ class SessionPedidosService implements PedidosServiceInterface
             $restored_at = isset($value['restored_at']) ? date_format($value['restored_at'], "d/m/Y H:i:s") : null;
             $nome_do_cliente = $provider_clientes->buscarCliente($value['cliente_id'])['name'];
             $filtro_carbon = $value['created_at'];
-
+            $porcentagem = $value['porcentagem'];
 
             $filtro_item = $provider_pedidos->buscarItemPedido($pedido_id);
             $quantidade_total = $filtro_item['array_quantidade'][$pedido_id]['calcular_quantidade_total'];
 
-            $desconto_total = abs($total - $value['totalSemDesconto']);
+            $aplicar_porcentagem = $value['total'] / 100 * $porcentagem;
+            $desconto_total = abs($total - $value['totalSemDesconto']) + $aplicar_porcentagem;
 
             if($escolha == 1 && $deleted_at == null)
             {
@@ -256,49 +256,26 @@ class SessionPedidosService implements PedidosServiceInterface
                             } 
                         }
 
-                        if(isset($maximo)){
-                            if($total >= $maximo)
-                                $buscar = false;      
-                        }
-                        
-                        if(isset($quantidade_maxima)){
-                            if($quantidade_total <= $quantidade_maxima)
-                                $buscar = true;
-                            else
-                                $buscar = false;    
-                        }
-
-                        if(isset($desconto_maximo)){
-                            if($desconto_total >= $desconto_maximo)
-                                $buscar = false;      
-                        }
-                        
-                
-                        $filtro_maximo_valor =  isset($desconto_maximo) && isset($maximo) && isset($quantidade_maxima);
-                     
-
-                        if($filtro_maximo_valor)
-                        {
-        
-                            $filtro_maximo = isset($categoria_id) 
-                            ? $total <= $maximo && $quantidade_total <= $quantidade_maxima  && $filtro_categoria 
-                            : $total <= $maximo && $quantidade_total <= $quantidade_maxima;
-
-                            if($filtro_maximo)
-                                $buscar = true;
-                            else
+                        if(isset($maximo))
+                            if($total > $maximo)
                                 $buscar = false;
-                        }
 
-                        if(isset($search)){
+                        if(isset($quantidade_maxima))
+                            if($quantidade_total > $quantidade_maxima)
+                                $buscar = false;
+                        
+
+                        if(isset($desconto_maximo))
+                            if($desconto_total > $desconto_maximo)
+                                $buscar = false; 
+
+                        if(isset($search))
                             if(stripos($nome_do_cliente, $search) !== 0)
                                 $buscar = false;
-                        }
 
                     } else
                         $buscar = false;
                 }
-               
             }
 
             if($buscar)
@@ -328,7 +305,6 @@ class SessionPedidosService implements PedidosServiceInterface
                 ];
             }
         }
-
 
         $total_paginas = 0;
 

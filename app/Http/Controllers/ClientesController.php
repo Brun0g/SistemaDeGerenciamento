@@ -31,13 +31,14 @@ class ClientesController extends Controller
         $tabela_clientes = $provider_cliente->listarClientes( false, $search);
         $listar_enderecos = $provider_endereco->listarEnderecos();
 
+    
         foreach ($tabela_clientes as $cliente_id => $valor) {
-            $valor_total_pedido[$cliente_id] = 0;
-            $buscar_pedido_cliente = $provider_pedido->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, null, null, null, null, null, $provider_user)['array'];
 
-            foreach ($buscar_pedido_cliente as $value) {
+            $buscar_pedido_cliente = $provider_pedido->listarPedidos(null, $cliente_id, null, null, null, null, null, null, null, null, null, null, null, null, $provider_user);
+        
+            foreach ($buscar_pedido_cliente['array'] as $value) {
                 if($cliente_id == $value['cliente_id'])
-                $valor_total_pedido[$cliente_id] += $value['total'];
+                    $valor_total_pedido[$cliente_id] = $buscar_pedido_cliente['total_pedido'];
             }
         }
 
@@ -106,8 +107,6 @@ class ClientesController extends Controller
 
     public function show(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente, PedidosServiceInterface $provider_pedidos, ProdutosServiceInterface $provider_produto, CategoriaServiceInterface $provider_categoria, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, UserServiceInterface $provider_user, EstoqueServiceInterface $provider_estoque)
     {
-        $buscar_total = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
-
         $cliente_array = $provider_cliente->buscarCliente($cliente_id);
         $porcentagem = $provider_carrinho->visualizarPorcentagem($cliente_id);
         $listar_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);  
@@ -115,6 +114,13 @@ class ClientesController extends Controller
         $listar_categorias = $provider_categoria->listarCategoria();
 
         $page = $request->input('page');
+
+        $totalComDesconto = 0;
+
+        foreach ($listar_carrinho as $key => $value) {
+                if($cliente_id == $value['cliente_id'])
+                    $totalComDesconto = $value['totalComDesconto'];
+        }
       
         $pagina_atual  =  0;
 
@@ -126,7 +132,7 @@ class ClientesController extends Controller
         $total_paginas = $listar_pedidos['total_paginas'];
         $listar_pedidos = $listar_pedidos['array'];
 
-        return view('listar_pedidos_aprovados', ['listar_produtos' => $listar_produtos, 'listar_carrinho'=> $listar_carrinho, 'listar_categorias' => $listar_categorias, 'listar_pedidos' => $listar_pedidos, 'clienteID' => $cliente_array, 'totalPedido'=> $buscar_total['totalComDesconto'], 'porcentagem' => $porcentagem, 'deletedAt' => $cliente_array['deleted_at'], 'cliente_id' => $cliente_id, 'total_paginas' => $total_paginas, 'pagina_atual' => $pagina_atual]);
+        return view('listar_pedidos_aprovados', ['listar_produtos' => $listar_produtos, 'listar_carrinho'=> $listar_carrinho, 'listar_categorias' => $listar_categorias, 'listar_pedidos' => $listar_pedidos, 'clienteID' => $cliente_array, 'totalPedido'=> $totalComDesconto, 'porcentagem' => $porcentagem, 'deletedAt' => $cliente_array['deleted_at'], 'cliente_id' => $cliente_id, 'total_paginas' => $total_paginas, 'pagina_atual' => $pagina_atual]);
     }
 
     public function deleteClient(Request $request, $cliente_id, ClientesServiceInterface $provider_cliente)

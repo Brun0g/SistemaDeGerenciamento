@@ -26,17 +26,9 @@ class CarrinhoController extends Controller
     {
         $pedidos_no_carrinho = $provider_carrinho->visualizar($cliente_id, $provider_produto, $provider_promocoes, $provider_carrinho, $provider_estoque);
         $visualizar_cliente = $provider_cliente->listarClientes(true, null);
-        
-        $buscar = $provider_carrinho->calcularDesconto($cliente_id, $provider_carrinho, $provider_promocoes, $provider_produto);
-
         $enderecos = $provider_endereco->listarEnderecos();
 
-        $desconto_total_promocao = $buscar['desconto_total_promocao'];
-        $porcentagem = $buscar['porcentagem'];
-        $totalSemDesconto = $buscar['totalSemDesconto'];
-        $totalComDesconto = $buscar['totalComDesconto'];
-        
-        return view('carrinho', ['pedidosSession' => $pedidos_no_carrinho, 'id' => $cliente_id, 'visualizarCliente' => $visualizar_cliente, 'totalComDesconto' =>  $totalComDesconto, 'enderecos' => $enderecos, 'totalSemDesconto' => $totalSemDesconto, 'porcentagem' => $porcentagem, 'desconto_total_promocao' => $desconto_total_promocao]);
+        return view('carrinho', ['pedidosSession' => $pedidos_no_carrinho, 'id' => $cliente_id, 'visualizarCliente' => $visualizar_cliente, 'enderecos' => $enderecos]);
     }
 
     public function store(Request $request, $cliente_id, ProdutosServiceInterface $provider_produto, CarrinhoServiceInterface $provider_carrinho, PromocoesServiceInterface $provider_promocoes, EstoqueServiceInterface $provider_estoque)
@@ -64,7 +56,8 @@ class CarrinhoController extends Controller
             {
                 $retornar_erro = $provider_carrinho->adicionarProduto($cliente_id, $produto_id, $quantidade,  $provider_produto, $provider_carrinho, $provider_promocoes, $provider_estoque);
 
-                if($retornar_erro['error']){
+                if($retornar_erro['error'])
+                {
                     $produto = $provider_produto->buscarProduto($produto_id)['produto'];
                     session()->flash('error_estoque', 'Quantidade do Produto: ' . strtoupper($produto) . ' ultrapassa valor do   Estoque: ' . $retornar_erro['quantidade'] . ' Quantidade: ' . $quantidade);
                 }
@@ -86,7 +79,8 @@ class CarrinhoController extends Controller
 
         $url = url()->previous();
 
-        if($validator->fails())
+
+        if($validator->fails() || !$array)
             return redirect()->to($url)->withErrors($validator);
 
         $validated = $validator->validated();
@@ -102,10 +96,9 @@ class CarrinhoController extends Controller
             $quantidade_carrinho = (int)$pedido_no_carrinho['quantidade'];
 
             $produto = $provider_produto->buscarProduto($produto_id);
-
             $quantidade_estoque = $provider_estoque->buscarEstoque($produto_id);
 
-       
+
             if($quantidade <= $quantidade_estoque && $quantidade != $quantidade_carrinho)
             {
                 session()->flash('status', 'Quantidade alterada com sucesso! Produto: ' . strtoupper($produto['produto']));

@@ -79,9 +79,8 @@ class PromocoesController extends Controller
         return redirect('promocoes');
     }
 
-    public function update(Request $request, $promocoes_id, PromocoesServiceInterface $provider_promocoes)
+    public function update(Request $request, $promocoes_id, PromocoesServiceInterface $provider_promocoes, CarrinhoServiceInterface $provider_carrinho, ProdutosServiceInterface $provider_produto)
     {
-        
         $situacao = $request->input('situacao');
 
         $validator = Validator::make($request->all(), [
@@ -92,12 +91,12 @@ class PromocoesController extends Controller
             return redirect('promocoes')->withErrors($validator);
 
         if($situacao == 0)
-        $provider_promocoes->desativarPromocao($promocoes_id, $situacao);
+            $provider_promocoes->desativarPromocao($promocoes_id, $situacao);
         else
-        $provider_promocoes->ativarPromocao($promocoes_id, $situacao);
+            $provider_promocoes->ativarPromocao($promocoes_id, $situacao);
 
         $url = url()->previous();
-        
+
         return redirect($url);
     }
 

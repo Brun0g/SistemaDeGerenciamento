@@ -130,7 +130,6 @@ class DBPedidosService implements PedidosServiceInterface
         $service_pedidos = new DBPedidosService();
         $service_clientes = new DBClientesService();
 
-        
         $pedidos = PedidosIndividuais::withTrashed()->whereDate('created_at', '>=', $data_inicial)->whereDate('created_at', '<=', $data_final)->get();
 
         $pedidos_por_data = [];
@@ -193,7 +192,11 @@ class DBPedidosService implements PedidosServiceInterface
         $provider_pedidos = new DBPedidosService;
 
         if(isset($cliente_id))
+        {
             $pedidos = Pedidos::where('cliente_id', $cliente_id);
+
+            $total_pedido = Pedidos::selectRaw('sum(total) as total_pedido')->where('cliente_id', $cliente_id)->value('total_pedido');
+        }
         else
             $pedidos = Pedidos::withTrashed();
 
@@ -237,7 +240,7 @@ class DBPedidosService implements PedidosServiceInterface
             $pedidos = $pedidos
             ->joinSub($buscar_total_quantidade, 'terceira_query', function ($join) {
                 $join->on('pedidos.id', '=', 'terceira_query.id_terceira');
-            })->selectRaw('pedidos.totalSemDesconto - pedidos.total as desconto, total_quantidade');
+            })->selectRaw('(pedidos.totalSemDesconto - pedidos.total) as desconto, total_quantidade');
         }
 
         if($data_inicial && $data_final)
@@ -245,10 +248,10 @@ class DBPedidosService implements PedidosServiceInterface
             $pedidos = $pedidos->when($escolha, function($query) use ($escolha, $maximo, $minimo, $search, $categoria_id, $quantidade_minima, $quantidade_maxima, $desconto_minimo, $desconto_maximo) 
             {
                 if($minimo)
-                    $query->where('pedidos.total', '>=', $minimo);
+                    $query->where('total', '>=', $minimo);
 
                 if($maximo)
-                    $query->where('pedidos.total', '<=', $maximo);
+                    $query->where('total', '<=', $maximo);
 
                 if($quantidade_minima)
                     $query->where('total_quantidade', '>=', $quantidade_minima);
@@ -272,13 +275,12 @@ class DBPedidosService implements PedidosServiceInterface
             });
         }
 
-       
         $row = $pedidos->count();
         $row_limit = 5;
         $pagina_atual = $pagina_atual * $row_limit;                
         $total_paginas = ceil($row / $row_limit - 1);        
         $pedidos = $pedidos->limit($row_limit)->offset($pagina_atual);
-
+        
         if($order_by)
         {
             $key = key($order_by);
@@ -289,7 +291,6 @@ class DBPedidosService implements PedidosServiceInterface
 
         foreach ($pedidos as $key => $value) 
         {
-        
             $pedido_id = $value->id;
             $nome_create = $value->create_by;
             $nome_create = $provider_user->buscarNome($nome_create);
@@ -311,7 +312,8 @@ class DBPedidosService implements PedidosServiceInterface
             $deleted_at = Carbon::parse($value->deleted_at);
             $restored_at = Carbon::parse($value->restored_at);
 
-            $total_pedido += $total;
+            if(!$cliente_id)
+                $total_pedido += $total;
 
             if($escolha == 2)
                 $filtro_data = $deleted_at;

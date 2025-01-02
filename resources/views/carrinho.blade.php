@@ -4,6 +4,8 @@
             {{ ('Carrinho de ' .  strtoupper($visualizarCliente[$id]['name'] ) ) }}
         </h2>
     </x-slot>
+
+    @if($pedidosSession != [])
     <div class="py-12" >
         <div class="max-w-8xl mx-auto sm:px-8 lg:px-8" >
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" >
@@ -72,7 +74,7 @@
                                     </td>
                                     @if($value['total'] != $value['total_final'])
                                     <td style="font-weight: normal; border: 1px solid black; width: 5%; color: green;">
-                                        R$ {{ number_format($value['unidade_desconto'], 2, ',', '.') }}
+                                        R$ {{ number_format(floor($value['unidade_desconto'] *100)/100,2, '.', '') }}
                                     </td>
                                     @else
                                     <td style="font-weight: normal; border: 1px solid black; font-style: italic; width: 8%; color: black;">
@@ -91,8 +93,8 @@
                                     <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: black solid 1px; border-right: hidden;"></td>
-                                    <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: black solid 1px;">TOTAL:</td>
-                                    <td style="border: black solid 1px; color: green;">R$ {{ isset($totalComDesconto) ? number_format($totalSemDesconto, 2, ',', '.') : 0 }}</td>
+                                    <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: black solid 1px;">TOTAL BRUTO:</td>
+                                    <td style="border: black solid 1px; color: green;">R$ {{ isset($value['totalComDesconto']) ? number_format($value['totalSemDesconto'], 2, ',', '.') : 0 }}</td>
                                     <td style="border: 1px solid black; border-right: hidden;"></td>
                                 </tr>
                                 {{-- <tr style="border-top: black solid 1px; border-bottom: black solid 1px;">
@@ -100,11 +102,11 @@
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
-                                    <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; border-right: black solid 1px;">DESCONTO GERAL <span style="color: indianred;">{{$porcentagem}}</span>% :</td>
-                                    @if($totalComDesconto != $totalSemDesconto)
-                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{ number_format(($totalComDesconto / 100 * $porcentagem) + $desconto_total_promocao, 2, ',', '.')}}</td>
+                                    <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; border-right: black solid 1px;">DESCONTO GERAL <span style="color: indianred;">{{$value['porcentagem_geral']}}</span>% :</td>
+                                    @if($value['totalComDesconto'] != $value['totalSemDesconto'])
+                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{ number_format(($value['totalComDesconto'] / 100 * $value['porcentagem_geral']) + $value['desconto_total_promocao'], 2, ',', '.')}}</td>
                                     @else
-                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{  number_format($totalSemDesconto / 100 * $porcentagem, 2, ',', '.')  }}</td>
+                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{  number_format($value['totalSemDesconto'] / 100 * $value['porcentagem_geral'], 2, ',', '.')  }}</td>
                                     @endif
                                     <td style="border-right: hidden; border-bottom: hidden; border-top: hidden;"></td>
                                 </tr> --}}
@@ -113,19 +115,20 @@
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
-                                    <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; border-right: black solid 1px;">PROMOÇÃO TOTAL P/ UNIDADE</td>
-                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{ number_format($desconto_total_promocao, 2, ',', '.')}}</td>
+                                    <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; border-right: black solid 1px;">DESCONTO PROMOCIONAL:</td>
+                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{ number_format($value['desconto_total_promocao'], 2, ',', '.')}}</td>
+                                    <td style="border-right: hidden; border-bottom: hidden; border-top: hidden;"></td>
                                 </tr>
                                 <tr style="border-top: black solid 1px; border-bottom: black solid 1px;">
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
-                                    <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; border-right: black solid 1px;">DESCONTO GERAL <span style="color: indianred;">{{$porcentagem}}</span>% :</td>
-                                    @if($totalComDesconto != $totalSemDesconto)
-                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{ number_format(($totalComDesconto / 100 * $porcentagem), 2, ',', '.')}}</td>
+                                    <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden; border-right: black solid 1px;">DESCONTO GERAL <span style="color: indianred;">{{$value['porcentagem_geral']}}</span>% :</td>
+                                    @if($value['totalComDesconto'] != $value['totalSemDesconto'])
+                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{ number_format(($value['totalComDesconto'] / 100 * $value['porcentagem_geral']), 2, ',', '.')}}</td>
                                     @else
-                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{  number_format($totalSemDesconto / 100 * $porcentagem, 2, ',', '.')  }}</td>
+                                    <td style="border-top: hidden; border-right: 1px solid black; color: indianred;">R$ {{  number_format($value['totalSemDesconto'] / 100 * $value['porcentagem_geral'], 2, ',', '.')  }}</td>
                                     @endif
                                     <td style="border-right: hidden; border-bottom: hidden; border-top: hidden;"></td>
                                 </tr>
@@ -135,7 +138,7 @@
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="border: black solid 1px; background: #e5e7eb; border-top: hidden; border-right: hidden;"></td>
                                     <td style="font-weight: 900; text-align: right; background: #e5e7eb; border-top: hidden;">À PAGAR:</td>
-                                    <td style="border: black solid 1px; border-top: hidden; color: green;">R$ {{ isset($totalComDesconto) ? number_format($totalComDesconto - ($totalComDesconto / 100 * $porcentagem), 2, ',', '.') : 0 }}</td>
+                                    <td style="border: black solid 1px; border-top: hidden; color: green;">R$ {{ number_format($value['valor_final'], 2, ',', '.') }}</td>
                                     <td style="border-right: hidden; border-bottom: hidden;"></td>
                                 </tr>
                             </tbody>
@@ -156,7 +159,7 @@
                                 @method('PATCH')
                                 <tr>
                                     <td style="border: 1px solid;">
-                                        <input type="number" style="border: hidden; text-align: center; color: darkgreen; font-weight: 900;" name="porcentagem" value="{{$porcentagem}}" min="0" max="100">
+                                        <input type="number" style="border: hidden; text-align: center; color: darkgreen; font-weight: 900;" name="porcentagem" value="{{$value['porcentagem_geral']}}" min="0" max="100">
                                     </td>
                                 </td>
                                 <td style="border: 1px solid;">
@@ -197,7 +200,8 @@
             </div>
         </div>
     </div>
-    @elseif(!session('status'))
+    @endif
+    @elseif(!session('status') || $pedidosSession == [])
     <div style="display: flex; justify-content: center; margin-top: 20px;">
         <div class="alert alert-danger"  type="submit">Não há produtos no carrinho!</div>
     </div>

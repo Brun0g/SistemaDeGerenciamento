@@ -21,7 +21,7 @@ class CreateProdutosTable extends Migration
             $table->foreignId('update_by')->nullable()->constrained('users');
             $table->string('produto');
             $table->foreignId('categoria_id')->constrained('categorias');
-            $table->double('valor', 8 , 2);
+            $table->decimal('valor', 8 , 2);
             $table->string('imagem');
             $table->timestamp('restored_at')->nullable();
             $table->softDeletes();

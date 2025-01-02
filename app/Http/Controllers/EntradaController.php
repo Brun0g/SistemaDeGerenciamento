@@ -28,7 +28,7 @@ class EntradaController extends Controller
     {
        $entradas = $provider_entradas_saidas->listarEntradaSaidas($provider_user, null);
        $produtos = $provider_produto->buscarProduto($produto_id);
-       $quantidade_carrinho = $provider_carrinho->buscarQuantidade($produto_id)['quantidade'];
+       $quantidade_carrinho = $provider_carrinho->buscarQuantidade($produto_id);
        $resultado = $provider_estoque->buscarEstoque($produto_id);
 
        return view('entradas_saida', ['entradas' => $entradas, 'Produtos' => $produtos, 'produto_id' => $produto_id, 'carrinho' => $quantidade_carrinho, 'quantidade_estoque' => $resultado]);
